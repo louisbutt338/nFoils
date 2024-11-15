@@ -1,11 +1,10 @@
 import os
-import numpy as np
+import numpy as np 
 import sys
 import statistics
 import matplotlib.font_manager
 import matplotlib
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from scipy.stats import gaussian_kde
 import seaborn
 import json
@@ -21,30 +20,25 @@ from pathlib import Path
 import math
 
 ################# DIRECTORY INPUTS #################
-#test
 
 image_directory = '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis'
-
-calc_data_directory = '{}/calculated_activities'.format(image_directory)
-exp_data_directory = '{}/experimental_activities'.format(image_directory)
+calc_data_directory = f"{image_directory}/calculated_activities"
+exp_data_directory =  f"{image_directory}/experimental_activities"
 
 ################# FLUX NORMALISATION CALCS ################# 
 
 flux_norm_mean = 0.02756
 flux_norm_error = 0.004
+calculated_flux_uncertainty_frac = flux_norm_error/flux_norm_mean
 n_per_s_norm_mean = 0.0751237
-print(0.02756/(73137.1/199358.77))
 n_per_s_error = 0.0751237* np.sqrt((1147.24/199358.77)**2+(0.004/0.02756)**2+(59186.1/73137.1)**2)
-#0.02756/(73137.1/(1147.24/199358.77))
-#0.027568*(59186.1/73137.1)
-#(59186.1/199358.77)
 
 def estimated_10ua_flux(flux):
     return flux*6.24151e13*1.37267e-05
 def estimated_10ua_li_n_per_s(flux):
     return flux*6.24151e13*3.28565E-03
-print('max flux at 10uA proton current: {:.3e} +- {:.3e} n/cm2/s'.format(estimated_10ua_flux(flux_norm_mean),estimated_10ua_flux(flux_norm_error)))
-print('max n/s from lithium at 10uA proton current: {:.3e} +- {:.3e} n/s'.format(estimated_10ua_li_n_per_s(n_per_s_norm_mean),estimated_10ua_li_n_per_s(n_per_s_error)))
+print(f"max flux at 10uA proton current: {estimated_10ua_flux(flux_norm_mean):.3e} +- {estimated_10ua_flux(flux_norm_error):.3e} n/cm2/s")
+print(f"max n/s from lithium at 10uA proton current: {estimated_10ua_li_n_per_s(n_per_s_norm_mean):.3e} +- {estimated_10ua_li_n_per_s(n_per_s_error):.3e} n/s")
 
 ################# LIST OF ANALYSED ISOTOPES ################# 
 
@@ -56,20 +50,14 @@ isotope_list = [
 '$^{65}Ni$',
 '$^{64}Cu$',
 '$^{111m}Cd$',
-#'$^{117}In$', # cd117 and cd117m both have too long halflives for this to be detected
-#'$^{117}Cd$',
 '$^{115}Cd$',
 '$^{115m}In$',
 '$^{116m}In$',
 '$^{57}Ni$',
-#'$^{58}Co$', # do not use - clash of halflives
 '$^{165}Dy$', 
 '$^{157}Dy$', 
 '$^{92m}Nb$',
 '$^{7}Be$ *'] 
-#'Sc44m', 
-#'Rh102m',
-#'Y88']
 
 ################# CALCULATED RESULTS FOR ALL THREE LIBRARIES ################# 
 
@@ -82,7 +70,6 @@ calculated_endfb8_activities = [
 0.7877*5.596E+01 ,
 0.7877*7.597E+02 ,
 1e6              , # reaction missing
-#0.1328*8.900E+01 ,
 0.1328*1.003E+02 ,
 1e6              , # reaction missing
 1e6 , # reaction missing in116m product 
@@ -100,7 +87,6 @@ calculated_endfb8_uncertainties = [
 0.7877*0.00E+00,
 0.7877*0.00E+00,
 0.1328*0.00E+00,
-#0.1328*0.00E+00,
 0.1328*0.00E+00,
 0.6452*0.00E+00,
 0.6452*0.00E+00,
@@ -114,11 +100,10 @@ calculated_irdff2_activities = [
 1.4440*8.972E+02,
 0.1498*9.350E+01,
 0.1498*4.306E+03,
-0.5*0.2334*9.043E+02, #    only half the Na24 generated here is from the (n,a) reaction, hence multiplication factor
+0.5*0.2334*9.043E+02, #    only half the Na24 generated here is from (n,a), hence multiplication factor
 1e6,        #    reaction missing
 0.7877*7.788E+02,
 1e6,        #    reaction missing
-#1e6,        #    reaction missing
 1e6,        #    reaction missing
 1e6*0.6452*3210.0877645615906,        #    reaction missing
 0.6452*0.33334*7.031E+05,
@@ -136,7 +121,6 @@ calculated_irdff2_uncertainties = [
 0.7877*0,
 0.7877*0,
 0.1328*0,
-#0.1328*0,
 0.1328*0,
 0.6452*0,
 0.6452*0,
@@ -154,7 +138,6 @@ calculated_tendl21_activities = [
 0.7877*8.772E+01 ,
 0.7877*7.645E+02 ,
 0.1328*3.870E+03 ,
-#0.1328*5.086E+01 ,
 0.1328*7.802E+01 ,
 0.6452*4.379E+03 ,
 0.6452*2.769E+05 ,
@@ -172,7 +155,6 @@ calculated_tendl21_uncertainties = [
 0.7877*6.44E+00 ,
 0.7877*3.22E+01 ,
 0.1328*1.54E+02 ,
-#0.1328*9.15E+00 ,
 0.1328*5.50E+00 ,
 0.6452*2.03E+02 ,
 0.6452*7.51E+03 ,
@@ -184,7 +166,6 @@ calculated_tendl21_uncertainties = [
 
 ################# CALCULATED UNCERTAINTIES FUNCTION ################# 
 
-calculated_flux_uncertainty_frac = flux_norm_error/flux_norm_mean
 def total_calculated_uncerts(calc_fispact_uncerts,calc_activities):
     calculated_uncertainties_frac = []
     for i in np.linspace(0,len(calc_activities)-1,len(calc_activities)):
@@ -203,7 +184,6 @@ experimental_activities = [
 ,47.354279028165536
 ,976.9745223250458
 ,564.0136821965442
-#,15.914748446854595
 ,24.055053741543887
 ,3925.6667358315044
 ,225978.3770850294
@@ -221,7 +201,6 @@ experimental_uncertainties = [
 ,5.588082663030442
 ,158.1728263407352
 ,4.923370766254835
-#,2.9068033692885105
 ,1.7118933951037367
 ,35.22751978312062
 ,1950.6765618229635
@@ -255,8 +234,6 @@ def c_over_e_uncerts(calculated_uncertainties_frac):
 
 ################# PLOTTING ################# 
 
-#new_order = [10,2,7,12, 13,8,5,6, 4,9,1,14,3,0,11,15]
-#new_order = [10,2,12,7,13, 8,5,6,4, 9,1,14,3,0,11,15]
 new_order = [9,2,11,12, 7,5,6,  8,4,1,13,3,0,10,14]
 
 new_isotope_list = [isotope_list[i] for i in new_order]
@@ -298,16 +275,13 @@ ax3.set_xlim(-0.7,len(new_order)-0.7)
 
 ax1.plot([-1,17], np.ones(2), 'Black', ls='--',linewidth=1.5)
 ax1.fill_between([-1,17], 1-0.14513788, 1+0.14513788,facecolor='lightgrey',alpha=0.5)
-#ax1.plot([-1,17], np.ones(2)*(73137.1/199358.77), 'Black', ls=':',linewidth=1.5)
 
 ax1.set_xticklabels(new_isotope_list,rotation=45)
-#ax1.grid(which='major')
-#ax1.legend(['$^{7}Be$ flux','$^{56}Mn$, $^{24}Na$ flux'],loc="upper left", bbox_to_anchor=(1, 1),handlelength=0,markerscale=0, labelspacing=8.8,borderaxespad=0, frameon=False,fontsize=16)
 ax1.legend(loc="upper left", bbox_to_anchor=(0.02, 0.90),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 ax2.legend(loc="upper left", bbox_to_anchor=(0.02, 0.98),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 ax3.legend(loc="upper left", bbox_to_anchor=(0.02, 0.82),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 fig.set_size_inches((17, 6))
-fig.savefig(os.path.join(image_directory, 'C_E_plot_alllibraries_test.png'), transparent=False, bbox_inches='tight')
+fig.savefig(os.path.join(f"{image_directory}/CE_plots", 'CE_plot_newscripttest.png'), transparent=False, bbox_inches='tight')
 
 ################# WEIGHTED AVES ################# 
 
@@ -324,7 +298,7 @@ def weighted_ce(ce_value_array,ce_error_array):
     summed_weighted_values = np.sum(weighted_values)
     weighted_ce_result = summed_weighted_values/summed_weights
     weighted_ce_error = 1/np.sqrt(summed_weights)
-    print(weighted_ce_result,weighted_ce_error)
+    return weighted_ce_result,weighted_ce_error
 
-weighted_ce(new_ce_results[:6],new_ce_errors[:6])
+print(f"weighted C/E for {new_isotope_list[:6]} is {weighted_ce(new_ce_results[:6],new_ce_errors[:6])[0]} +- {weighted_ce(new_ce_results[:6],new_ce_errors[:6])[1]}")
 

@@ -12,7 +12,7 @@ import numpy as np
 ascii_start_filename = ['fe','au']
 ascii_end_filename = '_ubb_280324.Spe'
 
-folder_path = '../short-lived/'
+folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/proton_hpge/test_summer/'
 
 # writes a summed ASCII file from the input ASCII files in the array. Takes the header and footer parameters 
 # (i.e. livetime, timings, calibration) from the first file in the array, so this will need to be edited 
@@ -23,7 +23,7 @@ folder_path = '../short-lived/'
 
 def parse_ascii(material):
 
-    filename = f"{material}{ascii_end_filename}"
+    filename = f"{folder_path}{material}{ascii_end_filename}"
     with open(filename,'r') as ascii_data_file:
         #ascii_contents = ascii_data_file.read().strip().split('\n')
         ascii_contents = ascii_data_file.readlines()

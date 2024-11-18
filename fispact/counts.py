@@ -263,8 +263,4 @@ for m in materials:
         with open(dose_results_filepath, 'a') as output_file:
             output_file.writelines(f"{fispact_nuclides_sorted[r]:<7}   {fispact_doses_sorted[r]:.3e} Sv/hr  ({per_dose:.2f}%) \n")    
             
-    
-     #        print(
-    #            f"{e*1e-3:<10.3f} keV    {i:<10.8f}   {n.activity:.3e} Bq    {counts:.3e} counts/s"
-    #        )
 

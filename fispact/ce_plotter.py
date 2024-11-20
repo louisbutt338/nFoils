@@ -210,6 +210,43 @@ experimental_uncertainties = [
 ,0.28527178050358687
 ,1147.2464970510382]
 
+# ROOT activities
+
+experimental_activities = [
+1268.687 
+,9.78996 
+,963.1377
+,107.9025 
+,44.10264 
+,933.3502
+,566.266
+,24.30778
+,3936.46124 # copied from interspec 
+,222635.41237 # copied from interspec
+,8.50635115 # copied from interspec
+,2315.183
+,3.51894
+,16.1274765
+,201906.330697] 
+
+experimental_uncertainties = [
+11.4709
+,1.1308
+,9.4074
+,1.185
+,6.351
+,185.4677
+,4.9878
+,1.78142
+,35.3244
+,1921.8196
+,0.11657
+,99.6136
+,0.157085
+,0.281949
+,962.421448]
+
+
 ################# C/E FUNCTIONS ################# 
 
 def c_over_e(calculated_activities):
@@ -228,7 +265,7 @@ def c_over_e_uncerts(calculated_uncertainties_frac):
         ce_error =  np.sqrt( c_error**2 + e_error**2 )
         #ce_error =  np.sqrt( c_error**2 + e_error**2 ) * c_over_e[int(i)]
         #ce_error =  ( c_error + e_error ) * c_over_e[int(i)]
-
+    
         c_over_e_uncerts.append(ce_error)
     return c_over_e_uncerts
 
@@ -281,7 +318,7 @@ ax1.legend(loc="upper left", bbox_to_anchor=(0.02, 0.90),handlelength=0,borderax
 ax2.legend(loc="upper left", bbox_to_anchor=(0.02, 0.98),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 ax3.legend(loc="upper left", bbox_to_anchor=(0.02, 0.82),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 fig.set_size_inches((17, 6))
-fig.savefig(os.path.join(f"{image_directory}/CE_plots", 'CE_plot_newscripttest.png'), transparent=False, bbox_inches='tight')
+fig.savefig(os.path.join(f"{image_directory}/CE_plots", 'CE_plot_root.png'), transparent=False, bbox_inches='tight')
 
 ################# WEIGHTED AVES ################# 
 

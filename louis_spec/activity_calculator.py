@@ -17,10 +17,10 @@ cross_section_calculator = False
 
 # choose whether to run all FOILS isotopes ('foils'), TARGET isotopes ('target') 
 # or a specific isotope ('isotope'):
-automation = 'foils'
+automation = 'Mn56'
 
 # choose peak analysis library 
-peak_library = 'maestro'
+peak_library = 'root'
 
 # folder to save the results
 folder_path = f"/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/experimental_activities/{peak_library}" 
@@ -43,13 +43,13 @@ data_dictionary['Na24'  ] = [8644,datetime(2024,3,28, 20,0,42)]
 data_dictionary['Ni65'  ] = [929,datetime(2024,3,28, 18,58,33)]
 data_dictionary['Cu64'  ] = [929,datetime(2024,3,28, 18,58,33)]
 data_dictionary['Cd111m'] = [1536,datetime(2024,3,28, 19,24,23)]
-data_dictionary['In117' ] = [1536,datetime(2024,3,28, 19,24,23)] # do not use - isotope clash
-data_dictionary['Cd117' ] = [1536,datetime(2024,3,28, 19,24,23)] # do not use - isotope clash
+#data_dictionary['In117' ] = [1536,datetime(2024,3,28, 19,24,23)] # do not use - isotope clash
+#data_dictionary['Cd117' ] = [1536,datetime(2024,3,28, 19,24,23)] # do not use - isotope clash
 data_dictionary['Cd115' ] = [1536,datetime(2024,3,28, 19,24,23)]
 data_dictionary['In115m'] = [459,datetime(2024,3,28, 19,51,24)]
 data_dictionary['In116m'] = [459,datetime(2024,3,28, 19,51,24)]
 data_dictionary['Ni57'  ] = [274848.9,datetime(2024,3,29, 11,29,26)]
-data_dictionary['Co58'  ] = [274848.9,datetime(2024,3,29, 11,29,26)] # do not use - isotope clash
+#data_dictionary['Co58'  ] = [274848.9,datetime(2024,3,29, 11,29,26)] # do not use - isotope clash
 data_dictionary['Dy165' ] = [44220,datetime(2024,3,28, 23,8,18)]
 data_dictionary['Dy157' ] = [44220,datetime(2024,3,28, 23,8,18)]
 data_dictionary['Nb92m' ] = [24133,datetime(2024,4,3, 10,16,14)]
@@ -105,18 +105,21 @@ if peak_library == 'interspec':
 
 # ROOT library
 if peak_library == 'root':
-    data_dictionary.setdefault('Be7'   ,[]).extend([[52870],[253.3]])
+    data_dictionary.setdefault('Be7'   ,[]).extend([[52930],[252.3]])
     data_dictionary.setdefault('Zn65'  ,[]).extend([[9091.4*48.87],[9091.4*0.13]])
     data_dictionary.setdefault('Mn56'  ,[]).extend([[12520,1641,0,0,0],[113.2,41.6,0,0,0]]) 
-    data_dictionary.setdefault('Au196' ,[]).extend([[125.8,0,0,0,0], [14.8,0,0,0,0]])
-    data_dictionary.setdefault('Au198' ,[]).extend([[11590,0,0,0,0], [107.4,0,0,0,0]]) 
+    data_dictionary.setdefault('Au196' ,[]).extend([[126.4,0,0,0,0], [14.6,0,0,0,0]])
+    data_dictionary.setdefault('Au198' ,[]).extend([[11610,0,0,0,0], [113.4,0,0,0,0]]) 
     data_dictionary.setdefault('Na24'  ,[]).extend([[8539.92,4245.37,0,0,0],[93.807,65.6465,0,0,0]])
     data_dictionary.setdefault('Ni65'  ,[]).extend([[75,118.6,0,0,0],[10.8,12.3,0,0,0]])
     data_dictionary.setdefault('Cu64'  ,[]).extend([[41.92],[8.33]])
     data_dictionary.setdefault('Cd111m',[]).extend([[13510,0],[119,0]])
     data_dictionary.setdefault('Cd115' ,[]).extend([[253.8,0,0,0,0],[18.6,0,0,0,0]])
-    data_dictionary.setdefault('Dy165' ,[]).extend([[0,1811,0,0,0],[0,77.4,0,0,0]])
-    data_dictionary.setdefault('Dy157' ,[]).extend([[2153,0,0,0,0],[90.4,0,0,0,0]])
+    data_dictionary.setdefault('In115m',[]).extend([[459*53.49,0,0,0,0],[459*0.48,0,0,0,0]])
+    data_dictionary.setdefault('In116m',[]).extend([[602.4*459,0,0,0,0],[5.2*459,0,0,0,0]])
+    data_dictionary.setdefault('Ni57'  ,[]).extend([[2.748e5*0.027,0,0,0,0],[2.748e5*0.00037,0,0,0,0]])
+    data_dictionary.setdefault('Dy165' ,[]).extend([[0,1943,0,0,0],[0,83.6,0,0,0]])
+    data_dictionary.setdefault('Dy157' ,[]).extend([[2332,0,0,0,0],[104.1,0,0,0,0]])
     data_dictionary.setdefault('Nb92m' ,[]).extend([[3861,0,0,0,0],[67.5,0,0,0,0]])
 
 
@@ -174,7 +177,8 @@ def efficiency_eqn(energy:float,n1:float,n2:float) -> float:
 # use the measurement distance and efficiency curves to calculate activity over the live time
 def activity_livetime(c,i,e) :  
     if measurement_distance == 1:
-        selected_efficiency = efficiency_eqn(e,8.7655,-0.934) # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak)
+        selected_efficiency = efficiency_eqn(e,8.1,-0.9209) # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak)
+        #errors=1.075,0.01871
     if measurement_distance == 6:
         selected_efficiency = efficiency_eqn(e,0.6264,-0.749) # Kyle fit
     if measurement_distance == 10:
@@ -182,7 +186,8 @@ def activity_livetime(c,i,e) :
     if measurement_distance == 15:
         selected_efficiency = efficiency_eqn(e,0.1966,-0.763) # Kyle fit 
     if measurement_distance == 34:
-        selected_efficiency = efficiency_eqn(e,0.074,-0.868) # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak)
+        selected_efficiency = efficiency_eqn(e,0.0715,-0.8631) # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak)
+        #errors=0.01523,0.03235
     activity = (c) / ((i)
         * selected_efficiency
     )
@@ -202,7 +207,6 @@ def reaction_rates(a, irrad_time):
     #rr_ave = activity_0(a,get_decay_database(isotope_name)[0][0],get_decay_database(isotope_name)[1][0])[0] / irrad_time
     rr_max = activity_0(a,get_decay_database(isotope_name)[0][0],get_decay_database(isotope_name)[1][0])[0] * (10/(8.778*128.5))
     return rr_ave,rr_max
-
 
 # print and save results for individual isotope activities
 for isotope_name in isotope_run_list:

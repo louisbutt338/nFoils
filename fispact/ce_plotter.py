@@ -305,7 +305,7 @@ ax2.tick_params(top=False, labeltop=False, bottom=True, labelbottom=False)
 ax2.set_xlim(-0.3,len(new_order)-0.3)
 
 ax3 = ax1.twiny()
-ax3.scatter(new_isotope_list, ce_results_endfb8, s=40 , c='green', linewidth=2,label='ENDF/B-VIII.0')
+ax3.scatter(new_isotope_list, ce_results_endfb8, s=40 , c='green', linewidth=2,label='ENDF/B-VIII')
 ax3.errorbar(new_isotope_list,ce_results_endfb8,ce_errors_endfb8,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
 ax3.tick_params(top=False, labeltop=False, bottom=True, labelbottom=False)
 ax3.set_xlim(-0.7,len(new_order)-0.7)
@@ -337,5 +337,5 @@ def weighted_ce(ce_value_array,ce_error_array):
     weighted_ce_error = 1/np.sqrt(summed_weights)
     return weighted_ce_result,weighted_ce_error
 
-print(f"weighted C/E for {new_isotope_list[:6]} is {weighted_ce(new_ce_results[:6],new_ce_errors[:6])[0]} +- {weighted_ce(new_ce_results[:6],new_ce_errors[:6])[1]}")
+print(f"weighted C/E for {new_isotope_list[6:14]} is {weighted_ce(new_ce_results[6:14],new_ce_errors[6:14])[0]} +- {weighted_ce(new_ce_results[6:14],new_ce_errors[6:14])[1]}")
 

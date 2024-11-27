@@ -9,10 +9,11 @@ import numpy as np
 ####################################
 
 
-ascii_start_filename = ['fe','au']
-ascii_end_filename = '_ubb_280324.Spe'
+ascii_filetag = 'uBB_20s_intervals_60mins_'
+first_file_number = 0
+last_file_number = 17
 
-folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/proton_hpge/test_summer/'
+folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/bgd/271124_20s_interval/'
 
 # writes a summed ASCII file from the input ASCII files in the array. Takes the header and footer parameters 
 # (i.e. livetime, timings, calibration) from the first file in the array, so this will need to be edited 
@@ -21,11 +22,10 @@ folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/proton_hpge/test_summ
 ####################################
 ####################################
 
-def parse_ascii(material):
-
-    filename = f"{folder_path}{material}{ascii_end_filename}"
+# parses the ascii spectrum data from the selected ascii file
+def parse_ascii(spectrum_number):
+    filename = f"{folder_path}{ascii_filetag}{spectrum_number}.Spe"
     with open(filename,'r') as ascii_data_file:
-        #ascii_contents = ascii_data_file.read().strip().split('\n')
         ascii_contents = ascii_data_file.readlines()
         ascii_header = ascii_contents[:12]
         ascii_footer = ascii_contents[8204:]
@@ -34,22 +34,26 @@ def parse_ascii(material):
         ascii_data = [int(x) for x in ascii_data_strings]
     return ascii_header,ascii_data,ascii_footer
 
+# automates for all the ascii files specified in the user inputs
+ascii_number_array = np.arange(first_file_number,last_file_number+1)
+ascii_number_array_strings = []
 all_ascii_data = []
-for m in ascii_start_filename:
-    all_ascii_data.append(parse_ascii(m)[1])
+for n in ascii_number_array:
+    n_string = (f"{n :03d}")
+    ascii_number_array_strings.append(n_string)
+    all_ascii_data.append(parse_ascii(n_string)[1])
 ascii_histogram = [sum(x) for x in zip(*all_ascii_data)]
 
+# writes the summed output file using the header and footer data from the FIRST ascii analysed
 def write_ascii():
     print('writing summed ASCII...')
-    filename = f"summed{ascii_end_filename}"
+    filename = f"{folder_path}summed_{ascii_filetag}.Spe"
     with open(filename,'w') as ascii_histogram_file:
-        for line in parse_ascii(ascii_start_filename[0])[0]:
+        for line in parse_ascii(ascii_number_array_strings[0])[0]:
             ascii_histogram_file.write(line)
         for line in ascii_histogram:
             ascii_histogram_file.write(f"{line}\n")
-        for line in parse_ascii(ascii_start_filename[0])[2]:
+        for line in parse_ascii(ascii_number_array_strings[0])[2]:
             ascii_histogram_file.write(line)
-        #ascii_histogram_file.write(ascii_histogram)
-        #ascii_histogram_file.write(parse_ascii(ascii_start_filename[0])[2])
     
 write_ascii()

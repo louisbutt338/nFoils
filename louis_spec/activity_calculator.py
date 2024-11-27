@@ -17,7 +17,7 @@ cross_section_calculator = False
 
 # choose whether to run all FOILS isotopes ('foils'), TARGET isotopes ('target') 
 # or a specific isotope ('isotope'):
-automation = 'Mn56'
+automation = 'Zn65'
 
 # choose peak analysis library 
 peak_library = 'root'
@@ -106,7 +106,7 @@ if peak_library == 'interspec':
 # ROOT library
 if peak_library == 'root':
     data_dictionary.setdefault('Be7'   ,[]).extend([[52930],[252.3]])
-    data_dictionary.setdefault('Zn65'  ,[]).extend([[9091.4*48.87],[9091.4*0.13]])
+    data_dictionary.setdefault('Zn65'  ,[]).extend([[3.577e5],[5.996e2]])
     data_dictionary.setdefault('Mn56'  ,[]).extend([[12520,1641,0,0,0],[113.2,41.6,0,0,0]]) 
     data_dictionary.setdefault('Au196' ,[]).extend([[126.4,0,0,0,0], [14.6,0,0,0,0]])
     data_dictionary.setdefault('Au198' ,[]).extend([[11610,0,0,0,0], [113.4,0,0,0,0]]) 

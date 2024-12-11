@@ -9,11 +9,11 @@ import numpy as np
 ####################################
 
 
-ascii_filetag = 'uBB_20s_intervals_60mins_'
+ascii_filetag = 'ubb_400s_x60_6dot7hrs'
 first_file_number = 0
-last_file_number = 17
+last_file_number = 55
 
-folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/bgd/271124_20s_interval/'
+folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/hpge_results_g11_291124/long-lived/y/'
 
 # writes a summed ASCII file from the input ASCII files in the array. Takes the header and footer parameters 
 # (i.e. livetime, timings, calibration) from the first file in the array, so this will need to be edited 
@@ -24,7 +24,7 @@ folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/bgd/271
 
 # parses the ascii spectrum data from the selected ascii file
 def parse_ascii(spectrum_number):
-    filename = f"{folder_path}{ascii_filetag}{spectrum_number}.Spe"
+    filename = f"{folder_path}{ascii_filetag}_{spectrum_number}.Spe"
     with open(filename,'r') as ascii_data_file:
         ascii_contents = ascii_data_file.readlines()
         ascii_header = ascii_contents[:12]

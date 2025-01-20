@@ -282,7 +282,7 @@ def total_calculated_uncerts(calc_fispact_uncerts,calc_activities):
 
 ################# EXPERIMENTAL RESULTS ################# 
 
-experimental_activities = [
+experimental_activities_interspec_2024cal = [
 1283.5748064185852
 ,9.56701857731642
 ,1059.8534636660463
@@ -297,9 +297,9 @@ experimental_activities = [
 ,1480.475164225852
 ,3.545378049582069
 ,16.443880490456756
-,199358.7712541107]
+,141683.77]
 
-experimental_uncertainties = [
+experimental_uncertainties_interspec_2024cal = [
 11.505019860224916
 ,1.0468470175786961
 ,15.256182909717403
@@ -314,7 +314,7 @@ experimental_uncertainties = [
 ,15.892505341164915
 ,0.1323696495059722
 ,0.28527178050358687
-,1147.2464970510382]
+,675.36]
 
 # ROOT activities
 
@@ -333,7 +333,7 @@ experimental_activities = [
 ,2322.42753
 ,3.5299517227162998
 ,16.243051418817277
-,202421.90327452912] 
+,199358.77] 
 
 experimental_uncertainties = [
 11.553077365500107
@@ -350,8 +350,41 @@ experimental_uncertainties = [
 ,99.925
 ,0.1575763183253717
 ,0.28396943039890343
-,964.8790137193216]
+,1147.24]
 
+experimental_activities_root2025cal = [
+833.2533802813856
+,7.03617761475889
+,681.7725148143758
+,67.41997744625581
+,27.329763226423605
+,584.2002783190643
+,421.8848933815178
+,16.724490519462055
+,2845.798781973623
+,139925.7137124618
+,5.311350629962082
+,1654.4295112098637 
+,2.5418366080853607
+,10.45693352168561
+,141683.77] 
+
+experimental_uncertainties_root2025cal = [
+7.5338883904035825
+,0.8127230472743654
+,6.6591734005125085
+,0.7405767061402121
+,3.9354859046049997
+,116.0875075953675
+,3.716084553101452
+,1.2256718820409545
+,25.53717359034098
+,1207.8580864953542
+,0.07278517529948038
+,71.18389456363592
+,0.11346706299386194
+,0.18281352310639176
+,675.36]
 
 ################# C/E FUNCTIONS ################# 
 
@@ -377,12 +410,13 @@ def c_over_e_uncerts(calculated_uncertainties_frac):
 
 ################# PLOTTING ################# 
 
-new_order = [9,2,11,12, 7,5,6,  8,4,1,13,3,0,10,14]
+new_order = [9,2,11,12, 7,5,6,  8,4,0,3,1,13,10,14]
 
 new_isotope_list = [isotope_list[i] for i in new_order]
-new_ce_results    = [c_over_e(calculated_tendl21_activities)[i] for i in new_order]
-ce_results_irdff  =  [c_over_e(calculated_irdff2_activities)[i] for i in new_order]
-ce_results_endfb8 =  [c_over_e(calculated_endfb8_activities)[i] for i in new_order]
+new_ce_results    =  [1.03*c_over_e(calculated_tendl21_activities)[i] for i in new_order]
+ce_results_irdff  =  [1.03*c_over_e(calculated_irdff2_activities)[i] for i in new_order]
+ce_results_endfb8 =  [1.03*c_over_e(calculated_endfb8_activities)[i] for i in new_order]
+print(ce_results_endfb8[12])
 
 new_ce_errors =     [c_over_e_uncerts(total_calculated_uncerts(calculated_tendl21_uncertainties,calculated_tendl21_activities))[i] for i in new_order]
 ce_errors_irdff =   [c_over_e_uncerts(total_calculated_uncerts(calculated_irdff2_uncertainties, calculated_irdff2_activities ))[i] for i in new_order]
@@ -424,7 +458,7 @@ ax1.legend(loc="upper left", bbox_to_anchor=(0.02, 0.90),handlelength=0,borderax
 ax2.legend(loc="upper left", bbox_to_anchor=(0.02, 0.98),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 ax3.legend(loc="upper left", bbox_to_anchor=(0.02, 0.82),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
 fig.set_size_inches((17, 6))
-fig.savefig(os.path.join(f"{image_directory}/CE_plots", 'CE_plot_root_sep_foils.png'), transparent=False, bbox_inches='tight')
+fig.savefig(os.path.join(f"{image_directory}/CE_plots", 'CE_plot_root_sep_foils_test.png'), transparent=False, bbox_inches='tight')
 
 ################# WEIGHTED AVES ################# 
 

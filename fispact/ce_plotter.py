@@ -44,7 +44,11 @@ print(f"max n/s from lithium at 10uA proton current: {estimated_10ua_li_n_per_s(
 experiment = 'proton_march24'
 model_dataset = 'seperated_foils'
 
-experimental_analysis_lib = 'interspec'
+experimental_analysis_lib = 'root'
+
+
+
+#####################################
 
 model_results_path = f"{working_directory}/calculated_activities/{experiment}/{model_dataset}.json"
 model_results_data = json.load(open(model_results_path))

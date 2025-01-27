@@ -16,25 +16,23 @@ reaction_rate_calculator = True
 
 # choose whether to run all FOILS isotopes ('foils'), TARGET isotopes ('target') 
 # or a specific isotope ('isotope'):
-automation = 'foils'
+automation = 'Mn56'
 
 # choose peak analysis library 
-peak_library = 'root'
+peak_library = 'interspec'
 
 # folder to save the results
-folder_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/proton_hpge/experimental_activities_2025_cal/{peak_library}" 
+folder_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/experimental_activities/{peak_library}" 
 
 # total irradiation time secs
-irrad_time = (20+67+41)*60 + 30
+irrad_time = 20*60 #(20+67+41)*60 + 30
 
 # datetime timestamp for the end of your irradiation
 irradiation_end = datetime(2024,3,28, 18,17,32)
 
-# detector crystal radius in cm
-detector_crystal_radius = 3.25
 
-
-json_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/proton_hpge/{peak_library}_data.json"
+json_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/{peak_library}_data.json"
+print(open(json_path))
 json_file_data = json.load(open(json_path))
 specific_json_data = json_file_data['Be7']
 full_isotope_list = []
@@ -54,11 +52,6 @@ if automation == 'foils':
     isotope_run_list = list(json_file_data.keys())[2:]
 else:
     isotope_run_list = list(automation.split(" "))
-
-#if automation in ('Be7','Zn65','target'):
-#    measurement_distance = 34
-#else:
-#    measurement_distance = 1
 
 # function for calculating the decay time from input irradiation end and measurement start
 def decay_time(isotope_name):
@@ -110,21 +103,21 @@ def efficiency_abs(energy:float,n1:float,n2:float) -> float:
 # use the measurement distance and efficiency curves to calculate activity over the live time
 def activity_livetime(c,i,e) :  
     if measurement_distance == 1:
-        selected_efficiency = efficiency_abs(e,8.1,-0.9209) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance))
-        # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak) = efficiency_abs(e,8.1,-0.9209)
+        detector_crystal_radius = 3.25
+        selected_efficiency = efficiency_abs(e,6.16551,-0.817) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance))
+        # louis fit with ba133,cs137,co60 b03 detector = efficiency_abs(e,8.1,-0.9209)
         #errors=1.075,0.01871
-        # fit with eu152 nov2024 = efficiency_abs(e,6.16551,-0.817)
-    if measurement_distance == 6:
-        selected_efficiency = efficiency_abs(e,0.6264,-0.749) # Kyle fit
-    if measurement_distance == 10:
-        selected_efficiency = efficiency_abs(e,0.3755,-0.765) # Kyle NEW fit
-    if measurement_distance == 15:
-        selected_efficiency = efficiency_abs(e,0.1966,-0.763) # Kyle fit 
+        # fit with eu152 nov2024 b03 detector = efficiency_abs(e,6.16551,-0.817)
+    if measurement_distance == 0.5:
+        detector_crystal_radius = 3.75
+        selected_efficiency = efficiency_abs(e,0.6264,-0.749) 
+        # fit with eu152 nov2024 g11 detector = 
     if measurement_distance == 38:
-        selected_efficiency = efficiency_abs(e,0.0715,-0.8631) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance)) 
+        detector_crystal_radius = 3.25
+        selected_efficiency = efficiency_abs(e,0.0604,-0.778) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance)) 
         # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak) = efficiency_abs(e,0.0715,-0.8631)
         #errors=0.01523,0.03235
-        # fit with eu152 nov2024 = efficiency_abs(e,0.0604,-0.778)
+        # fit with eu152 nov2024 b03 detector = efficiency_abs(e,0.0604,-0.778)
     activity = (c) / ((i)
         * selected_efficiency
     )

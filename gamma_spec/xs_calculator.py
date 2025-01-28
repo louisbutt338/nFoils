@@ -1,10 +1,5 @@
-from dataclasses import dataclass
-import json
 from math import pi, sqrt, log, exp
-import numpy as np
-import actigamma as ag
-from scipy.integrate import quad
-from datetime import datetime
+import numpy as np # type: ignore
 
 ################################################################################
 ########### USER INPUTS ########################################################
@@ -48,7 +43,7 @@ def no_of_target_atoms(thickness,mass_density,atom_mass,radius):
     number_density = (avo_number*mass_density)/atom_mass
     return number_density * thickness * np.pi * (radius)**2
 
-# calculate charged particle flux incident on target for each current
+# calculate charged particles incident on target for each current
 def no_of_beam_particles(current,irrad_time):
     total_coulombs = current*1e-6*irrad_time
     no_particles = total_coulombs/(1.602e-19)

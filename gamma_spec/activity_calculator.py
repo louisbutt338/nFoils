@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 import json
 from math import pi, sqrt, log, exp
-import numpy as np
-import actigamma as ag
-from scipy.integrate import quad
+import numpy as np # type: ignore
+import actigamma as ag # type: ignore
+from scipy.integrate import quad # type: ignore
 from datetime import datetime
 
 ################################################################################
@@ -33,7 +33,6 @@ irradiation_end = datetime(2024,11,29, 15,17,59)
 
 json_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/{peak_library}_data.json"
 json_file_data = json.load(open(json_path))
-specific_json_data = json_file_data['Be7']
 full_isotope_list = []
 for isotope in json_file_data.keys():
     full_isotope_list.append(isotope)
@@ -102,20 +101,23 @@ def efficiency_abs(energy:float,n1:float,n2:float) -> float:
 def activity_livetime(c,i,e) :  
     if measurement_distance == 1:
         detector_crystal_radius = 3.25
-        selected_efficiency = efficiency_abs(e,6.16551,-0.817) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance))
+        selected_efficiency = efficiency_abs(e,4.4142,-0.77) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance))
         # louis fit with ba133,cs137,co60 b03 detector = efficiency_abs(e,8.1,-0.9209)
         #errors=1.075,0.01871
-        # fit with eu152 nov2024 b03 detector = efficiency_abs(e,6.16551,-0.817)
+        # fit with eu152 nov2024 b03 detector = efficiency_abs(e,4.468,-0.7733)
+        #errors=0.8396,0.02882
     if measurement_distance == 0.5:
         detector_crystal_radius = 3.75
-        selected_efficiency = efficiency_abs(e,0.6264,-0.749) 
-        # fit with eu152 nov2024 g11 detector = 
+        selected_efficiency = efficiency_abs(e,32.17,-1.119) 
+        # fit with eu152 nov2024 g11 detector = efficiency_abs(e,32.17,-1.119)
+        # errors=6.133,0.02936
     if measurement_distance == 38:
         detector_crystal_radius = 3.25
-        selected_efficiency = efficiency_abs(e,0.0604,-0.778) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance)) 
+        selected_efficiency = efficiency_abs(e,0.0671,-0.793) * (solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance)) 
         # louis fit with ba133,cs137,co60 (omitting ba133 81keV peak) = efficiency_abs(e,0.0715,-0.8631)
         #errors=0.01523,0.03235
-        # fit with eu152 nov2024 b03 detector = efficiency_abs(e,0.0604,-0.778)
+        # fit with eu152 nov2024 b03 detector = efficiency_abs(e,0.06418,-0.7869)
+        #errors=0.01521,0.03619
     activity = (c) / ((i)
         * selected_efficiency
     )

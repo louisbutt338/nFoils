@@ -1,14 +1,12 @@
 import os
-import numpy as np 
+import numpy as np # type: ignore
 import sys
 import statistics
-import matplotlib.font_manager
-import matplotlib
-import matplotlib.pyplot as plt
-from scipy.stats import gaussian_kde
-import seaborn
+import matplotlib.font_manager # type: ignore
+import matplotlib # type: ignore
+import matplotlib.pyplot as plt # type: ignore
 import json
-from matplotlib.pyplot import cm
+#from matplotlib.pyplot import cm
 #plt.rcParams["font.family"] = "sans-serif"
 plt.rcParams["font.sans-serif"] = "Helvetica"
 plt.rcParams["font.size"] = 22

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import json
 from math import pi, sqrt, log, exp
-import numpy as np
+import numpy as np # type: ignore
 
 
 ####################################

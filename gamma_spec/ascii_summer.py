@@ -17,7 +17,6 @@ folder_path = '/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/hpge_re
 
 # writes a summed ASCII file from the input ASCII files in the array. Takes the header and footer parameters 
 # (i.e. livetime, timings, calibration) from the first file in the array, so this will need to be edited 
-# work on this is in progress
 
 ####################################
 ####################################

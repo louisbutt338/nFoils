@@ -22,6 +22,7 @@ def parse_txt():
             countrate.append(float(line.split()[1]))
     return time,countrate
 
+# return protons per second for each time interval, based on 12uA=190k counts
 def proton_flux_conversion():
     cps_to_protons_per_s = 6.24151e12 * (12/190000)
     target_protons_per_s = [i*cps_to_protons_per_s for i in parse_txt()[1] ]
@@ -37,16 +38,7 @@ def fispact_hist_writer():
             irrad_history_file.writelines("TIME 1 SECS \n")
         irrad_history_file.writelines("ATOMS")
 
-fispact_hist_writer()
+#fispact_hist_writer()
 
-
-#FLUX 1204918514800.0
-#TIME 20 MINS ATOMS 
-#FLUX 0.0 
-#TIME 36.3 MINS ATOMS 
-#FLUX 1971684842400.0
-#TIME 67 MINS ATOMS 
-#FLUX 0.0 
-#TIME 10.3 MINS ATOMS 
-#FLUX 2190760936000.0
-#TIME 41.5 MINS ATOMS 
+approx_current_array = [i*(12/190000) for i in parse_txt()[1] ]
+print(len(parse_txt()[0]))

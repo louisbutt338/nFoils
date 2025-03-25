@@ -16,7 +16,7 @@ reaction_rate_calculator = True
 
 # choose whether to run all FOILS isotopes ('foils'), TARGET isotopes ('target') 
 # or a specific isotope ('isotope'):
-automation = 'foils'
+automation = 'Tc'
 
 # choose peak analysis library 
 peak_library = 'interspec'

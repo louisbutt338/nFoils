@@ -6,7 +6,7 @@ Created on Wed Feb 19 12:00:16 2025
 @author: ethansumner
 """
 
-import numpy as np
+import numpy as np # type: ignore
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit 
 import pandas as pd 
@@ -26,39 +26,63 @@ def parse_txt(file):
         file_contents = data_file.readlines()       
     #return x,y,errors
 
+#experimental data
 x_data = [121.7817
-,244.6974
-,344.2785
-,443.9606
-,778.9045
-,867.3800
-,964.0570
-#,1085.837
-,1112.076
-,1408.013
-,1299.140]
-y_data = [1.04E-01 *1.3
-,6.66E-02 *1.56 
-,5.52E-02 *1.43
-,4.45E-02 *1.49
-,2.58E-02 *1.58
-,2.09E-02 *1.80
-,2.25E-02 *1.56
-#,2.33E-02 *1.46
-,2.03E-02 *1.56
-,1.65E-02 *1.62
-,1.70E-02 *1.64]
-errors = [5.95E-03 *1.3
-,3.80E-03 *1.56 
-,3.14E-03 *1.43
-,2.55E-03 *1.49
-,1.47E-03 *1.58
-,1.20E-03 *1.80
-,1.28E-03 *1.56
-#,1.33E-03 *1.46
-,1.16E-03 *1.56
-,9.43E-04 *1.62
-,9.99E-04 *1.64]
+         ,244.6974
+         ,344.2785
+         ,443.9606
+         ,778.9045
+         ,867.3800
+         ,964.0570
+         ,1085.837
+         ,1112.076
+         ,1408.013]
+y_data = [0.135849839 
+         ,0.103919441 
+         ,0.078887158
+         ,0.066050731
+         ,0.040737369
+         ,0.037480357
+         ,0.035006829
+         ,0.033901763
+         ,0.03159819
+         ,0.026876227]
+errors = [5.95E-03 
+         ,3.80E-03 
+         ,3.14E-03
+         ,2.55E-03
+         ,1.47E-03
+         ,1.20E-03
+         ,1.28E-03
+         ,1.33E-03
+         ,1.16E-03
+         ,9.43E-04]
+
+# #model data 
+# x_data = [100
+#          ,150
+#          ,200
+#          ,400
+#          ,600
+#          ,800
+#          ,1000
+#          ,1500]
+# y_data = [1.98E-01
+#          ,1.63E-01
+#          ,1.31E-01
+#          ,6.75E-02
+#          ,4.64E-02
+#          ,3.63E-02
+#          ,2.99E-02
+#          ,2.14E-02]
+# errors = [1.98E-02
+#          ,1.63E-02
+#          ,1.31E-02
+#          ,6.75E-03
+#          ,4.64E-03
+#          ,3.63E-03
+#          ,2.99E-03
+#          ,2.14E-03]
 
 #SINGLE FITTING OF DATA
 params, covs  = curve_fit(spec_function, x_data, y_data, p0=[0,0,0,0],sigma=errors,absolute_sigma=True)
@@ -96,7 +120,7 @@ print(f"Estimated Single Fit Parameters: \n a0 = {a0}+/-{a0_err}, a1 = {a1}+/-{a
 # plt.close()
 
 #MONTE CARLO METHOD
-N = 1000
+N = 10
 a_samples = []
 a1_samples = []
 a2_samples = []
@@ -142,7 +166,7 @@ plt.plot(np.arange(1,2000), spec_function(np.arange(1,2000), a_mc,a1_mc,a2_mc,a3
 plt.errorbar(x_data, y_data, yerr=errors,lw=2,capsize=2,color='k',zorder=-1,fmt='none')
 plt.legend()
 plt.xlim(0,2000)
-plt.ylim(1e-2,2e-1)
+#plt.ylim(1e-2,2e-1)
 plt.xlabel("Gamma energy (keV)")
 plt.ylabel("Efficiency")
 plt.savefig("mc_function.png")

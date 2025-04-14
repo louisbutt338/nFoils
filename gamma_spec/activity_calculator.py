@@ -24,7 +24,7 @@ peak_library = 'root'
 # choose experiment (deuteron or proton)
 experiment = 'proton'
 
-# input fractional uncertainty on your eff curve fit
+# input fractional uncertainty on your eff curve fit - dominated by measurement uncertainty on the calibration source
 efficiency_uncert_frac = 0.057
 
 ##########################################################################################
@@ -105,9 +105,9 @@ def activity_livetime(c,i,e) :
         detector_crystal_radius = 3.25
         eff_values = [-23.491, 11.4696, -1.952, 0.103] #exp
         #eff_values = [-15.197, 7.983, -1.456, 0.0789] #model
-    if measurement_distance == 0.5: #g11 bege model SOON
+    if measurement_distance == 0.5: #g11 bege model
         detector_crystal_radius = 3.75
-        eff_values = [0.0, 4e-16, -2e-12, 4e-9 ] # CHANGE ASAP WHEN G11 MODEL FIXED
+        eff_values = [-26.209, 13.931, -2.4957, 0.13609 ] # exp
     if measurement_distance == 38: #b03 hpge model
         detector_crystal_radius = 3.25
         eff_values = [-27.257, 10.917, -1.8563, 0.09776] #exp

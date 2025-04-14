@@ -5,84 +5,71 @@ Created on Wed Feb 19 12:00:16 2025
 
 @author: ethansumner
 """
-
 import numpy as np # type: ignore
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit 
 import pandas as pd 
 import scipy.optimize as opt
 
+###########################
+####### USER INPUTS #######
+
+#experimental data
+b03_endcap_exp_data = {
+  121.7817 : {"efficiency" : 0.135849839, "uncertainty": 7.74E-03 },
+  244.6974 : {"efficiency" : 0.103919441, "uncertainty": 5.94E-03 },
+  344.2785 : {"efficiency" : 0.078887158, "uncertainty": 4.50E-03 },
+  443.9606 : {"efficiency" : 0.066050731, "uncertainty": 3.79E-03 },
+  778.9045 : {"efficiency" : 0.040737369, "uncertainty": 2.33E-03 },
+  867.3800 : {"efficiency" : 0.037480357, "uncertainty": 2.16E-03 },
+  964.0570 : {"efficiency" : 0.035006829, "uncertainty": 2.00E-03 },
+  1085.837 : {"efficiency" : 0.033901763, "uncertainty": 1.94E-03 },
+  1112.076 : {"efficiency" : 0.03159819 , "uncertainty": 1.80E-03 },
+  1408.013 : {"efficiency" : 0.026876227, "uncertainty": 1.53E-03 }}
+g11_endcap_exp_data = {
+  121.7817 : {"efficiency" : 0.165991862, "uncertainty": 9.46E-03 },
+  244.6974 : {"efficiency" : 0.089447323, "uncertainty": 5.11E-03 },
+  344.2785 : {"efficiency" : 0.054542061, "uncertainty": 3.11E-03 },
+  443.9606 : {"efficiency" : 0.041743764, "uncertainty": 2.40E-03 },
+  778.9045 : {"efficiency" : 0.019949091, "uncertainty": 1.14E-03 },
+  867.3800 : {"efficiency" : 0.017064127, "uncertainty": 9.88E-04 },
+  964.0570 : {"efficiency" : 0.015357942, "uncertainty": 8.77E-04 },
+  1085.837 : {"efficiency" : 0.015114318, "uncertainty": 8.66E-04 },
+  1112.076 : {"efficiency" : 0.012635361, "uncertainty": 7.22E-04 },
+  1408.013 : {"efficiency" : 0.010719542, "uncertainty": 6.12E-04 }
+}
+# model data 
+b03_endcap_model_data = {
+  100:  {"efficiency" : 1.98E-01, "uncertainty": 1.98E-03 },
+  150:  {"efficiency" : 1.63E-01, "uncertainty": 1.63E-03 },
+  200:  {"efficiency" : 1.31E-01, "uncertainty": 1.31E-03 },
+  400:  {"efficiency" : 6.75E-02, "uncertainty": 6.75E-04 },
+  600:  {"efficiency" : 4.64E-02, "uncertainty": 4.64E-04 },
+  800:  {"efficiency" : 3.63E-02, "uncertainty": 3.63E-04 },
+  1000: {"efficiency" : 2.99E-02, "uncertainty": 2.99E-04 },
+  1500: {"efficiency" : 2.14E-02, "uncertainty": 2.14E-04 }}
+g11_endcap_model_data = {
+  100:  {"efficiency" : 0.20975 , "uncertainty": 0.20975E-01  },
+  150:  {"efficiency" : 0.16322 , "uncertainty": 0.16322E-01  },
+  200:  {"efficiency" : 0.117447, "uncertainty": 0.117447E-01 },
+  400:  {"efficiency" : 0.045982, "uncertainty": 0.045982E-01 },
+  600:  {"efficiency" : 0.027943, "uncertainty": 0.027943E-01 },
+  800:  {"efficiency" : 0.020153, "uncertainty": 0.020153E-01 },
+  1000: {"efficiency" : 0.015819, "uncertainty": 0.015819E-01 },
+  1500: {"efficiency" : 0.010543, "uncertainty": 0.010543E-01 }}
+
+# select which dataset
+x_data = [i for i in g11_endcap_exp_data.keys()]
+y_data = [g11_endcap_exp_data[i]["efficiency" ] for i in x_data]
+errors = [g11_endcap_exp_data[i]["uncertainty"] for i in x_data]
+
+###########################
+###########################
+
 #define efficiency polynomial
 def spec_function(energy,a0,a1,a2,a3):
     polynomial = a0 + a1*np.log(energy)**1 + a2*np.log(energy)**2 + a3*np.log(energy)**3 
     return np.exp(polynomial)
-
-#get data
-folderpath = "/Users/ljb841@student.bham.ac.uk/gamma_spec/deuteron_hpge/hpge_results_b03_291124/calibration"
-filename = "1cm.txt"
-def parse_txt(file):
-    file_path = f"{folderpath}/{file}"
-    with open(file_path,'r') as data_file:
-        file_contents = data_file.readlines()       
-    #return x,y,errors
-
-#experimental data
-x_data = [121.7817
-         ,244.6974
-         ,344.2785
-         ,443.9606
-         ,778.9045
-         ,867.3800
-         ,964.0570
-         ,1085.837
-         ,1112.076
-         ,1408.013]
-y_data = [0.135849839 
-         ,0.103919441 
-         ,0.078887158
-         ,0.066050731
-         ,0.040737369
-         ,0.037480357
-         ,0.035006829
-         ,0.033901763
-         ,0.03159819
-         ,0.026876227]
-errors = [5.95E-03 
-         ,3.80E-03 
-         ,3.14E-03
-         ,2.55E-03
-         ,1.47E-03
-         ,1.20E-03
-         ,1.28E-03
-         ,1.33E-03
-         ,1.16E-03
-         ,9.43E-04]
-
-# #model data 
-# x_data = [100
-#          ,150
-#          ,200
-#          ,400
-#          ,600
-#          ,800
-#          ,1000
-#          ,1500]
-# y_data = [1.98E-01
-#          ,1.63E-01
-#          ,1.31E-01
-#          ,6.75E-02
-#          ,4.64E-02
-#          ,3.63E-02
-#          ,2.99E-02
-#          ,2.14E-02]
-# errors = [1.98E-02
-#          ,1.63E-02
-#          ,1.31E-02
-#          ,6.75E-03
-#          ,4.64E-03
-#          ,3.63E-03
-#          ,2.99E-03
-#          ,2.14E-03]
 
 #SINGLE FITTING OF DATA
 params, covs  = curve_fit(spec_function, x_data, y_data, p0=[0,0,0,0],sigma=errors,absolute_sigma=True)
@@ -120,7 +107,7 @@ print(f"Estimated Single Fit Parameters: \n a0 = {a0}+/-{a0_err}, a1 = {a1}+/-{a
 # plt.close()
 
 #MONTE CARLO METHOD
-N = 10
+N = 100
 a_samples = []
 a1_samples = []
 a2_samples = []

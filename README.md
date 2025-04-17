@@ -1,4 +1,4 @@
-# nFoils
+# nFoils ![alt text](https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg)
 
 Python suite of codes for the measurement of neutron spectra with neutron activation analysis 
 

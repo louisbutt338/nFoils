@@ -1,8 +1,4 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import json
-import sys
-import os
 
 library = 'tendl21'
 

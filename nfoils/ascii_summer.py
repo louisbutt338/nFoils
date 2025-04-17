@@ -1,13 +1,8 @@
-from dataclasses import dataclass
-import json
-from math import pi, sqrt, log, exp
 import numpy as np # type: ignore
-
 
 ####################################
 ############ USER INPUTS ###########
 ####################################
-
 
 ascii_filetag = 'ubb_400s_x60_6dot7hrs'
 first_file_number = 0

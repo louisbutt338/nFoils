@@ -1,11 +1,8 @@
 import os
-import shutil
-import numpy as np
-import sys
-import matplotlib.font_manager
-import matplotlib
-import matplotlib.pyplot as plt
-#plt.rcParams["font.family"] = "sans-serif"
+import numpy as np # type: ignore
+import matplotlib.font_manager # type: ignore
+import matplotlib # type: ignore
+import matplotlib.pyplot as plt # type: ignore
 plt.rcParams["font.sans-serif"] = "Helvetica"
 plt.rcParams["font.size"] = 22
 plt.rcParams["font.weight"] = "normal"

@@ -1,7 +1,3 @@
-import numpy as np # type: ignore
-import json
-import sys
-import os
 
 working_dir = "/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/diamond_prepro"
 filename = "Diamond_rate.txt"

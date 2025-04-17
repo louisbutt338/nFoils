@@ -19,10 +19,10 @@ reaction_rate_calculator = True
 automation = 'foils'
 
 # choose peak analysis library (root or interspec) 
-peak_library = 'root'
+peak_library = 'interspec'
 
 # choose experiment (deuteron or proton)
-experiment = 'proton'
+experiment = 'deuteron'
 
 # input fractional uncertainty on your eff curve fit - dominated by measurement uncertainty on the calibration source
 efficiency_uncert_frac = 0.057
@@ -121,7 +121,7 @@ def activity_livetime(c,i,e) :
 
 # gamma self absorption correction factor taken from XCOM mu data
 def self_attenuation_correction(material,E,thickness,density):
-    xcom=np.loadtxt(f'XCOM_new/{material}.txt', skiprows=1)
+    xcom=np.loadtxt(f'../data/XCOM_new/{material}.txt', skiprows=1)
     mass_coeff = np.interp(E/1000, xcom[:,0], xcom[:,1]) 
     self_att_factor = (mass_coeff * density * thickness) / (1 - exp(- mass_coeff * density * thickness))
     return self_att_factor

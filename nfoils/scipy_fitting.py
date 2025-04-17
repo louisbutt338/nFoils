@@ -1,15 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb 19 12:00:16 2025
-
-@author: ethansumner
-"""
 import numpy as np # type: ignore
-import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit 
-import pandas as pd 
-import scipy.optimize as opt
+import matplotlib.pyplot as plt # type: ignore
+from scipy.optimize import curve_fit # type: ignore
+import scipy.optimize as opt # type: ignore
 
 ###########################
 ####### USER INPUTS #######

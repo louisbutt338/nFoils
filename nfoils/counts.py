@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import json
 from math import pi, sqrt, log, exp
-import numpy as np
+import numpy as np # type: ignore
 
 
 ####################################
@@ -184,7 +184,7 @@ for m in materials:
     fispact_doses = collect_fispact_info(grn_filepath)[3]
 
       # load library of gamma lines takes from printlib5 output
-    library = load_json("./decay2020.json")
+    library = load_json("../data/decay2020.json")
 
      # just collect any that are relevant by checking for photon emission data
     nuclides = relevant_nuclides_only(fispact_nuclides, fispact_activity, library)

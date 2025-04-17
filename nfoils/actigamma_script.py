@@ -1,5 +1,5 @@
-import actigamma as ag
-import matplotlib.pyplot as plt
+import actigamma as ag # type: ignore
+import matplotlib.pyplot as plt # type: ignore
 import os
 
 folder_path = '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/fispact_gammaspec'

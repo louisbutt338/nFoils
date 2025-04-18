@@ -1,0 +1,2 @@
+[console_scripts]
+sum_asciis = scripts.sum_asciis:main

@@ -1,0 +1,7 @@
+numpy
+actigamma
+datetime
+matplotlib
+pandas
+scipy
+dataclasses

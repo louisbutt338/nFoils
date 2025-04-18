@@ -1,0 +1,24 @@
+Metadata-Version: 2.4
+Name: nfoils
+Version: 1.0.0
+Summary: Suite of tools for NAA analysis of neutron sources
+Home-page: https://github.com/louisbutt338/nFoils
+Author: Louis Butt
+Author-email: LJB841@bham.ac.uk
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: actigamma
+Requires-Dist: datetime
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: scipy
+Requires-Dist: dataclasses
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary

@@ -99,7 +99,7 @@ print(f"Estimated Single Fit Parameters: \n a0 = {a0}+/-{a0_err}, a1 = {a1}+/-{a
 # plt.close()
 
 #MONTE CARLO METHOD
-N = 100
+N = 100000
 a_samples = []
 a1_samples = []
 a2_samples = []
@@ -142,6 +142,7 @@ print(f"Estimated MC Parameters: \n a0 = {a_mc}+/-{a_err_mc}, a1 = {a1_mc}+/-{a1
 #plot MC data
 plt.scatter(x_data, y_data, label="Data", c='r',marker='o',lw=2)
 plt.plot(np.arange(1,2000), spec_function(np.arange(1,2000), a_mc,a1_mc,a2_mc,a3_mc), label="Fitted Curve", color='blue')
+plt.fill_between(np.arange(1,2000), spec_function(np.arange(1,2000), a_mc-a_err_mc,a1_mc-a1_err_mc,a2_mc-a2_err_mc,a3_mc-a3_err_mc), spec_function(np.arange(1,2000), a_mc+a_err_mc,a1_mc+a1_err_mc,a2_mc+a2_err_mc,a3_mc+a3_err_mc), step='post', alpha=0.25)
 plt.errorbar(x_data, y_data, yerr=errors,lw=2,capsize=2,color='k',zorder=-1,fmt='none')
 plt.legend()
 plt.xlim(0,2000)

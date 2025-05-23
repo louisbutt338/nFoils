@@ -5,7 +5,6 @@ import json
 deuteron_currents_file = '/Users/ljb841@student.bham.ac.uk/nFoils/data/deuteron_experiment_currents.json'
 deuteron_currents_data = json.load(open(deuteron_currents_file))
 
-# the main worker
 def main():
     # activity at end of irradiation and uncertainty (Bq), halflife of isotope
     isotope_activity = [141135,807.3]    #p:[202151,43070] (original cal) [141135,807.3] (new cal) d:[189476,44921] 

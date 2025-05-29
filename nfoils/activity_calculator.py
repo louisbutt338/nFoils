@@ -25,7 +25,7 @@ peak_library = 'interspec'
 experiment = 'deuteron'
 
 # input fractional uncertainty on your eff curve fit - dominated by measurement uncertainty on the calibration source
-efficiency_uncert_frac = 0.057
+efficiency_uncert_frac = 0.043 #0.057 is old MC average, 0.043 is new MC average
 
 ##########################################################################################
 ##########################################################################################

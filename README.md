@@ -2,7 +2,7 @@
 
 IN DEVELOPMENT
 
-Python toolkit for the measurement of neutron spectra with neutron activation analysis
+Python toolkit for the measurement of neutron spectra and validation of nuclear data with activation foils
 
 Includes postprocessing and preprocessing codes for (but is not dependent on) FISPACT, OpenMC, MCNP, SPECTRA-UF
 

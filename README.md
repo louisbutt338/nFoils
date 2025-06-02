@@ -6,7 +6,7 @@ Python toolkit for the measurement of neutron spectra and validation of nuclear 
 
 Includes postprocessing and preprocessing codes for (but is not dependent on) FISPACT, OpenMC, MCNP, SPECTRA-UF
 
-Work is part of a PhD thesis and future manuscript - reference to be provided in future. IP belongs to the University of Birmingham and UKAEA, so do not share the package outside these organisations. Contact LJB841@bham.ac.uk for details
+Work is part of a PhD thesis - reference to be provided in future. IP belongs to the University of Birmingham and UKAEA, so do not share the package outside these organisations. Contact LJB841@bham.ac.uk for details
 
 to install:
 ```

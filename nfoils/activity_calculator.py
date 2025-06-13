@@ -18,28 +18,26 @@ reaction_rate_calculator = True
 # or a specific isotope ('isotope'):
 automation = 'foils'
 
-# choose peak analysis library (root or interspec) 
-peak_library = 'interspec'
+# type in filename for the input data (without .json)
+data_file_name = 'root_data'
 
 # choose experiment (deuteron or proton)
-experiment = 'deuteron'
+experiment = 'proton'
 
-# input fractional uncertainty on your eff curve fit - dominated by measurement uncertainty on the calibration source
-efficiency_uncert_frac = 0.043 #0.057 is old MC average, 0.043 is new MC average
+# input ave fractional uncertainty on your eff curve fit across measurement range
+efficiency_uncert_frac = 0.0375 #endcaps=0.0375 b03/38cm=0.04422
+
+# workin dir for input data and to save results
+json_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/proton_hpge"
 
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
 
-# folder for input data
-json_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/{experiment}_hpge/{peak_library}_data.json"
-json_file_data = json.load(open(json_path))
-# folder to save the results
-folder_path = f"/Users/ljb841@student.bham.ac.uk/gamma_spec/{experiment}_hpge/experimental_activities/{peak_library}" 
+json_file_data = json.load(open(f'{json_path}/{data_file_name}.json'))
 
-
-# switches for the different experiments
+# switches for the different experiments. calculate total irrad time for RRs
 if experiment == 'proton':
     irrad_time = (20+67+41)*60 + 30
     irradiation_end = datetime(2024,3,28, 18,17,32) 
@@ -101,17 +99,15 @@ def efficiency_abs(energy:float,n0:float,n1:float,n2:float,n3:float) -> float:
 
 # use the measurement distance and efficiency curves to calculate activity over the live time
 def activity_livetime(c,i,e) :  
-    if measurement_distance == 1: #b03 hpge model
+    if measurement_distance == 1: #b03 hpge
         detector_crystal_radius = 3.25
-        eff_values = [-23.491, 11.4696, -1.952, 0.103] #exp
-        #eff_values = [-15.197, 7.983, -1.456, 0.0789] #model
-    if measurement_distance == 0.5: #g11 bege model
+        eff_values = [-23.385, 11.3457, -1.9302, 0.10197]
+    if measurement_distance == 0.5: #g11 bege
         detector_crystal_radius = 3.75
-        eff_values = [-26.209, 13.931, -2.4957, 0.13609 ] # exp
-    if measurement_distance == 38: #b03 hpge model
+        eff_values = [-26.2955, 13.906, -2.4909, 0.1358]
+    if measurement_distance == 38: #b03 hpge
         detector_crystal_radius = 3.25
-        eff_values = [-27.257, 10.917, -1.8563, 0.09776] #exp
-        #eff_values = [-23.169, 8.828, -1.491, 0.076] #model
+        eff_values = [-27.425, 10.9595, -1.86674, 0.09852] 
     solid_angle_ratio = solid_angle_disc(detector_crystal_radius,measurement_distance,json_file_data[isotope_name]['foil_radius_cm']) / solid_angle(detector_crystal_radius,measurement_distance)
     selected_efficiency = efficiency_abs(e,eff_values[0],eff_values[1],eff_values[2],eff_values[3]) * solid_angle_ratio
     activity = (c) / ((i)
@@ -140,45 +136,36 @@ def reaction_rates(a, irrad_time):
     rr_ave = a / (1 - activity_integrand(irrad_time,get_decay_database(isotope_name)[2]))
     return rr_ave
 
+
 # run for all isotopes requested
-open(f"{folder_path}/exp_activities.txt", 'w').close()
-open(f"{folder_path}/exp_uncertainties.txt", 'w').close()
-open(f"{folder_path}/reaction_rates.txt", 'w').close()
-open(f"{folder_path}/reaction_rate_uncertainties.txt", 'w').close()
+open(f"{json_path}/experimental_results_{data_file_name}.json", 'w').close()
+results_dictionary = {}
 for isotope_name in isotope_run_list:
-    print( "*********************************************")
     print(f"************ activities for {isotope_name} ************")
-    print( "*********************************************")
     measurement_distance = json_file_data[isotope_name]['detector_distance_cm']
 
 # print and save results for individual isotope activities and uncerts for top 5 gamma emissions
     final_activity_list = []
     final_uncert_list = []
-    with open(f"{folder_path}/{isotope_name}_activities.txt", 'w') as output_file:
-        for n in range(len(get_decay_database(isotope_name)[0][:5])):
-            if json_file_data[isotope_name]['counts'][n] != 0:
+    for n in range(len(get_decay_database(isotope_name)[0][:5])):
+        if json_file_data[isotope_name]['counts'][n] != 0:
 
-                self_attenuation_factor = self_attenuation_correction(json_file_data[isotope_name]['foil_material'],get_decay_database(isotope_name)[1][n],json_file_data[isotope_name]['thickness_cm'],json_file_data[isotope_name]['density_gcm3'])
-                coincidence_factor = 1/(json_file_data[isotope_name]['inv_coincidence_factor'][n])
-                uncorrected_activity = activity_0(json_file_data[isotope_name]['counts'][n],get_decay_database(isotope_name)[0][n],get_decay_database(isotope_name)[1][n])
-                final_activity = coincidence_factor * self_attenuation_factor * uncorrected_activity
-                counts_frac_uncertainty = json_file_data[isotope_name]['uncertainty'][n]/json_file_data[isotope_name]['counts'][n]
-                final_uncertainty = final_activity *  np.sqrt( counts_frac_uncertainty**2 + efficiency_uncert_frac**2 )
+            self_attenuation_factor = self_attenuation_correction(json_file_data[isotope_name]['foil_material'],get_decay_database(isotope_name)[1][n],json_file_data[isotope_name]['thickness_cm'],json_file_data[isotope_name]['density_gcm3'])
+            coincidence_factor = 1/(json_file_data[isotope_name]['inv_coincidence_factor'][n])
+            uncorrected_activity = activity_0(json_file_data[isotope_name]['counts'][n],get_decay_database(isotope_name)[0][n],get_decay_database(isotope_name)[1][n])
+            final_activity = coincidence_factor * self_attenuation_factor * uncorrected_activity
+            counts_frac_uncertainty = json_file_data[isotope_name]['uncertainty'][n]/json_file_data[isotope_name]['counts'][n]
+            final_uncertainty = final_activity *  np.sqrt( counts_frac_uncertainty**2 + efficiency_uncert_frac**2 )
 
-                print(f"(e={get_decay_database(isotope_name)[1][n]}keV, i={get_decay_database(isotope_name)[0][n]}) activity at end of irradiation is {final_activity:.5e} +- {final_uncertainty:.5e} Bq")
-                output_file.writelines(f" e={get_decay_database(isotope_name)[1][n]} keV, i={get_decay_database(isotope_name)[0][n]}: activity at end of irradiation is {final_activity} +- {final_uncertainty} Bq \n")
-                final_activity_list.append(final_activity)
-                final_uncert_list.append(final_uncertainty)
+            print(f"(e={get_decay_database(isotope_name)[1][n]}keV, i={get_decay_database(isotope_name)[0][n]}) activity at end of irradiation is {final_activity:.5e} +- {final_uncertainty:.5e} Bq")
+            final_activity_list.append(final_activity)
+            final_uncert_list.append(final_uncertainty)
 
-# save activities and uncertainties FOR THE TOP GAMMA EMISSION for all analysed isotopes as one nice txt
-    with open(f"{folder_path}/exp_activities.txt", 'a') as output_file:
-        output_file.writelines(f"{final_activity_list[0]}\n")
-    with open(f"{folder_path}/exp_uncertainties.txt", 'a') as output_file:
-        output_file.writelines(f"{final_uncert_list[0]}\n")
-
-# print and save average reaction rates for each isotope in one nice txt file for unfolding
+# print and save average reaction rates for each isotope for the top gamma peak
+    pathway_prob = [1]
+    final_rr_list = []
+    final_rr_uncert_list = []
     if reaction_rate_calculator == True:
-        pathway_prob = [1]
         if isotope_name == 'Cu64':
             pathway_prob = [0.342,0.658]
         if isotope_name == 'Cd111m':
@@ -192,10 +179,20 @@ for isotope_name in isotope_run_list:
         for p in pathway_prob:
             final_rr = p*reaction_rates(final_activity_list[0],irrad_time)
             final_rr_uncert = p*reaction_rates(final_uncert_list[0],irrad_time)
-            print(f"Average (fraction={p}) reaction rate over irradiation from top peak: {final_rr:.5e} +- {final_rr_uncert:.5e}")
-            if automation == 'foils':
-                with open(f"{folder_path}/reaction_rates.txt", 'a') as output_file:        
-                    output_file.writelines(f"{final_rr} \n")
-                with open(f"{folder_path}/reaction_rate_uncertainties.txt", 'a') as output_file:    
-                    output_file.writelines(f"{final_rr_uncert} \n") 
-    
+            final_rr_list.append(final_rr)
+            final_rr_uncert_list.append(final_rr_uncert)
+            print(f"Average (fraction={p}) reaction rate over irradiation from top peak: {final_rr:.5e} +- {final_rr_uncert:.5e}") 
+        
+# save activites for all peaks and RRs calculated with the top peak as a dictionary
+    isotope_dictionary = {isotope_name: {
+        "activities":final_activity_list,
+        "activity_uncertainties":final_uncert_list,
+        "pathway_probabilities":pathway_prob,
+        "reaction_rates":final_rr_list,
+        "reaction_rate_uncertainty":final_rr_uncert_list
+    }}
+    results_dictionary.update(isotope_dictionary)
+
+# print results as one neat json for postprocessing
+with open(f"{json_path}/experimental_results_{data_file_name}.json", 'a') as output_file:
+    json.dump(results_dictionary,output_file,ensure_ascii=False,indent=4)

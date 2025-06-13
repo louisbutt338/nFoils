@@ -1,0 +1,12 @@
+{
+    "121.7817" : {"efficiency" : 0.146377303, "uncertainty": 0.007362555 },
+    "244.6974" : {"efficiency" : 0.07887771 , "uncertainty": 0.003978394 },
+    "344.2785" : {"efficiency" : 0.048097055, "uncertainty": 0.002419776 },
+    "443.9606" : {"efficiency" : 0.036811079, "uncertainty": 0.001868924 },
+    "778.9045" : {"efficiency" : 0.017591791, "uncertainty": 0.000887509 },
+    "867.3800" : {"efficiency" : 0.015047731, "uncertainty": 0.000772899 },
+    "964.0570" : {"efficiency" : 0.013543158, "uncertainty": 0.000683006 },
+    "1085.837" : {"efficiency" : 0.013328323, "uncertainty": 0.00067562  },
+    "1112.076" : {"efficiency" : 0.011142293, "uncertainty": 0.000562644 },
+    "1408.013" : {"efficiency" : 0.009452859, "uncertainty": 0.000476738 }
+}

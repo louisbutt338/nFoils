@@ -7,7 +7,7 @@ deuteron_currents_data = json.load(open(deuteron_currents_file))
 
 def main():
     # activity at end of irradiation and uncertainty (Bq), halflife of isotope
-    isotope_activity = [141135,807.3]    #p:[202151,43070] (original cal) [141135,807.3] (new cal) d:[189476,44921] 
+    isotope_activity = [1.5979e5,7.10764e3]    #p:[1.5979e5,7.10764e3] (new cal) d:[189476,44921] 
     isotope_halflife = 53.22*(24*3600)
 
     # DEUTERONS: current array in uA, timing array in seconds
@@ -25,7 +25,7 @@ def main():
 
     # real 7Li XS (mb) for the ave energy of particles in the target to get correction factor from
     # and real target source strength (n per src p) and flux (per source proton) on Fe foil 
-    real_cross_section = [33,4.95] # p:33 Using hand-drawn to match with ENDFB8/experimental data  #d:60 or 85 ? Two hand-drawn lines as two datasets
+    real_cross_section = [33.5,1.0857] # p:33 Using hand-drawn to match with ENDFB8/experimental data  #d:60 or 85 ? Two hand-drawn lines as two datasets
     real_source_strength = 3.28563E-03 # p:3.28563E-03 d: 
     real_fe_flux = 1.37267e-05 # p:1.37267e-05 d:3.42800e+09/6.24151e+13
 

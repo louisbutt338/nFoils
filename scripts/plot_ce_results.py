@@ -2,20 +2,17 @@ from nfoils.ce_plotter import CEPlotter
 
 def main():
     # select working directory with 'calculated_activities' and 'experimental_activities' inside
-    experiment = 'deuteron_nov24'
+    experiment = 'proton_march24'
     working_directory = f'/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/{experiment}'
-    calculated_results_file = 'calc_activities_60mb'
-    experimental_results_file = 'exp_activities_apr25'
+    calculated_results_file = 'calc_activities'
+    experimental_results_file = 'experimental_results_root_data'
 
     # name for the C/E plot
-    plotname = 'may2025_mcnp_TEST'
-
-    # select analysis method out of root/interspec - should be included in the experimental_activities file
-    experimental_analysis_method = 'interspec'
+    plotname = 'root_jun2025_mcnp_TEST'
 
     # FLUX NORMALISATION for C results - calculated using be7 calcs from the xs_calculator program
-    flux_norm_mean = 1 #0.7 for the mcnp/be7/p-li, 1 for unfolded175/be7/p-li 
-    flux_percentage_error = 0.159 #0.159 for mcnp/be7/p-li , 0.218 for unfolded175/be7/p-li
+    flux_norm_mean = 0.801787 #mcnp/be7/p-li= 0.7(0.026985 rescale) or 0.801787(0.0309 rescale), 1 for unfolded175/be7/p-li 
+    flux_percentage_error = 0.12783 #0.12783 for mcnp/be7/p-li , 0.218 for unfolded175/be7/p-li
     # redundant old normalisation factors
     #flux_norm_mean = 0.7 for the mcnp/be7/p-li, 1/0.4302 for unfolded175/be7/p-li 
     #flux_norm_error = 0.1496197
@@ -27,7 +24,7 @@ def main():
     last_we = 5
 
     ce_plotter = CEPlotter(experiment,working_directory,calculated_results_file,
-                           experimental_results_file,plotname,experimental_analysis_method,
+                           experimental_results_file,plotname,
                            flux_norm_mean,flux_percentage_error,first_we,last_we)
     ce_plotter.run()
 

@@ -12,14 +12,13 @@ import math
 
 class CEPlotter:
     def __init__(self, experiment,working_directory,calculated_results_file,
-                experimental_results_file,plotname,experimental_analysis_method,
+                experimental_results_file,plotname,
                 flux_norm_mean,flux_percentage_error,first_we,last_we):
         self.experiment = experiment
         self.working_directory = working_directory
         self.calculated_results_file =  calculated_results_file
         self.experimental_results_file = experimental_results_file
         self.plotname = plotname
-        self.experimental_analysis_method = experimental_analysis_method
         self.flux_norm_mean = flux_norm_mean
         self.flux_percentage_error = flux_percentage_error
         self.first_we = first_we
@@ -34,14 +33,16 @@ class CEPlotter:
         return c_over_e_array
 
     #c/e uncertainity function
-    def _c_over_e_uncerts(self,calc_uncerts,calc_activities,experimental_activities,experimental_uncertainties,isotope_list):
+    def _c_over_e_uncerts(self,calc_uncerts,calc_activities,experimental_activities,
+                          experimental_uncertainties,isotope_list,
+                          isotopic_spectrum_percentage_uncerts):
         c_over_e_uncerts = []
         for i in np.arange(len(isotope_list)):
             if self.experiment == 'proton_march24':
                 fispact_error = calc_uncerts[i]/calc_activities[i]
             if self.experiment == 'deuteron_nov24':
                 fispact_error = calc_uncerts[i]
-            c_error = np.sqrt( fispact_error**2 + self.flux_percentage_error**2)
+            c_error = np.sqrt( fispact_error**2 + isotopic_spectrum_percentage_uncerts[i]**2)
             e_error = experimental_uncertainties[i]/experimental_activities[i]
             ce_error =  np.sqrt( c_error**2 + e_error**2)
             #ce_error =  np.sqrt( c_error**2 + e_error**2 ) * c_over_e[i]
@@ -52,7 +53,7 @@ class CEPlotter:
     # plot c/e diagram with be7 and uncertainty as the error bar
     def _plotter(self,new_order,new_isotope_list,ce_results_tendl,
                  ce_errors_tendl,ce_results_irdff,ce_errors_irdff,
-                 ce_results_endfb8,ce_errors_endfb8,):
+                 ce_results_endfb8,ce_errors_endfb8,isotopic_flux_percentage_uncerts):
         #fig, ax1 = plt.subplots()
         plot_split_integer = 5
         fig, (ax1,ax4) = plt.subplots(1,2,figsize=(12,6),gridspec_kw={'width_ratios': [len(new_order[:plot_split_integer]), len(new_order[plot_split_integer:])]})
@@ -61,50 +62,49 @@ class CEPlotter:
         plt.subplots_adjust(wspace=0.05)
 
         # plotting the first half of plot (significant capture reactions)
-        ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True)
-        ax1.set_xticks(np.arange(0, len(new_order[:plot_split_integer]), step=1))
-        ax1.set_ylim(0,2)
+        ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,top=True)
+        ax1.set_xticks(np.arange(len(new_order[:plot_split_integer])), labels=new_isotope_list[:plot_split_integer] ,rotation=45)
+        ax1.set_ylim(0,3)
         #ax1.set_yticks([0,0.5,1,1.5,2,2.5,3])
         ax1.scatter (new_isotope_list[:plot_split_integer],ce_results_tendl[:plot_split_integer], s=40 , c='b', linewidth=2,label='TENDL-2021')
         ax1.errorbar(new_isotope_list[:plot_split_integer],ce_results_tendl[:plot_split_integer],ce_errors_tendl[:plot_split_integer],fmt='none',lw=2,capsize=2,color='Black',zorder=-1)
-        ax1.set_xlim(-0.5,len(new_order[:plot_split_integer])-0.5)
-        ax1.set_xticklabels(new_isotope_list[:plot_split_integer],rotation=45)
+        ax1.set_xlim(-0.4,len(new_order[:plot_split_integer])-0.6)
         ax2 = ax1.twiny()
         ax2.scatter (new_isotope_list[:plot_split_integer],ce_results_irdff[:plot_split_integer], s=40 , c='magenta', linewidth=2,label='IRDFF-II')
         ax2.errorbar(new_isotope_list[:plot_split_integer],ce_results_irdff[:plot_split_integer],ce_errors_irdff[:plot_split_integer],fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax2.tick_params(top=False, labeltop=False, bottom=True, labelbottom=False)
-        ax2.set_xlim(-0.3,len(new_order[:plot_split_integer])-0.3)
+        ax2.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax2.set_xlim(-0.2,len(new_order[:plot_split_integer])-0.4)
         ax3 = ax1.twiny()
         ax3.scatter (new_isotope_list[:plot_split_integer],ce_results_endfb8[:plot_split_integer], s=40 , c='green', linewidth=2,label='ENDF/B-VIII')
         ax3.errorbar(new_isotope_list[:plot_split_integer],ce_results_endfb8[:plot_split_integer],ce_errors_endfb8[:plot_split_integer],fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax3.tick_params(top=False, labeltop=False, bottom=True, labelbottom=False)
-        ax3.set_xlim(-0.7,len(new_order[:plot_split_integer])-0.7)
+        ax3.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax3.set_xlim(-0.6,len(new_order[:plot_split_integer])-0.8)
         # plotting lines and error margins
         ax1.plot([-1,len(new_order)], np.ones(2), 'Black', ls='--',linewidth=1.5)
-        ax1.fill_between([-1,len(new_order)], 1-self.flux_percentage_error, 1+self.flux_percentage_error,facecolor='lightcoral',alpha=0.3)
+        ax1.fill_between(range(len(new_order[:plot_split_integer])), [1-x for x in isotopic_flux_percentage_uncerts[:plot_split_integer]], [1+x for x in isotopic_flux_percentage_uncerts[:plot_split_integer]],facecolor='lightcoral',alpha=0.3,step='mid')
 
         # plotting the second half of plot (significant threshold reactions)
-        ax4.tick_params(axis='y',right=True,labelright=True,left=False,labelleft=False,bottom=False)
-        ax4.set_xticks(np.arange(0, len(new_order[plot_split_integer:]), step=1))
-        ax4.set_ylim(0,2)
+        ax4.tick_params(axis='y',right=False,labelright=False,left=False,labelleft=False,bottom=False)
+        ax4.set_xticks(np.arange(len(new_order[plot_split_integer:])),labels=new_isotope_list[plot_split_integer:],rotation=45)
+        ax4.set_ylim(0,3)
         #ax1.set_yticks([0,0.5,1,1.5,2,2.5,3])
         ax4.scatter (new_isotope_list[plot_split_integer:],ce_results_tendl[plot_split_integer:], s=40 , c='b', linewidth=2,label='TENDL-2021')
         ax4.errorbar(new_isotope_list[plot_split_integer:],ce_results_tendl[plot_split_integer:],ce_errors_tendl[plot_split_integer:],fmt='none',lw=2,capsize=2,color='Black',zorder=-1)
-        ax4.set_xlim(-0.5,len(new_order[plot_split_integer:])-0.5)
+        ax4.set_xlim(-0.4,len(new_order[plot_split_integer:])-0.6)
         ax4.set_xticklabels(new_isotope_list[plot_split_integer:],rotation=45)
         ax5 = ax4.twiny()
         ax5.scatter (new_isotope_list[plot_split_integer:],ce_results_irdff[plot_split_integer:], s=40 , c='magenta', linewidth=2,label='IRDFF-II')
         ax5.errorbar(new_isotope_list[plot_split_integer:],ce_results_irdff[plot_split_integer:],ce_errors_irdff[plot_split_integer:],fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax5.tick_params(top=False, labeltop=False, bottom=True, labelbottom=False)
-        ax5.set_xlim(-0.3,len(new_order[plot_split_integer:])-0.3)
+        ax5.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax5.set_xlim(-0.2,len(new_order[plot_split_integer:])-0.4)
         ax6 = ax4.twiny()
         ax6.scatter (new_isotope_list[plot_split_integer:],ce_results_endfb8[plot_split_integer:], s=40 , c='green', linewidth=2,label='ENDF/B-VIII')
         ax6.errorbar(new_isotope_list[plot_split_integer:],ce_results_endfb8[plot_split_integer:],ce_errors_endfb8[plot_split_integer:],fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax6.tick_params(top=False, labeltop=False, bottom=True, labelbottom=False)
-        ax6.set_xlim(-0.7,len(new_order[plot_split_integer:])-0.7)
+        ax6.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax6.set_xlim(-0.6,len(new_order[plot_split_integer:])-0.8)
         # plotting lines and error margins
         ax4.plot([-1,len(new_order[plot_split_integer:])], np.ones(2), 'Black', ls='--',linewidth=1.5)
-        ax4.fill_between([-1,len(new_order[plot_split_integer:])], 1-self.flux_percentage_error, 1+self.flux_percentage_error,facecolor='lightcoral',alpha=0.3)
+        ax4.fill_between(range(len(new_order[plot_split_integer:])), [1-x for x in isotopic_flux_percentage_uncerts[plot_split_integer:]], [1+x for x in isotopic_flux_percentage_uncerts[plot_split_integer:]],facecolor='lightcoral',alpha=0.3,step='mid')
 
         # legend and saving figure
         ax4.set_zorder(-1)
@@ -112,14 +112,14 @@ class CEPlotter:
         ax2.legend(loc="upper left", bbox_to_anchor=(1.12, 0.98),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         ax3.legend(loc="upper left", bbox_to_anchor=(1.12, 0.82),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         fig.set_size_inches((17, 6))
-        fig.savefig(os.path.join(f"{self.working_directory}/ce_plots", f'{self.experimental_analysis_method}_{self.plotname}.png'), transparent=False, bbox_inches='tight')
+        fig.savefig(os.path.join(f"{self.working_directory}/ce_plots", f'{self.plotname}.png'), transparent=False, bbox_inches='tight')
 
     # calculate weighted averages from first_we to last_we
     def _weighted_ce(self,ce_value_array,ce_error_array):
         weights = []
         weighted_values = []
         for i in np.arange(len(ce_value_array)):
-            print(f'C/E = {ce_value_array[i]} +- {ce_error_array[i]}')
+            #print(f'C/E = {ce_value_array[i]} +- {ce_error_array[i]}')
             if ce_value_array[i] <10:
                 weight = 1/((ce_error_array[i])**2)
                 weighted_value = weight*ce_value_array[i]
@@ -145,11 +145,15 @@ class CEPlotter:
         calculated_tendl21_activities = [model_results_data[key]["tendl21_values"][0] for key in isotope_list]
         calculated_tendl21_uncertainties = [model_results_data[key]["tendl21_values"][1] for key in isotope_list]
 
-        #extract data for exp activities
+        # extract spectrum uncertainties for each isotope
+        isotopic_spectrum_percentage_uncerts = [model_results_data[key]["spectrum_percent_uncert"] for key in isotope_list]
+        isotopic_spectrum_percentage_uncerts = [np.sqrt(self.flux_percentage_error**2 + i**2) for i in isotopic_spectrum_percentage_uncerts]
+
+        #extract data for exp activities (using first peak)
         exp_results_path =  f"{self.working_directory}/{self.experimental_results_file}.json" 
         exp_results_data = json.load(open(exp_results_path))
-        experimental_activities = [exp_results_data[key][f"{self.experimental_analysis_method}_values"][0] for key in isotope_list]
-        experimental_uncertainties = [exp_results_data[key][f"{self.experimental_analysis_method}_values"][1] for key in isotope_list]
+        experimental_activities = [exp_results_data[key][f"activities"][0] for key in isotope_list]
+        experimental_uncertainties = [exp_results_data[key][f"activity_uncertainties"][0] for key in isotope_list]
 
         #reorder results into capture-to-threshold and perform C/E calculations for the foils 
         if self.experiment == 'proton_march24':
@@ -160,14 +164,22 @@ class CEPlotter:
         ce_results_tendl  = [(self.flux_norm_mean)*self._c_over_e(calculated_tendl21_activities,experimental_activities,isotope_list,foil_weight_normalisation)[i] for i in new_order]
         ce_results_irdff  = [(self.flux_norm_mean)*self._c_over_e(calculated_irdff2_activities ,experimental_activities,isotope_list,foil_weight_normalisation)[i]  for i in new_order]
         ce_results_endfb8 = [(self.flux_norm_mean)*self._c_over_e(calculated_endfb8_activities ,experimental_activities,isotope_list,foil_weight_normalisation)[i]  for i in new_order]
-        ce_errors_tendl =   [(self.flux_norm_mean)*self._c_over_e(calculated_tendl21_activities,experimental_activities,isotope_list,foil_weight_normalisation)[i] *self._c_over_e_uncerts(calculated_tendl21_uncertainties,calculated_tendl21_activities,experimental_activities,experimental_uncertainties,isotope_list)[i] for i in new_order]
-        ce_errors_irdff =   [(self.flux_norm_mean)*self._c_over_e(calculated_irdff2_activities ,experimental_activities,isotope_list,foil_weight_normalisation)[i]  *self._c_over_e_uncerts(calculated_irdff2_uncertainties, calculated_irdff2_activities,experimental_activities,experimental_uncertainties,isotope_list)[i] for i in new_order]
-        ce_errors_endfb8 =  [(self.flux_norm_mean)*self._c_over_e(calculated_endfb8_activities ,experimental_activities,isotope_list,foil_weight_normalisation)[i]  *self._c_over_e_uncerts(calculated_endfb8_uncertainties, calculated_endfb8_activities,experimental_activities,experimental_uncertainties,isotope_list)[i] for i in new_order]
-
+        ce_errors_tendl =   [(self.flux_norm_mean)*self._c_over_e(calculated_tendl21_activities,experimental_activities,isotope_list,foil_weight_normalisation)[i] *self._c_over_e_uncerts(calculated_tendl21_uncertainties,calculated_tendl21_activities,experimental_activities,experimental_uncertainties,isotope_list,isotopic_spectrum_percentage_uncerts)[i] for i in new_order]
+        ce_errors_irdff =   [(self.flux_norm_mean)*self._c_over_e(calculated_irdff2_activities ,experimental_activities,isotope_list,foil_weight_normalisation)[i]  *self._c_over_e_uncerts(calculated_irdff2_uncertainties, calculated_irdff2_activities,experimental_activities,experimental_uncertainties,isotope_list,isotopic_spectrum_percentage_uncerts)[i] for i in new_order]
+        ce_errors_endfb8 =  [(self.flux_norm_mean)*self._c_over_e(calculated_endfb8_activities ,experimental_activities,isotope_list,foil_weight_normalisation)[i]  *self._c_over_e_uncerts(calculated_endfb8_uncertainties, calculated_endfb8_activities,experimental_activities,experimental_uncertainties,isotope_list,isotopic_spectrum_percentage_uncerts)[i] for i in new_order]
+        isotopic_spectrum_percentage_uncerts = [isotopic_spectrum_percentage_uncerts[i] for i in new_order]
+        
+        #print some results if you want
+        for i in range(len(new_isotope_list)):
+            print(f'*********{new_isotope_list[i]} C/E results')
+            print(f"TENDL value is {ce_results_tendl[i]} pm {ce_errors_tendl[i] }")
+            print(f"ENDFB8 value is {ce_results_endfb8[i]} pm {ce_errors_endfb8[i] }")
+            print(f"IRDFF value is {ce_results_irdff[i]} pm {ce_errors_irdff[i] }")
+        
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_tendl,
                     ce_errors_tendl,ce_results_irdff,ce_errors_irdff,
-                    ce_results_endfb8,ce_errors_endfb8)
+                    ce_results_endfb8,ce_errors_endfb8,isotopic_spectrum_percentage_uncerts)
         
         # do weighted ave calcs and print
         weighted_ave_value = self._weighted_ce(ce_results_irdff[self.first_we:self.last_we],ce_errors_irdff[self.first_we:self.last_we])[0]

@@ -34,7 +34,7 @@ class AsciiSummer:
     # writes the summed output file using the header and footer data from the FIRST ascii analysed
     def run(self):
         print('writing summed ASCII...')
-        filename = f"{self.folder_path}/TEST_summed_{self.ascii_filetag}.Spe"
+        filename = f"{self.folder_path}/summed_{self.ascii_filetag}.Spe"
         with open(filename,'w') as ascii_histogram_file:
             for line in self._parse_ascii(self._loop_parser()[1][0])[0]:
                 ascii_histogram_file.write(line)

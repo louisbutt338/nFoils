@@ -11,10 +11,9 @@ import actigamma as ag # type: ignore
 
 # calculated activities collector code
 class ActivitiesCollector:
-    def __init__(self,library,fispact_results_folder,collected_results_folder):
+    def __init__(self,library,fispact_results_folder):
         self.library = 'tendl21'
         self.fispact_results_folder =  '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/040924_foils_fe_flux_analysis/{}'.format(self.library)
-        self.collected_results_folder = '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/analysis/calculated_activities'
         self.materials = ['au', 'al', 'fe', 'in', 'nb', 'ni', 'rh', 'sc', 'y', 'dy', 'cd','cu']
 
     def run(self):

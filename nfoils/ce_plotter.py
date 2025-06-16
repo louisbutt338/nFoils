@@ -11,11 +11,10 @@ from pathlib import Path
 import math
 
 class CEPlotter:
-    def __init__(self, experiment,working_directory,calculated_results_file,
+    def __init__(self, experiment,calculated_results_file,
                 experimental_results_file,plotname,
                 flux_norm_mean,flux_percentage_error,first_we,last_we):
-        self.experiment = experiment
-        self.working_directory = working_directory
+        self.experiment_directory = experiment
         self.calculated_results_file =  calculated_results_file
         self.experimental_results_file = experimental_results_file
         self.plotname = plotname
@@ -38,9 +37,9 @@ class CEPlotter:
                           isotopic_spectrum_percentage_uncerts):
         c_over_e_uncerts = []
         for i in np.arange(len(isotope_list)):
-            if self.experiment == 'proton_march24':
+            if self.experiment_directory == 'proton_march24':
                 fispact_error = calc_uncerts[i]/calc_activities[i]
-            if self.experiment == 'deuteron_nov24':
+            if self.experiment_directory == 'deuteron_nov24':
                 fispact_error = calc_uncerts[i]
             c_error = np.sqrt( fispact_error**2 + isotopic_spectrum_percentage_uncerts[i]**2)
             e_error = experimental_uncertainties[i]/experimental_activities[i]
@@ -112,7 +111,7 @@ class CEPlotter:
         ax2.legend(loc="upper left", bbox_to_anchor=(1.12, 0.98),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         ax3.legend(loc="upper left", bbox_to_anchor=(1.12, 0.82),handlelength=0,borderaxespad=0, frameon=False,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         fig.set_size_inches((17, 6))
-        fig.savefig(os.path.join(f"{self.working_directory}/ce_plots", f'{self.plotname}.png'), transparent=False, bbox_inches='tight')
+        fig.savefig(os.path.join(f"{self.experiment_directory}", f'{self.plotname}.png'), transparent=False, bbox_inches='tight')
 
     # calculate weighted averages from first_we to last_we
     def _weighted_ce(self,ce_value_array,ce_error_array):
@@ -133,7 +132,7 @@ class CEPlotter:
     
     def run(self):
         #extract data for calculated  activities
-        model_results_path = f"{self.working_directory}/{self.calculated_results_file}.json"
+        model_results_path = f"{self.experiment_directory}/{self.calculated_results_file}.json"
         model_results_data = json.load(open(model_results_path))
         isotope_list = model_results_data.keys()
         foil_weight_normalisation = [model_results_data[key]["foil_weight"] for key in isotope_list]
@@ -150,15 +149,15 @@ class CEPlotter:
         isotopic_spectrum_percentage_uncerts = [np.sqrt(self.flux_percentage_error**2 + i**2) for i in isotopic_spectrum_percentage_uncerts]
 
         #extract data for exp activities (using first peak)
-        exp_results_path =  f"{self.working_directory}/{self.experimental_results_file}.json" 
+        exp_results_path =  f"{self.experiment_directory}/{self.experimental_results_file}.json" 
         exp_results_data = json.load(open(exp_results_path))
         experimental_activities = [exp_results_data[key][f"activities"][0] for key in isotope_list]
         experimental_uncertainties = [exp_results_data[key][f"activity_uncertainties"][0] for key in isotope_list]
 
         #reorder results into capture-to-threshold and perform C/E calculations for the foils 
-        if self.experiment == 'proton_march24':
+        if self.experiment_directory == 'proton_march24':
             new_order = [10,2,12,13, 7,5,6,9 ,4,0,3,1,14,11]
-        if self.experiment == 'deuteron_nov24':
+        if self.experiment_directory == 'deuteron_nov24':
             new_order = [10,20,2,15,16, 6,7,9,12,13,4,5,0,3,1,14,17,11,18,19]
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         ce_results_tendl  = [(self.flux_norm_mean)*self._c_over_e(calculated_tendl21_activities,experimental_activities,isotope_list,foil_weight_normalisation)[i] for i in new_order]

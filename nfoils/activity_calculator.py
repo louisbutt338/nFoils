@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 import json
 from math import pi, sqrt, log, exp
-import numpy as np # type: ignore
-import actigamma as ag # type: ignore
-from scipy.integrate import quad # type: ignore
+import numpy as np 
+import actigamma as ag 
+from scipy.integrate import quad 
 from datetime import datetime
 
 class ActivityCalc:

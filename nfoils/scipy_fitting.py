@@ -1,7 +1,8 @@
-import numpy as np # type: ignore
-import matplotlib.pyplot as plt # type: ignore
-from scipy.optimize import curve_fit # type: ignore
-import scipy.optimize as opt # type: ignore
+import numpy as np 
+import matplotlib.pyplot as plt 
+from matplotlib import rc
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
+from scipy.optimize import curve_fit 
 import json
 
 class CurveFitter:

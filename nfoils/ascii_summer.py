@@ -1,8 +1,7 @@
 import numpy as np # type: ignore
-import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rc("font", family="sans-serif",weight='normal',size=20)
-plt.rcParams["font.sans-serif"] = "Helvetica"
+from matplotlib import rc
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
 
 class AsciiSummer:
     def __init__(self, data_folder_path, filetag, ff_number, lf_number):

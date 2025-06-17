@@ -1,12 +1,9 @@
 import os
-import numpy as np # type: ignore
-import matplotlib.font_manager # type: ignore
-import matplotlib # type: ignore
-import matplotlib.pyplot as plt # type: ignore
+import numpy as np 
+import matplotlib.pyplot as plt 
+from matplotlib import rc
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
 import json
-plt.rcParams["font.sans-serif"] = "Helvetica"
-plt.rcParams["font.size"] = 22
-plt.rcParams["font.weight"] = "normal"
 from pathlib import Path
 import math
 

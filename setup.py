@@ -9,7 +9,7 @@ setuptools.setup(
     url="https://github.com/louisbutt338/nFoils",
     packages=setuptools.find_packages(),
     entry_points= dict(console_scripts=['sum_asciis=scripts.sum_asciis:main']), # Add command line tools here
-    install_requires=['numpy', 'actigamma', 'datetime', 'matplotlib', 'pandas', 'scipy','dataclasses'], # Add dependencies here
+    install_requires=['numpy', 'actigamma', 'datetime', 'matplotlib', 'pandas', 'scipy','sandy','shutil','os','csv'], # Add dependencies here
     classifiers=["Programming Language :: Python :: 3",
                  "Operating System :: OS Independent"],
 )

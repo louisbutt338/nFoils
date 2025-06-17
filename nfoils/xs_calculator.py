@@ -1,5 +1,5 @@
-from math import pi, sqrt, log, exp
-import numpy as np # type: ignore
+from math import pi, sqrt, log
+import numpy as np 
 
 class TargetAnalysis:
     def __init__(self, isotope_activity,isotope_halflife,current_list,timing_list,
@@ -26,7 +26,7 @@ class TargetAnalysis:
     def _no_of_target_atoms(self,thickness,mass_density,atom_mass,radius):
         avo_number = 6.02214076e23
         number_density = (avo_number*mass_density)/atom_mass
-        return number_density * thickness * np.pi * (radius)**2
+        return number_density * thickness * pi * (radius)**2
 
     # calculate charged particles incident on target for each current
     def _no_of_beam_particles(self,current,irrad_time):
@@ -49,7 +49,7 @@ class TargetAnalysis:
         # do calculations for the fractional uncertainty 
         summed_incident_particles = sum([self._no_of_beam_particles(self.current_list[i],self.timing_list[i]) for i in range(len(self.current_list))])
         be7_cross_section = self._cross_section(self._no_of_isotopes(self.isotope_activity[0],self.isotope_halflife),self._no_of_target_atoms(self.target_thickness,self.target_mass_density,self.target_atomic_mass,self.target_radius),summed_incident_particles)
-        total_frac_uncert = np.sqrt((self.isotope_activity[1]/self.isotope_activity[0])**2 + (self.real_cross_section[1]/self.real_cross_section[0])**2)
+        total_frac_uncert = sqrt((self.isotope_activity[1]/self.isotope_activity[0])**2 + (self.real_cross_section[1]/self.real_cross_section[0])**2)
         print(f"total flux-estimation fractional uncert = {total_frac_uncert} " )
 
         # do calculation for the factor the XS is wrong by (for the timing/current arrays used here) - use to estimate #neutrons per second from lithium and neutron flux on iron foil

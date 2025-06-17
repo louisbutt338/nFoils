@@ -1,13 +1,10 @@
 import os
-import numpy as np # type: ignore
-import matplotlib.font_manager # type: ignore
-import matplotlib # type: ignore
-import matplotlib.pyplot as plt # type: ignore
-plt.rcParams["font.sans-serif"] = "Helvetica"
-plt.rcParams["font.size"] = 22
-plt.rcParams["font.weight"] = "normal"
+import numpy as np 
+import matplotlib.pyplot as plt 
+from matplotlib import rc
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=22)
 import json
-import actigamma as ag # type: ignore
+import actigamma as ag 
 
 # calculated activities collector code
 class ActivitiesCollector:

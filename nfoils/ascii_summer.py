@@ -1,4 +1,8 @@
 import numpy as np # type: ignore
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rc("font", family="sans-serif",weight='normal',size=20)
+plt.rcParams["font.sans-serif"] = "Helvetica"
 
 class AsciiSummer:
     def __init__(self, data_folder_path, filetag, ff_number, lf_number):
@@ -30,6 +34,21 @@ class AsciiSummer:
             all_ascii_data.append(self._parse_ascii(n_string)[1])
         ascii_histogram = [sum(x) for x in zip(*all_ascii_data)]
         return ascii_histogram,ascii_number_array_strings
+    
+    # plot the summed data
+    def _plot_ascii(self,ascii_data):
+        kev_array = [i*0.41653 for i in range(len(ascii_data))]
+        fig, ax1 = plt.subplots(tight_layout=True)
+        ax1.set_xlabel('Gamma energy (keV)') 
+        ax1.set_ylabel('Counts')
+        ax1.tick_params(axis='y')
+        ax1.set_xlim(0,2200)
+        ax1.set_ylim(1e0,5e3)
+        ax1.set_yscale("log")
+        ax1.plot(kev_array, ascii_data , 'b-' )
+        ax1.grid(which='major')
+        fig.set_size_inches((12, 6))
+        fig.savefig( 'gamma_spectrum.png', transparent=False, bbox_inches='tight')
 
     # writes the summed output file using the header and footer data from the FIRST ascii analysed
     def run(self):
@@ -42,3 +61,5 @@ class AsciiSummer:
                 ascii_histogram_file.write(f"{line}\n")
             for line in self._parse_ascii(self._loop_parser()[1][0])[2]:
                 ascii_histogram_file.write(line)
+        summed_spe_data = self._parse_ascii('000')[1]
+        self._plot_ascii(summed_spe_data)

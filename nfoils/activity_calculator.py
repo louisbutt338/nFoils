@@ -181,5 +181,5 @@ class ActivityCalc:
             results_dictionary.update(self._run_one_isotope(isotope_name,measurement_distance))
 
         # print results as one neat json for postprocessing
-        with open(f"{self.json_path}/experimental_results.json", 'a') as output_file:
+        with open(f"{self.json_path}/e_results.json", 'a') as output_file:
             json.dump(results_dictionary,output_file,ensure_ascii=False,indent=4)

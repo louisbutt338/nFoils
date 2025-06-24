@@ -166,11 +166,11 @@ class CEPlotter:
         isotopic_spectrum_percentage_uncerts = [isotopic_spectrum_percentage_uncerts[i] for i in new_order]
         
         #print some results if you want
-        for i in range(len(new_isotope_list)):
-            print(f'*********{new_isotope_list[i]} C/E results')
-            print(f"TENDL value is {ce_results_tendl[i]} pm {ce_errors_tendl[i] }")
-            print(f"ENDFB8 value is {ce_results_endfb8[i]} pm {ce_errors_endfb8[i] }")
-            print(f"IRDFF value is {ce_results_irdff[i]} pm {ce_errors_irdff[i] }")
+        #for i in range(len(new_isotope_list)):
+        #    print(f'*********{new_isotope_list[i]} C/E results')
+        #    print(f"TENDL value is {ce_results_tendl[i]} pm {ce_errors_tendl[i] }")
+        #    print(f"ENDFB8 value is {ce_results_endfb8[i]} pm {ce_errors_endfb8[i] }")
+        #    print(f"IRDFF value is {ce_results_irdff[i]} pm {ce_errors_irdff[i] }")
         
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_tendl,
@@ -178,6 +178,6 @@ class CEPlotter:
                     ce_results_endfb8,ce_errors_endfb8,isotopic_spectrum_percentage_uncerts)
         
         # do weighted ave calcs and print
-        weighted_ave_value = self._weighted_ce(ce_results_irdff[self.first_we:self.last_we],ce_errors_irdff[self.first_we:self.last_we])[0]
-        weighted_ave_uncert = self._weighted_ce(ce_results_irdff[self.first_we:self.last_we],ce_errors_irdff[self.first_we:self.last_we])[1]
+        weighted_ave_value = self._weighted_ce(ce_results_endfb8[self.first_we:self.last_we],ce_errors_endfb8[self.first_we:self.last_we])[0]
+        weighted_ave_uncert = self._weighted_ce(ce_results_endfb8[self.first_we:self.last_we],ce_errors_endfb8[self.first_we:self.last_we])[1]
         print(f"weighted C/E for {new_isotope_list[self.first_we:self.last_we]} is {weighted_ave_value} +- {weighted_ave_uncert}")

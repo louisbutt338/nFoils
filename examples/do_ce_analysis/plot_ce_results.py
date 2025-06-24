@@ -7,14 +7,14 @@ calculated_results_file = 'c_results_unfolded'
 experimental_results_file = 'e_results'
 
 # name for the C/E plot
-plotname = 'root_unfolded_160625'
+plotname = 'root_unfolded_200625'
 
 # FLUX NORMALISATION for C results - calculated using be7 calcs from the xs_calculator program
 flux_norm_mean = 0.8733 #mcnp/be7/p-li= 0.7(0.026985 rescale) or 0.801787(0.0309 rescale), 0.8733 for unfolded175/be7/p-li 
-flux_percentage_error = 0.12783 #0.12783 for mcnp/be7/p-li , 0.218 for unfolded175/be7/p-li
+flux_percentage_error = 0.12783 #0.12783 for be7/p-li 
 
 #first weighted ave in list and last weighted ave in list for the WE calculations
-first_we = 0
+first_we = 1
 last_we = 5
 
 #run 

@@ -1,5 +1,5 @@
 import numpy as np 
-import shutil
+import os
 
 ####################################
 ############ USER INPUTS ###########
@@ -34,7 +34,7 @@ def parse_ascii(spectrum_number):
 
 # copies the example input file header for gamma_process_spectra and prints the desired spectrum to the new file
 def spe_preprocessor(spec_numerator):
-    example_path = shutil.copyfile(f"{working_path}/example_spec_format.spe", f"{working_path}/{which_foil}_data/{spec_numerator}.spe")
+    example_path = os.system(f"cp {working_path}/example_spec_format.spe {working_path}/{which_foil}_data/{spec_numerator}.spe")
     with open(example_path,'r') as example_input_spectra:
         input_file = example_input_spectra.readlines()
         input_file[11-1] = f"Real Time: {int(all_ascii_headers[spec_numerator][10-1].split()[0])*(spec_numerator+1)}\n"

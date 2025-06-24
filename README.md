@@ -8,10 +8,15 @@ Includes postprocessing and preprocessing codes for (but is not dependent on) FI
 
 Work is part of a PhD thesis - reference to be provided in future. IP belongs to the University of Birmingham and UKAEA, so do not share the package outside these organisations. Contact LJB841@bham.ac.uk for details
 
-to install:
+to install with dependencies:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -e .
+pip install .
 ```
 
+to use the SANDY/NJOY nuclear data extraction tool, NJOY2016 must also be installed seperately
+then set the path to the NJOT executable
+```
+export NJOY=/path/to/njoy
+```

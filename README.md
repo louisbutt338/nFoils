@@ -8,7 +8,7 @@ Includes postprocessing and preprocessing codes for (but is not dependent on) FI
 
 Work is part of a PhD thesis - reference to be provided in future. IP belongs to the University of Birmingham and UKAEA, so do not share the package outside these organisations. Contact LJB841@bham.ac.uk for details
 
-## installing
+## installing nFoils
 
 to install with dependencies (once you are set up in your chosen environment):
 ```
@@ -24,7 +24,7 @@ then set the path to the NJOY2016 executable
 export NJOY=/path/to/njoy
 ```
 
-## installing extra nuclear data extraction
+### extra nuclear data extraction
 
 sandy base install is limited in nuclear data available and energy grids available
 e.g. if you want tendl21 nuclear data in VITAMIN-J-175

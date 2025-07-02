@@ -1,7 +1,5 @@
 numpy
-actigamma
-datetime
 matplotlib
-pandas
 scipy
-dataclasses
+sandy
+actigamma

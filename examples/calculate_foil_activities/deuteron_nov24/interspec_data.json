@@ -109,7 +109,8 @@
             "detector_distance_cm": 0.5,
             "thickness_cm": 0.05,
             "density_gcm3": 8.96,
-            "foil_material": "cu"
+            "foil_material": "cu",
+            "pathway_probabilities": [0.342,0.658]
         },
 
     "Cd111m": {
@@ -122,7 +123,8 @@
             "detector_distance_cm": 0.5,
             "thickness_cm": 0.0034,
             "density_gcm3": 8.64,
-            "foil_material": "cd"
+            "foil_material": "cd",
+            "pathway_probabilities": [0.02776,0.80484,0.16737]
         },
     "In117": {
             "live_time": 520,
@@ -196,7 +198,8 @@
             "detector_distance_cm": 1,
             "thickness_cm": 0.1,
             "density_gcm3": 8.9,
-            "foil_material": "ni"
+            "foil_material": "ni",
+            "pathway_probabilities": [0.78093,0.20468,0.0138]
         },
     "Co57": {
             "live_time": 620,
@@ -233,7 +236,8 @@
             "detector_distance_cm": 0.5,
             "thickness_cm": 0.0051,
             "density_gcm3": 8.551,
-            "foil_material": "dy"
+            "foil_material": "dy",
+            "pathway_probabilities": [0.73696,0.26304]
         },
 
     "Sc44m": {

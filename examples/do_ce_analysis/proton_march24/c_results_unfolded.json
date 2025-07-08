@@ -5,7 +5,8 @@
         "endfb8_values":[5.119E+02,1.08E+01],
         "irdff2_values":[5.122E+02 ,0],
         "tendl21_values":[5.094E+02,5.23E+01],
-        "spectrum_percent_uncert": 0.2019645
+        "spectrum_percent_uncert": 0.2019645,
+        "ssf_correction":1
     },
     "Au196": {
         "foil_weight":0.1498,
@@ -13,7 +14,8 @@
         "endfb8_values":[4.968E+01 ,0],
         "irdff2_values":[5.065E+01,0],
         "tendl21_values":[4.817E+01 ,2.13E+00  ],
-        "spectrum_percent_uncert": 0.20155
+        "spectrum_percent_uncert": 0.20155,
+        "ssf_correction":1
     },
     "Au198": {
         "foil_weight":0.1498,
@@ -21,7 +23,8 @@
         "endfb8_values":[6.662E+03 ,1.27E+02],
         "irdff2_values":[6.651E+03,0],
         "tendl21_values":[6.323E+03 ,8.31E+01  ],
-        "spectrum_percent_uncert": 0.09782
+        "spectrum_percent_uncert": 0.09782,
+        "ssf_correction":0.97
     },
     "Na24": {
         "foil_weight":0.2334,
@@ -29,7 +32,8 @@
         "endfb8_values":[2.640E+02,0],
         "irdff2_values":[2.6335E+02  ,0],
         "tendl21_values":[2.641E+02  ,0.00E+00 ],
-        "spectrum_percent_uncert": 0.2146858
+        "spectrum_percent_uncert": 0.2146858,
+        "ssf_correction":1
     },
     "Ni65": {
         "foil_weight":0.7877,
@@ -37,7 +41,8 @@
         "endfb8_values":[3.133E+01,0],
         "irdff2_values":[1e6 ,0],
         "tendl21_values":[4.933E+01 ,3.81E+00 ],
-        "spectrum_percent_uncert": 0.19096
+        "spectrum_percent_uncert": 0.19096,
+        "ssf_correction":1
     },
     "Cu64": {
         "foil_weight":0.7877,
@@ -45,7 +50,8 @@
         "endfb8_values":[8.538E+02,0],
         "irdff2_values":[8.616E+02  ,0],
         "tendl21_values":[8.567E+02,3.92E+01 ],
-        "spectrum_percent_uncert": 0.1617
+        "spectrum_percent_uncert": 0.1617,
+        "ssf_correction":0.898
     },
     "Cd111m": {
         "foil_weight":0.1328,
@@ -53,7 +59,8 @@
         "endfb8_values":[1e6,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[2.826E+03  ,1.52E+02 ],
-        "spectrum_percent_uncert": 0.1393
+        "spectrum_percent_uncert": 0.1393,
+        "ssf_correction":0.99455
     },
     "Cd115": {
         "foil_weight":0.1328,
@@ -61,7 +68,8 @@
         "endfb8_values":[1.806E+02,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[1.545E+02 ,7.99E+00],
-        "spectrum_percent_uncert": 0.126
+        "spectrum_percent_uncert": 0.126,
+        "ssf_correction":0.47886
     },
     "In117": {
         "foil_weight":0.1328,
@@ -69,7 +77,8 @@
         "endfb8_values":[1.794E+01 ,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[2.918E+01,3.35],
-        "spectrum_percent_uncert": 0.09782
+        "spectrum_percent_uncert": 0.09782,
+        "ssf_correction":1
     },
     "In115m": {
         "foil_weight":0.6452,
@@ -77,7 +86,8 @@
         "endfb8_values":[1e6,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[3.688E+03  ,1.80E+02  ],
-        "spectrum_percent_uncert":0.127678
+        "spectrum_percent_uncert":0.127678,
+        "ssf_correction":1
     },
     "In116m": {
         "foil_weight":0.6452,
@@ -85,7 +95,8 @@
         "endfb8_values":[1e8,0],
         "irdff2_values":[5.823E+05,0],
         "tendl21_values":[6.401E+05,1.75E+04  ],
-        "spectrum_percent_uncert": 0.09782
+        "spectrum_percent_uncert": 0.09782,
+        "ssf_correction":0.9722
     },
     "Ni57": {
         "foil_weight":1.5845,
@@ -93,7 +104,8 @@
         "endfb8_values":[2.366E+00 , 1.01E-01 ],
         "irdff2_values":[2.283E+00,0],
         "tendl21_values":[2.305E+00,3.49E-01],
-        "spectrum_percent_uncert": 0.20763
+        "spectrum_percent_uncert": 0.20763,
+        "ssf_correction":1
     },
     "Dy165": {
         "foil_weight":0.0435,
@@ -101,7 +113,8 @@
         "endfb8_values":[4.780E+04 ,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[4.661E+04  ,3.68E+03],
-        "spectrum_percent_uncert": 0.09782
+        "spectrum_percent_uncert": 0.09782,
+        "ssf_correction":0.9856
     },
     "Dy157": {
         "foil_weight":0.0435,
@@ -109,7 +122,8 @@
         "endfb8_values":[3.887E+01,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[4.172E+01 ,2.83E+00 ],
-        "spectrum_percent_uncert": 0.1252
+        "spectrum_percent_uncert": 0.1252,
+        "ssf_correction":0.98025
     },
     "Nb92m": {
         "foil_weight":0.7317,
@@ -117,6 +131,7 @@
         "endfb8_values":[1e6,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[1.295E+01 ,7.72E-01],
-        "spectrum_percent_uncert": 0.2019645
+        "spectrum_percent_uncert": 0.2019645,
+        "ssf_correction":1
     }
 }

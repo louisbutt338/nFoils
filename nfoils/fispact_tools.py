@@ -10,12 +10,15 @@ import actigamma as ag
 class ActivitiesCollector:
     def __init__(self,library,fispact_results_folder):
         self.library = 'tendl21'
-        self.fispact_results_folder =  '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/040924_foils_fe_flux_analysis/{}'.format(self.library)
-        self.materials = ['au', 'al', 'fe', 'in', 'nb', 'ni', 'rh', 'sc', 'y', 'dy', 'cd','cu']
+        self.fispact_results_folder =  (
+            f'/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/040924_foils_fe_flux_analysis/{self.library}')
+        self.materials = [
+            'au', 'al', 'fe', 'in', 'nb', 'ni', 'rh', 'sc', 'y', 'dy', 'cd','cu']
 
     def run(self):
         for m in self.materials:
-            calculated_result_json = json.load(open('{}/uBB_{}_cell12.json'.format(self.fispact_results_folder,m)))
+            calculated_result_json = json.load(
+                open('{}/uBB_{}_cell12.json'.format(self.fispact_results_folder,m)))
             activity = calculated_result_json['neutron_cell_flux'][3]['value']
             activity_uncert = calculated_result_json['neutron_cell_flux'][3]['value']
             print(activity,activity_uncert)
@@ -33,11 +36,17 @@ class JsonPlotter:
         total_dose_array = [] # in Sv/hr
         for timestep in range(0,len(inventory_data)):
             if inventory_data[timestep]['irradiation_time'] != 0:
-                timestep_array.append(inventory_data[timestep]['cooling_time']/(3600*24))
-                total_activity_array.append(inventory_data[timestep]['total_activity'])
-                total_activity_normalised_array.append(inventory_data[timestep]['total_activity']/(1e3*inventory_data[timestep]['total_mass']))
-                total_dose_array.append(inventory_data[timestep]['dose_rate']['dose'])
-        return timestep_array,total_activity_array,total_activity_normalised_array,total_dose_array
+                timestep_array.append(
+                    inventory_data[timestep]['cooling_time']/(3600*24))
+                total_activity_array.append(
+                    inventory_data[timestep]['total_activity'])
+                total_activity_normalised_array.append(
+                    inventory_data[timestep]['total_activity']
+                    /(1e3*inventory_data[timestep]['total_mass']))
+                total_dose_array.append(
+                    inventory_data[timestep]['dose_rate']['dose'])
+        return (timestep_array,total_activity_array,
+                total_activity_normalised_array,total_dose_array)
 
     #plot acitivity in bq/g from the json
     def _activity_plotter(self,timestep_array,total_activity_normalised_array):
@@ -49,19 +58,25 @@ class JsonPlotter:
         ax1.set_xscale("log")
         #ax1.set_ylim(1e0,1e6)
         ax1.set_yscale("log")
-        ax1.plot(timestep_array, total_activity_normalised_array , 'k-' ,     linewidth=1.5)
+        ax1.plot(timestep_array, total_activity_normalised_array ,
+                  'k-' ,     linewidth=1.5)
         ax1.axhline(y=1e5, ls='-', c='green', lw=1.5)
         ax1.axvline(x=0.04167, ls='--', c='grey')
         ax1.axvline(x=1e0, ls='--', c='grey')
         ax1.axvline(x=30, ls='--', c='grey')
-        ax1.text(1.02, 0.9, 'Approx. background', transform = ax1.transAxes, fontsize=12, c='green')
-        ax1.text(0.2, 1.02, '1 hour', transform = ax1.transAxes, fontsize=12, c='grey')
-        ax1.text(0.44, 1.02, '1 day', transform = ax1.transAxes, fontsize=12, c='grey')
-        ax1.text(0.654, 1.02, '1 month', transform = ax1.transAxes, fontsize=12, c='grey')
+        ax1.text(1.02, 0.9, 'Approx. background', 
+                 transform = ax1.transAxes, fontsize=12, c='green')
+        ax1.text(0.2, 1.02, '1 hour', 
+                 transform = ax1.transAxes, fontsize=12, c='grey')
+        ax1.text(0.44, 1.02, '1 day', 
+                 transform = ax1.transAxes, fontsize=12, c='grey')
+        ax1.text(0.654, 1.02, '1 month',
+                 transform = ax1.transAxes, fontsize=12, c='grey')
         ax1.grid(which='major')
-        #ax1.legend(loc="upper left", bbox_to_anchor=(1, 1), borderaxespad=0, frameon=False, fontsize=11)
         fig.set_size_inches((8, 6))
-        fig.savefig(os.path.join(self.directory, 'total_activity_{}.png'.format(self.json_name)), transparent=False, bbox_inches='tight')
+        fig.savefig(os.path.join(
+            self.directory, 'total_activity_{}.png'.format(self.json_name))
+            ,transparent=False, bbox_inches='tight')
 
     # plot isotopic dose over time from the json
     def _dose_plotter(self,timestep_array,total_dose_array):
@@ -78,21 +93,28 @@ class JsonPlotter:
         ax1.axvline(x=0.04167, ls='--', c='grey')
         ax1.axvline(x=1e0, ls='--', c='grey')
         ax1.axvline(x=30, ls='--', c='grey')
-        ax1.text(1.02, 0.9, 'Approx. background', transform = ax1.transAxes, fontsize=12, c='green')
-        ax1.text(0.2, 1.02, '1 hour', transform = ax1.transAxes, fontsize=12, c='grey')
-        ax1.text(0.44, 1.02, '1 day', transform = ax1.transAxes, fontsize=12, c='grey')
-        ax1.text(0.654, 1.02, '1 month', transform = ax1.transAxes, fontsize=12, c='grey')
+        ax1.text(1.02, 0.9, 'Approx. background', 
+                 transform = ax1.transAxes, fontsize=12, c='green')
+        ax1.text(0.2, 1.02, '1 hour',
+                 transform = ax1.transAxes, fontsize=12, c='grey')
+        ax1.text(0.44, 1.02, '1 day',
+                 transform = ax1.transAxes, fontsize=12, c='grey')
+        ax1.text(0.654, 1.02, '1 month',
+                 transform = ax1.transAxes, fontsize=12, c='grey')
         ax1.grid(which='major')
-        #ax1.legend(loc="upper left", bbox_to_anchor=(1, 1), borderaxespad=0, frameon=False, fontsize=11)
         fig.set_size_inches((8, 6))
-        fig.savefig(os.path.join(self.directory, 'total_dose_{}.png'.format(self.json_name)), transparent=False, bbox_inches='tight')
+        fig.savefig(os.path.join(self.directory, 'total_dose_{}.png'.format(self.json_name))
+                    , transparent=False, bbox_inches='tight')
 
     def run(self):
         dictionary = json.load(open('{}/{}.json'.format(self.directory,self.json_name), 'r'))
         inventory_data = dictionary['inventory_data']
         #print(inventory_data[0]['nuclides'][0])
-        print('********************','plotting activity in Bq/g and dose in Sv/hr', '********************')
-        print('note: FISPACT {} dose calculation was used'.format(inventory_data[0]['dose_rate']['type']))
+        print('********************',
+              'plotting activity in Bq/g and dose in Sv/hr',
+              '********************')
+        print('note: FISPACT {} dose calculation was used'.format(
+            inventory_data[0]['dose_rate']['type']))
         self._activity_plotter()
         self._dose_plotter()
 
@@ -101,7 +123,8 @@ class JsonPlotter:
 # simple gamma spectrum modeller with actigamma
 class GammaSpectrumModel:
     def __init__(self,folder_path,isotope_name,activity):
-        self.folder_path = '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/fispact_gammaspec'
+        self.folder_path = (
+            '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/fispact_gammaspec')
         self.isotope_name = 'Mn56'
         self.activity = 3.82e7
 
@@ -133,4 +156,6 @@ class GammaSpectrumModel:
         plt.ylim(1e-5,1e15)
         plt.yscale("log")
         plt.stairs(hist,bin_edges)
-        plt.savefig(os.path.join(self.folder_path, '{}_gammaspec.png'.format(self.isotope_name)), transparent=False, bbox_inches='tight')
+        plt.savefig(os.path.join(self.folder_path, '{}_gammaspec.png'.format(
+            self.isotope_name))
+            ,transparent=False, bbox_inches='tight')

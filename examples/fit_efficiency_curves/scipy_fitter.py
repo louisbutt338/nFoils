@@ -2,14 +2,14 @@ from nfoils.scipy_fitting import CurveFitter
 
 #select folder and dataset
 input_data_path = "gamma_spec_efficiencies"
-input_data_filename = "b03_38cm_data"
+input_data_filename = "g11_endcap_data"
 
 # energy range in keV for fitting the data in montecarlo and finding the average uncertainty
 interpolation_range_start = 100
 interpolation_range_end = 1800
 
 # number of MC samples you want to try
-no_of_monte_carlo_samples = 1000
+no_of_monte_carlo_samples = 10000
 
 # run
 curve_fitter = CurveFitter(input_data_path,input_data_filename,

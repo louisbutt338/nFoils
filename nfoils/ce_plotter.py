@@ -9,8 +9,9 @@ import math
 
 class CEPlotter:
     def __init__(self, experiment,calculated_results_file,
-                experimental_results_file,plotname,
-                flux_norm_mean,flux_percentage_error,first_we,last_we):
+                experimental_results_file,plotname,y_upper,
+                y_lower,flux_norm_mean,flux_percentage_error,
+                first_we,last_we):
         self.experiment_directory = experiment
         self.calculated_results_file =  calculated_results_file
         self.experimental_results_file = experimental_results_file
@@ -19,6 +20,8 @@ class CEPlotter:
         self.flux_percentage_error = flux_percentage_error
         self.first_we = first_we
         self.last_we = last_we
+        self.y_axis_upper = y_upper
+        self.y_axis_lower = y_lower
 
     #c/e function
     def _c_over_e(self,calc_activities,exp_activities,isotope_list,foil_weight,ssf):
@@ -65,8 +68,7 @@ class CEPlotter:
         ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,top=True)
         ax1.set_xticks(np.arange(len(new_order[:plot_split_integer]))
                        , labels=new_isotope_list[:plot_split_integer] ,rotation=45)
-        ax1.set_ylim(0,3.5)
-        #ax1.set_yticks([0,0.5,1,1.5,2,2.5,3])
+        ax1.set_ylim(self.y_axis_lower,self.y_axis_upper)
         ax1.scatter (new_isotope_list[:plot_split_integer]
                      ,ce_results_tendl[:plot_split_integer]
                      , s=40 , c='b', linewidth=2,label='TENDL-2021')
@@ -109,8 +111,7 @@ class CEPlotter:
                         ,left=False,labelleft=False,bottom=False)
         ax4.set_xticks(np.arange(len(new_order[plot_split_integer:]))
                        ,labels=new_isotope_list[plot_split_integer:],rotation=45)
-        ax4.set_ylim(0,3.5)
-        #ax1.set_yticks([0,0.5,1,1.5,2,2.5,3])
+        ax4.set_ylim(self.y_axis_lower,self.y_axis_upper)
         ax4.scatter (new_isotope_list[plot_split_integer:]
                      ,ce_results_tendl[plot_split_integer:]
                      , s=40 , c='b', linewidth=2,label='TENDL-2021')
@@ -206,26 +207,25 @@ class CEPlotter:
         calculated_tendl21_u = [model_results_data[key]["tendl21_values"][1]
                                  for key in isotope_list]
 
-        # extract spectrum uncertainties for each isotope
+        # calculate spectrum + flux uncertainties for each isotope
         isotopic_spectrum_u = [model_results_data[key]["spectrum_percent_uncert"]
                                 for key in isotope_list]
         isotopic_spectrum_u = [np.sqrt(self.flux_percentage_error**2 + i**2)
                                 for i in isotopic_spectrum_u]
 
-        #extract data for exp activities (using first peak)
+        #extract data for exp activities (using average activities)
         exp_results_path =  f"{
             self.experiment_directory}/{self.experimental_results_file}.json" 
         exp_results_data = json.load(open(exp_results_path))
-        experimental_a = [exp_results_data[key][f"activities"][0]
+        experimental_a = [np.mean(exp_results_data[key][f"activities"])
                            for key in isotope_list]
-        experimental_u = [exp_results_data[key][f"activity_uncertainties"][0]
+        experimental_u = [np.mean(exp_results_data[key][f"activity_uncertainties"])
                            for key in isotope_list]
-
         #reorder results into capture-to-threshold and perform C/E calculations for the foils 
         if self.experiment_directory == 'proton_march24':
             new_order = [10,2,12,13, 7,5,6,9 ,4,0,3,1,14,11]
         if self.experiment_directory == 'deuteron_nov24':
-            new_order = [10,20,2,15,16, 6,7,9,12,13,4,5,0,3,1,14,17,11,18,19]
+            new_order = [10,18,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,17,11]
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         ce_results_tendl  = [
             (self.flux_norm_mean)*

@@ -67,9 +67,9 @@
             "datetime": [2024,11,29, 16,17,20],
             "counts": [5096.2,0,0,0,0],
             "uncertainty": [72.2,0,0,0,0],
-            "inv_coincidence_factor": [0.8026,0,0,0,0],
+            "inv_coincidence_factor": [0.842,0,0,0,0],
             "foil_radius_cm": 0.75,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.05,
             "density_gcm3": 2.7,
             "foil_material": "al"
@@ -79,9 +79,9 @@
             "datetime": [2024,11,29, 16,17,20],
             "counts": [5282.1,1722.7,0,0,0],
             "uncertainty": [74.5,44.2,0,0,0],
-            "inv_coincidence_factor": [0.9975,1.0053,0,0,0],
+            "inv_coincidence_factor": [0.998,1.0042,0,0,0],
             "foil_radius_cm": 0.75,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.05,
             "density_gcm3": 2.7,
             "foil_material": "al"
@@ -92,9 +92,9 @@
             "datetime": [2024,11,29, 16,5,35],
             "counts": [639,489.2,600.5,0,0],
             "uncertainty": [26.1,24.3,32.4,0,0],
-            "inv_coincidence_factor": [1.0139,0.9316,0.777,0,0],
+            "inv_coincidence_factor": [1.0111,0.94535,0.8216,0,0],
             "foil_radius_cm": 0.75,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.05,
             "density_gcm3": 8.96,
             "foil_material": "cu"
@@ -106,7 +106,7 @@
             "uncertainty": [8.3,0,0,0,0],
             "inv_coincidence_factor": [1,0,0,0,0],
             "foil_radius_cm": 0.75,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.05,
             "density_gcm3": 8.96,
             "foil_material": "cu",
@@ -120,7 +120,7 @@
             "uncertainty": [276.7,206.1,0,0,0],
             "inv_coincidence_factor": [1,1,0,0,0],
             "foil_radius_cm": 0.6,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.0034,
             "density_gcm3": 8.64,
             "foil_material": "cd",
@@ -131,9 +131,9 @@
             "datetime": [2024,11,29, 16,29,15],
             "counts": [117.9,661.3,0,0,0],
             "uncertainty": [11.7,34.1,0,0,0],
-            "inv_coincidence_factor": [0.7856,0.7465,0,0,0],
+            "inv_coincidence_factor": [0.8284,0.7972,0,0,0],
             "foil_radius_cm": 0.6,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.0034,
             "density_gcm3": 8.64,
             "foil_material": "cd"
@@ -154,8 +154,8 @@
     "In116m": {
             "live_time": 340,
             "datetime": [2024,11,29, 15,51,49],
-            "counts": [373259,302225,309963,0,0],
-            "uncertainty": [629.3,581.3,614,0,0],
+            "counts": [451546,363038,390870,0,0],
+            "uncertainty": [1767.4,2766.9,2728.2,0,0],
             "inv_coincidence_factor": [0.947,1,1,0,0],
             "foil_radius_cm": 0.75,
             "detector_distance_cm": 1,
@@ -221,7 +221,7 @@
             "uncertainty": [101,23.7,14,12,23.2],
             "inv_coincidence_factor": [1,1,1,1,1],
             "foil_radius_cm": 0.5,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.0051,
             "density_gcm3": 8.551,
             "foil_material": "dy"
@@ -233,7 +233,7 @@
             "uncertainty": [15.8,0,0,0,0],
             "inv_coincidence_factor": [1,0,0,0,0],
             "foil_radius_cm": 0.5,
-            "detector_distance_cm": 0.5,
+            "detector_distance_cm": 0.4,
             "thickness_cm": 0.0051,
             "density_gcm3": 8.551,
             "foil_material": "dy",
@@ -253,24 +253,11 @@
             "foil_material": "sc"
         },
 
-    "Tc101": {
-            "live_time": 1220,
-            "datetime": [2024,11,29, 16,57,10],
-            "counts": [237.7,0,0,0,0],
-            "uncertainty": [18.6,0,0,0,0],
-            "inv_coincidence_factor": [1,0,0,0,0],
-            "foil_radius_cm": 0.6,
-            "detector_distance_cm": 0.5,
-            "thickness_cm": 0.006,
-            "density_gcm3": 12.423,
-            "foil_material": "rh"
-        },
-
     "Y90m": {
             "live_time": 620,
             "datetime": [2024,11,29, 16,11,36],
-            "counts": [1627.5,697.7,0,0,0],
-            "uncertainty": [42,27,0,0,0],
+            "counts": [1623.3,697.1,0,0,0],
+            "uncertainty": [41.6,26.9,0,0,0],
             "inv_coincidence_factor": [1,1,0,0,0],
             "foil_radius_cm": 0.75,
             "detector_distance_cm": 1,
@@ -303,7 +290,7 @@
             "density_gcm3": 10.22,
             "foil_material": "mo"
         },
-    "Tc101_DIFF": {
+    "Tc101": {
             "live_time": 1180,
             "datetime": [2024,11,29, 16,51,38],
             "counts": [1744.9,0,0,0,0],

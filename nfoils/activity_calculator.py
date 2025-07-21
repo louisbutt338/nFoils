@@ -64,17 +64,17 @@ class ActivityCalc:
         return np.exp(polynomial)
 
     # use the foil measurement distance and efficiency curves 
-    # to calculate activity over the live time
+    # to calculate activity over the live time - FIX G11/B03 DISCREPANCY
     def _activity_livetime(self,c,i,e,foil_dist,isotope_name) :  
         if foil_dist == 1: #b03 hpge
             detector_radius = 3.25
             eff_values = [-23.385, 11.3457, -1.9302, 0.10197]
-        if foil_dist == 0.5: #g11 bege
+        if foil_dist == 0.4: #g11 bege
             detector_radius = 3.75
-            eff_values = [-26.2955, 13.906, -2.4909, 0.1358]
+            eff_values = [-25.7209, 13.8415, -2.48, 0.1352]
         if foil_dist == 38: #b03 hpge
             detector_radius = 3.25
-            eff_values = [-27.425, 10.9595, -1.86674, 0.09852] 
+            eff_values = [-27.773, 11.13964, -1.8975, 0.10025] 
         foil_rad = self.json_file_data[isotope_name]['foil_radius_cm']
         solid_angle_ratio = ( self._solid_angle_disc(detector_radius,foil_dist,foil_rad) 
                             / self._solid_angle(detector_radius,foil_dist) )
@@ -164,9 +164,9 @@ class ActivityCalc:
                     pathway_prob = (self.json_file_data[isotope_name]
                                     ["pathway_probabilities"])
                 for p in pathway_prob:
-                    final_rr = p*self._reaction_rates(final_activity_list[0],
+                    final_rr = p*self._reaction_rates(np.mean(final_activity_list),
                                                       self.irrad_time,halflife)
-                    final_rr_uncert = p*self._reaction_rates(final_uncert_list[0],
+                    final_rr_uncert = p*self._reaction_rates(np.mean(final_uncert_list),
                                                              self.irrad_time,halflife)
                     final_rr_list.append(final_rr)
                     final_rr_uncert_list.append(final_rr_uncert)

@@ -7,7 +7,7 @@ calculated_results_file = 'c_results_unfolded_njoy_xs'
 experimental_results_file = 'e_results'
 
 # name for the C/E plot
-plotname = 'root_unfolded_180725'
+plotname = 'root_unfolded_210725'
 
 # set y axis size
 y_axis_upper = 3.5
@@ -21,8 +21,8 @@ flux_norm_mean = 1
 flux_percentage_error = 0.12783 
 
 #first weighted ave in list and last weighted ave in list for the WE calculations
-first_we = 5
-last_we = 14
+first_we = 1
+last_we = 5
 
 #run 
 ce_plotter = CEPlotter(experiment_directory,calculated_results_file,

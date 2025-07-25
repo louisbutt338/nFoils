@@ -5,7 +5,7 @@
         "endfb8_values":[4.472E+02 , 9.53E+00],
         "irdff2_values":[4.475E+02 ,0],
         "tendl21_values":[4.450E+02 , 4.57E+01],
-        "spectrum_percent_uncert": 0.2019645,
+        "spectrum_percent_uncert": 0.28823,
         "ssf_correction":1
     },
     "Au196": {
@@ -14,7 +14,7 @@
         "endfb8_values":[4.325E+01,0],
         "irdff2_values":[4.410E+01,0],
         "tendl21_values":[4.195E+01 , 1.80E+00],
-        "spectrum_percent_uncert": 0.20155,
+        "spectrum_percent_uncert": 0.21378,
         "ssf_correction":1
     },
     "Au198": {
@@ -23,7 +23,7 @@
         "endfb8_values":[3.525E+03 , 6.76E+01],
         "irdff2_values":[3.512E+03,0],
         "tendl21_values":[3.350E+03 , 4.83E+01],
-        "spectrum_percent_uncert": 0.09782,
+        "spectrum_percent_uncert": 0.101843,
         "ssf_correction":0.97
     },
     "Na24": {
@@ -32,7 +32,7 @@
         "endfb8_values":[2.307E+02,0],
         "irdff2_values":[2.309E+02  ,0],
         "tendl21_values":[2.307E+02  , 0.00E+00],
-        "spectrum_percent_uncert": 0.2146858,
+        "spectrum_percent_uncert": 0.434255,
         "ssf_correction":1
     },
     "Ni65": {
@@ -41,7 +41,7 @@
         "endfb8_values":[2.751E+01,0],
         "irdff2_values":[1e6 ,0],
         "tendl21_values":[4.350E+01 , 3.35E+00],
-        "spectrum_percent_uncert": 0.19096,
+        "spectrum_percent_uncert": 0.3416,
         "ssf_correction":1
     },
     "Cu64": {
@@ -50,7 +50,7 @@
         "endfb8_values":[5.290E+02 ,0],
         "irdff2_values":[5.384E+02 ,0],
         "tendl21_values":[5.283E+02 , 2.46E+01],
-        "spectrum_percent_uncert": 0.1617,
+        "spectrum_percent_uncert": 0.187,
         "ssf_correction":0.898
     },
     "Cd111m": {
@@ -59,7 +59,7 @@
         "endfb8_values":[1e6,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[2.445E+03 , 1.17E+02],
-        "spectrum_percent_uncert": 0.1393,
+        "spectrum_percent_uncert": 0.246,
         "ssf_correction":0.99455
     },
     "Cd115": {
@@ -68,7 +68,7 @@
         "endfb8_values":[6.839E+01,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[5.374E+01 , 4.73E+00 ],
-        "spectrum_percent_uncert": 0.126,
+        "spectrum_percent_uncert": 0.152,
         "ssf_correction":0.47886
     },
     "In117": {
@@ -77,7 +77,7 @@
         "endfb8_values":[1.016E+01 ,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[1.719E+01 , 2.16E+00],
-        "spectrum_percent_uncert": 0.09782,
+        "spectrum_percent_uncert": 0.101843,
         "ssf_correction":1
     },
     "In115m": {
@@ -86,7 +86,7 @@
         "endfb8_values":[1e6,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[3.227E+03 , 1.56E+02],
-        "spectrum_percent_uncert":0.127678,
+        "spectrum_percent_uncert":0.432,
         "ssf_correction":1
     },
     "In116m": {
@@ -95,7 +95,7 @@
         "endfb8_values":[1e8,0],
         "irdff2_values":[4.6066E+05,0],
         "tendl21_values":[5.065E+05 , 1.37E+04],
-        "spectrum_percent_uncert": 0.09782,
+        "spectrum_percent_uncert": 0.101843,
         "ssf_correction":0.9722
     },
     "Ni57": {
@@ -104,7 +104,7 @@
         "endfb8_values":[2.021E+00 , 4.81E-02],
         "irdff2_values":[1.956E+00 ,0],
         "tendl21_values":[1.972E+00 , 2.98E-01],
-        "spectrum_percent_uncert": 0.20763,
+        "spectrum_percent_uncert": 0.2902,
         "ssf_correction":1
     },
     "Dy165": {
@@ -113,7 +113,7 @@
         "endfb8_values":[2.469E+04 ,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[2.408E+04 , 1.70E+03],
-        "spectrum_percent_uncert": 0.09782,
+        "spectrum_percent_uncert": 0.101843,
         "ssf_correction":0.9856
     },
     "Dy157": {
@@ -122,7 +122,7 @@
         "endfb8_values":[2.150E+01,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[2.300E+01 , 1.60E+00],
-        "spectrum_percent_uncert": 0.1252,
+        "spectrum_percent_uncert": 0.1509,
         "ssf_correction":0.98025
     },
     "Nb92m": {
@@ -131,7 +131,7 @@
         "endfb8_values":[1e6,0],
         "irdff2_values":[1e6,0],
         "tendl21_values":[1.125E+01 , 6.71E-01],
-        "spectrum_percent_uncert": 0.2019645,
+        "spectrum_percent_uncert": 0.28823,
         "ssf_correction":1
     }
 }

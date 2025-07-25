@@ -6,6 +6,21 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal'
 import json
 import actigamma as ag 
 
+#retrieve activities at a specified time interval from fispact json
+class JsonRetriever:
+    def __init__(self,filepath,interval,zai,isotope_state):
+        self.filepath = filepath
+        self.interval = interval-1
+        self.zai = zai
+        self.state = isotope_state
+
+    def run(self):
+        json_file_data = json.load(open(f'{self.filepath}'))
+        nuclides_list = json_file_data['inventory_data'][self.interval]['nuclides']
+        nuclides_dict = {item['zai']:item for item in nuclides_list}
+        isotope_activity = nuclides_dict[self.zai]['activity']
+        return isotope_activity
+
 # calculated activities collector code
 class ActivitiesCollector:
     def __init__(self,library,fispact_results_folder):
@@ -117,8 +132,6 @@ class JsonPlotter:
             inventory_data[0]['dose_rate']['type']))
         self._activity_plotter()
         self._dose_plotter()
-
-##########
 
 # simple gamma spectrum modeller with actigamma
 class GammaSpectrumModel:

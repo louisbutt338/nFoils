@@ -217,13 +217,14 @@ class CEPlotter:
         exp_results_path =  f"{
             self.experiment_directory}/{self.experimental_results_file}.json" 
         exp_results_data = json.load(open(exp_results_path))
-        experimental_a = [np.mean(exp_results_data[key][f"activities"])
+        # CHANGE TO MEAN() WHEN DONE WITH PROTON-LITHIUM ANALYSIS
+        experimental_a = [(exp_results_data[key][f"activities"][0])
                            for key in isotope_list]
-        experimental_u = [np.mean(exp_results_data[key][f"activity_uncertainties"])
+        experimental_u = [(exp_results_data[key][f"activity_uncertainties"][0])
                            for key in isotope_list]
         #reorder results into capture-to-threshold and perform C/E calculations for the foils 
         if self.experiment_directory == 'proton_march24':
-            new_order = [10,2,12,13, 7,5,6,9 ,4,0,3,1,14,11]
+            new_order = [10,2,12,13, 7,5,6,9 ,4,3,0,1,14,11]
         if self.experiment_directory == 'deuteron_nov24':
             new_order = [10,18,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,17,11]
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]

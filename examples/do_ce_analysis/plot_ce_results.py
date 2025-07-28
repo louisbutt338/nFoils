@@ -1,20 +1,19 @@
 from nfoils.ce_plotter import CEPlotter
 
 # select directory with two calculated and experimental results files inside
-experiment_directory = 'proton_march24'
-#working_directory = f'/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/{experiment}'
-calculated_results_file = 'c_results_unfolded_njoy_xs'
+experiment_directory = 'deuteron_nov24'
+calculated_results_file = 'c_results_60mb'
 experimental_results_file = 'e_results'
 
 # name for the C/E plot
-plotname = 'root_unfolded_210725'
+plotname = 'test'
 
 # set y axis size
 y_axis_upper = 3.5
 y_axis_lower = 0
 
 # FLUX NORMALISATION for C results
-# calculated using be7 calcs from the xs_calculator program
+# calculated using be7 calcs from the xs_calculator program, but you do you
 # FNM: mcnp/be7/p-li= 0.7(0.026985 rescale) or 0.801787(0.0309 rescale), 0.8733 for initial unfolded175/be7/p-li fispact sims 
 flux_norm_mean = 1
 # FPE: 0.12783 for be7/p-li 

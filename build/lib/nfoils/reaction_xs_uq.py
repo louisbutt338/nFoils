@@ -1,15 +1,13 @@
 import sandy
-import os
 import matplotlib.pyplot as plt
 from matplotlib import rc
 rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
 import numpy as np
 import csv
-os.environ['NJOY'] = '/Users/ljb841@student.bham.ac.uk/NJOY2016/bin/njoy'
 
 # user inputs
-ek=sandy.energy_grids.VITAMINJ175
-library = 'tendl_21' # endfb_71 endfb_80 jendl_40u jeff_33 tendl_21
+ek=sandy.energy_grids.ECCO33
+library = 'jeff_33' # endfb_71 endfb_80 jendl_40u jeff_33 tendl_21 irdff_2
 #material_list = [491150, 
 #                 661640,
 #                 791970,
@@ -33,7 +31,7 @@ library = 'tendl_21' # endfb_71 endfb_80 jendl_40u jeff_33 tendl_21
 #reaction_labels = [r'${}^{115}$In(n,$\gamma$)',
 #                r'${}^{164}$Dy(n,$\gamma$)',
 #                r'${}^{197}$Au(n,$\gamma$)',
-#                r'${}^{115}$In(n,n\')', 
+#                r"${}^{115}$In(n,n')", 
 #                r'${}^{65}$Cu(n,p) *',
 #                r'${}^{56}$Fe(n,p)',
 #                r'${}^{27}$Al(n,$\\alpha$)', 
@@ -44,8 +42,6 @@ library = 'tendl_21' # endfb_71 endfb_80 jendl_40u jeff_33 tendl_21
 material_list = [260560]
 mt_values_list = [[103]]
 reaction_labels = [r'${}^{56}$Fe(n,p)']
-#material_list = [491150]
-#mt_values_list = [[4,102]]
 
 # get covariance and standard deviation data from a material endf6 file
 def _get_cov_data(material,mt_values):
@@ -54,7 +50,7 @@ def _get_cov_data(material,mt_values):
         endf_file = sandy.get_endf6_file(library, "xs", material)
         #print(endf_file)
         ekws = dict(ek=ek)
-        err = endf_file.get_errorr(temperature=0,err=1,chi=False, nubar=False, prod=False,mubar=False, errorr_kws=ekws,verbose=False)["errorr33"]
+        err = endf_file.get_errorr(temperature=0,err=1,chi=False, xs=True, nubar=False, mubar=False, errorr_kws=ekws,verbose=False)["errorr33"]
     except:
         return [],np.array([])
     covariance = err.get_cov()

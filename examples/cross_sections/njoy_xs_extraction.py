@@ -10,10 +10,10 @@ import csv
 os.environ['NJOY'] = '/Users/ljb841@student.bham.ac.uk/NJOY2016/bin/njoy'
 
 # user inputs
-ek=sandy.energy_grids.VITAMINJ175
-library = 'tendl_21' # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
-data_file_name = 'foil_data_wo_in'
-reaction_labels = [#r'${}^{115}$In(n,$\gamma$)',
+ek=sandy.energy_grids.SCALE238
+library = 'jeff_33' # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
+data_file_name = 'foil_data'
+reaction_labels = [r'${}^{115}$In(n,$\gamma$)',
                 r'${}^{164}$Dy(n,$\gamma$)',
                 r'${}^{197}$Au(n,$\gamma$)',
                 r"${}^{115}$In(n,n')", 
@@ -199,9 +199,9 @@ def run():
     atomic_mass_list= [x['foil_atomic_mass'] for x in json_file_data.values()]
     thickness_list =  [x['thickness_cm'] for x in json_file_data.values()]
     labels_list = reaction_labels
-    _export_and_plot_stdev(material_list,mt_list,labels_list)
-    #_export_and_plot_xs(
-    #    material_list,mt_list,density_list,
-    #    mass_list,abundance_list,atomic_mass_list,
-    #    labels_list,thickness_list)
+    #_export_and_plot_stdev(material_list,mt_list,labels_list)
+    _export_and_plot_xs(
+        material_list,mt_list,density_list,
+        mass_list,abundance_list,atomic_mass_list,
+        labels_list,thickness_list)
 run()

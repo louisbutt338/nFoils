@@ -1,3 +1,6 @@
+""" module for doing various fispact-y things
+"""
+
 import os
 import numpy as np 
 import matplotlib.pyplot as plt 
@@ -6,16 +9,22 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal'
 import json
 import actigamma as ag 
 
-#retrieve activities at a specified time interval from fispact json
-# useful although doesn't get uncerts so check all results
 class JsonRetriever:
+    """ retrieve activities at a specified time interval from fispact json
+    useful although doesn't get uncerts so check all results
+    """
     def __init__(self,filepath,interval,zai,isotope_state):
+        """ Initialise class
+        """
+        # set the parameters
         self.filepath = filepath
         self.interval = interval-1
         self.zai = zai
         self.state = isotope_state
 
     def run(self):
+        """ run for all requested isotopes
+        """
         try:
             json_file_data = json.load(open(f'{self.filepath}'))
         except:
@@ -29,9 +38,13 @@ class JsonRetriever:
         else:
             return 'isotope not calculated'
 
-# calculated activities collector code
 class ActivitiesCollector:
+    """ class to collect activities from a json
+    """
     def __init__(self,library,fispact_results_folder):
+        """ initialise class
+        """
+        # set parameters
         self.library = 'tendl21'
         self.fispact_results_folder =  (
             f'/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/040924_foils_fe_flux_analysis/{self.library}')
@@ -39,6 +52,8 @@ class ActivitiesCollector:
             'au', 'al', 'fe', 'in', 'nb', 'ni', 'rh', 'sc', 'y', 'dy', 'cd','cu']
 
     def run(self):
+        """ run for all materials requested 
+        """
         for m in self.materials:
             calculated_result_json = json.load(
                 open('{}/uBB_{}_cell12.json'.format(self.fispact_results_folder,m)))
@@ -46,13 +61,24 @@ class ActivitiesCollector:
             activity_uncert = calculated_result_json['neutron_cell_flux'][3]['value']
             print(activity,activity_uncert)
 
-#json plotter
 class JsonPlotter:
+    """ class to plot activities from a json
+    """
     def __init__(self,directory,json_name):
+        """ initialise
+        """
+        # set params
         self.directory = directory
         self.json_name =  json_name
 
     def _data_extraction(self,inventory_data):
+        """ extract data 
+
+        Parameters
+        ----------
+        inventory_data : dict
+            Json dictionary of data
+        """
         timestep_array = [] # in days
         total_activity_array = [] # in Bq
         total_activity_normalised_array = [] # in Bq/g
@@ -71,8 +97,16 @@ class JsonPlotter:
         return (timestep_array,total_activity_array,
                 total_activity_normalised_array,total_dose_array)
 
-    #plot acitivity in bq/g from the json
     def _activity_plotter(self,timestep_array,total_activity_normalised_array):
+        """ plot acitivity in bq/g from the json
+
+        Parameters
+        ----------
+        timstep_array : array
+            Array of timesteps
+        total_activity_normalised_array : array
+            Array of activities
+        """
         fig, ax1 = plt.subplots()
         ax1.set_xlabel('Decay time (days)') 
         ax1.set_ylabel('Activity (Bq/g)')
@@ -101,8 +135,15 @@ class JsonPlotter:
             self.directory, 'total_activity_{}.png'.format(self.json_name))
             ,transparent=False, bbox_inches='tight')
 
-    # plot isotopic dose over time from the json
     def _dose_plotter(self,timestep_array,total_dose_array):
+        """ plot isotopic dose over time from the json
+        Parameters
+        ----------
+        timstep_array : array
+            Array of timesteps
+        total_dose_array : array
+            Array of doses
+        """
         fig, ax1 = plt.subplots()
         ax1.set_xlabel('Decay time (days)') 
         ax1.set_ylabel('Dose (Sv/h)')
@@ -130,6 +171,8 @@ class JsonPlotter:
                     , transparent=False, bbox_inches='tight')
 
     def run(self):
+        """ run both plottings
+        """
         dictionary = json.load(open('{}/{}.json'.format(self.directory,self.json_name), 'r'))
         inventory_data = dictionary['inventory_data']
         #print(inventory_data[0]['nuclides'][0])
@@ -141,15 +184,21 @@ class JsonPlotter:
         self._activity_plotter()
         self._dose_plotter()
 
-# simple gamma spectrum modeller with actigamma
 class GammaSpectrumModel:
+    """ simple gamma spectrum modeller with actigamma
+    """
     def __init__(self,folder_path,isotope_name,activity):
+        """ initialise
+        """
+        # set params
         self.folder_path = (
             '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/fispact_gammaspec')
         self.isotope_name = 'Mn56'
         self.activity = 3.82e7
 
     def run(self):
+        """ run the thing
+        """
         SPECTYPE = "gamma"
         db = ag.Decay2012Database()
 

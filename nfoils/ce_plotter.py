@@ -1,3 +1,6 @@
+""" module for performing ce analysis for some isotopes
+"""
+
 import os
 import numpy as np 
 import matplotlib.pyplot as plt 
@@ -8,10 +11,16 @@ from pathlib import Path
 import math
 
 class CEPlotter:
+    """ class for doing the ce analysis
+    """
     def __init__(self, experiment,calculated_results_file,
                 experimental_results_file,plotname,y_upper,
                 y_lower,flux_norm_mean,flux_percentage_error,
                 first_we,last_we):
+        """ Initialise class
+        """
+
+        # set params
         self.experiment_directory = experiment
         self.calculated_results_file =  calculated_results_file
         self.experimental_results_file = experimental_results_file
@@ -23,18 +32,48 @@ class CEPlotter:
         self.y_axis_upper = y_upper
         self.y_axis_lower = y_lower
 
-    #c/e function
     def _c_over_e(self,calc_activities,exp_activities,isotope_list,foil_weight,ssf):
+        """ c/e calculation
+
+        Parameters
+        ----------
+        calc_activities : list
+            List of calculated activities
+        exp_activities : list
+            List of measured activities
+        isotope_list : list
+            List of the isotopes
+        foil_weight : list
+            List of the weights of the respective foils
+        ssf : list
+            List of the self shielding factors for the respective isotopes
+        """
         c_over_e_array = []
         for i in np.arange(len(isotope_list)):
             c_over_e =  (foil_weight[i]*ssf[i]*calc_activities[i])/exp_activities[i]
             c_over_e_array.append(c_over_e)
         return c_over_e_array
 
-    #c/e uncertainity function
     def _c_over_e_uncerts(self,calc_uncerts,calc_activities,experimental_activities,
                           experimental_uncertainties,isotope_list,
                           isotopic_spectrum_percentage_uncerts):
+        """ c/e uncertainty calculation
+
+        Parameters
+        ----------
+        calc_uncerts : list
+            List of calculated uncertainties
+        calc_activities : list
+            List of calculated activities
+        exp_activities : list
+            List of measured activities
+        exp_uncertainties : list
+            List of measured uncerts
+        isotope_list : list
+            List of the isotopes
+        isotopic_spectrum_percentage_uncerts : list
+            List of the uncerts in the spectrum for all the isotopes
+        """
         c_over_e_uncerts = []
         for i in np.arange(len(isotope_list)):
             if self.experiment_directory == 'proton_march24':
@@ -54,6 +93,7 @@ class CEPlotter:
     def _plotter(self,new_order,new_isotope_list,ce_results_tendl,
                  ce_errors_tendl,ce_results_irdff,ce_errors_irdff,
                  ce_results_endfb8,ce_errors_endfb8,isotopic_flux_percentage_uncerts):
+
         #fig, ax1 = plt.subplots()
         plot_split_integer = 5
         fig, (ax1,ax4) = plt.subplots(

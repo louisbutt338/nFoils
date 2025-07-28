@@ -7,6 +7,7 @@ import json
 import actigamma as ag 
 
 #retrieve activities at a specified time interval from fispact json
+# useful although doesn't get uncerts so check all results
 class JsonRetriever:
     def __init__(self,filepath,interval,zai,isotope_state):
         self.filepath = filepath
@@ -15,11 +16,18 @@ class JsonRetriever:
         self.state = isotope_state
 
     def run(self):
-        json_file_data = json.load(open(f'{self.filepath}'))
+        try:
+            json_file_data = json.load(open(f'{self.filepath}'))
+        except:
+            FileNotFoundError
+            return 'file not found'
         nuclides_list = json_file_data['inventory_data'][self.interval]['nuclides']
         nuclides_dict = {item['zai']:item for item in nuclides_list}
-        isotope_activity = nuclides_dict[self.zai]['activity']
-        return isotope_activity
+        if self.zai in nuclides_dict.keys():
+            isotope_activity = nuclides_dict[self.zai]['activity']
+            return isotope_activity
+        else:
+            return 'isotope not calculated'
 
 # calculated activities collector code
 class ActivitiesCollector:

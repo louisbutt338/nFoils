@@ -258,10 +258,8 @@ class CEPlotter:
     
     def run(self):
         """ run the analysis
-        This is specific to TENDL2021/ENDFB/IRDFF2 so names will need changing 
-        if you are using different libraries
         """
-        #extract data for calculated activities
+        #extract foil data and isotopes
         model_results_path = f"{
             self.experiment_directory}/{self.calculated_results_file}.json"
         model_results_data = json.load(open(model_results_path))
@@ -270,18 +268,6 @@ class CEPlotter:
         ssf = [model_results_data[key]["ssf_correction"] for key in isotope_list]
         isotope_list_mathmode = [model_results_data[key]["mathmode_name"]
                                   for key in isotope_list]
-        calculated_endfb8_a = [model_results_data[key]["endfb8_values"][0]
-                                for key in isotope_list]
-        calculated_endfb8_u = [model_results_data[key]["endfb8_values"][1]
-                                for key in isotope_list]
-        calculated_irdff2_a = [model_results_data[key]["irdff2_values"][0]
-                                for key in isotope_list]
-        calculated_irdff2_u = [model_results_data[key]["irdff2_values"][1]
-                                for key in isotope_list]
-        calculated_tendl21_a = [model_results_data[key]["tendl21_values"][0]
-                                 for key in isotope_list]
-        calculated_tendl21_u = [model_results_data[key]["tendl21_values"][1]
-                                 for key in isotope_list]
 
         # calculate spectrum + flux uncertainties for each isotope
         isotopic_spectrum_u = [model_results_data[key]["spectrum_percent_uncert"]
@@ -293,12 +279,31 @@ class CEPlotter:
         exp_results_path =  f"{
             self.experiment_directory}/{self.experimental_results_file}.json" 
         exp_results_data = json.load(open(exp_results_path))
-        experimental_a = [np.mean(exp_results_data[key][f"activities"])
+        exp_a = [np.mean(exp_results_data[key][f"activities"])
                            for key in isotope_list]
-        experimental_u = [np.mean(exp_results_data[key][f"activity_uncertainties"])
+        exp_u = [np.mean(exp_results_data[key][f"activity_uncertainties"])
                            for key in isotope_list]
         
-        #reorder results into capture-to-threshold  
+        #extract data for calculated activities
+        # These settings are specific to Birmingham TuNED experiments
+        # feel free to change if you are using different libraries
+        library_labels = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
+        calc_a_1 = [model_results_data[key]["tendl21_values"][0]
+                            for key in isotope_list]
+        calc_u_1 = [model_results_data[key]["tendl21_values"][1]
+                            for key in isotope_list]
+        calc_a_2 = [model_results_data[key]["irdff2_values"][0]
+                            for key in isotope_list]
+        calc_u_2 = [model_results_data[key]["irdff2_values"][1]
+                            for key in isotope_list]
+        calc_a_3 = [model_results_data[key]["endfb8_values"][0]
+                            for key in isotope_list]
+        calc_u_3 = [model_results_data[key]["endfb8_values"][1]
+                            for key in isotope_list]
+        
+        #reorder results into capture-to-threshold
+        # These settings are specific to Birmingham TuNED experiments
+        # feel free to change  
         if self.experiment_directory == 'proton_march24':
             new_order = [10,2,12,13, 7,5,6,9 ,4,3,0,1,14,11]
         if self.experiment_directory == 'deuteron_nov24':
@@ -306,58 +311,60 @@ class CEPlotter:
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
 
         #perform C/E calculations for the foils
-        ce_results_tendl  = [
+        ce_results_1  = [
             (self.flux_norm_mean)*
-            self._c_over_e(calculated_tendl21_a,experimental_a,isotope_list,foil_weight,ssf)
+            self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)
             [i] for i in new_order]
-        ce_results_irdff  = [
+        ce_results_2  = [
             (self.flux_norm_mean)*
-            self._c_over_e(calculated_irdff2_a,experimental_a,isotope_list,foil_weight,ssf)
+            self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)
             [i]  for i in new_order]
-        ce_results_endfb8 = [
+        ce_results_3 = [
             (self.flux_norm_mean)*
-            self._c_over_e(calculated_endfb8_a ,experimental_a,isotope_list,foil_weight,ssf)
+            self._c_over_e(calc_a_3 ,exp_a,isotope_list,foil_weight,ssf)
             [i]  for i in new_order]
-        ce_errors_tendl =   [
+        ce_errors_1 =   [
             (self.flux_norm_mean)*
-            self._c_over_e(calculated_tendl21_a,experimental_a,isotope_list,foil_weight,ssf)[i]
-            *self._c_over_e_uncerts(calculated_tendl21_u,calculated_tendl21_a,experimental_a
-                                    ,experimental_u,isotope_list,isotopic_spectrum_u)[i]
-                                      for i in new_order]
-        ce_errors_irdff =   [
+            self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)[i]
+            *self._c_over_e_uncerts(calc_u_1,calc_a_1,exp_a,exp_u,isotope_list,
+                                    isotopic_spectrum_u)[i] for i in new_order]
+        ce_errors_2 =   [
             (self.flux_norm_mean)*
-            self._c_over_e(calculated_irdff2_a ,experimental_a,isotope_list,foil_weight,ssf)[i]
-            *self._c_over_e_uncerts(calculated_irdff2_u, calculated_irdff2_a,experimental_a
-                                    ,experimental_u,isotope_list,isotopic_spectrum_u)[i]
-                                      for i in new_order]
-        ce_errors_endfb8 =  [
+            self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)[i]
+            *self._c_over_e_uncerts(calc_u_2,calc_a_2,exp_a,exp_u,isotope_list,
+                                    isotopic_spectrum_u)[i]  for i in new_order]
+        ce_errors_3 =  [
             (self.flux_norm_mean)*
-            self._c_over_e(calculated_endfb8_a ,experimental_a,isotope_list,foil_weight,ssf)[i]
-            *self._c_over_e_uncerts(calculated_endfb8_u, calculated_endfb8_a,experimental_a
-                                    ,experimental_u,isotope_list,isotopic_spectrum_u)[i]
-                                      for i in new_order]
+            self._c_over_e(calc_a_3,exp_a,isotope_list,foil_weight,ssf)[i]
+            *self._c_over_e_uncerts(calc_u_3,calc_a_3,exp_a,exp_u,isotope_list,
+                                    isotopic_spectrum_u)[i]for i in new_order]
         isotopic_spectrum_u = [isotopic_spectrum_u[i] for i in new_order]
         
         #print some results if you want
         for i in range(len(new_isotope_list)):
             print(f'*********{new_isotope_list[i]} C/E results')
-            print(f"TENDL value is {ce_results_tendl[i]} pm {ce_errors_tendl[i] }")
-            print(f"ENDFB value is {ce_results_endfb8[i]} pm {ce_errors_endfb8[i] }")
-            print(f"IRDFF value is {ce_results_irdff[i]} pm {ce_errors_irdff[i] }")
+            print(f"{library_labels[0]} value is "
+            f"{ce_results_1[i]} pm {ce_errors_1[i] }")
+            print(f"{library_labels[1]} value is "
+            f"{ce_results_2[i]} pm {ce_errors_2[i] }")
+            print(f"{library_labels[2]} value is "
+            f"{ce_results_3[i]} pm {ce_errors_3[i] }")
         
         # plot results
-        library_labels = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
-        self._plotter(new_order,new_isotope_list,ce_results_tendl,
-                    ce_errors_tendl,ce_results_irdff,ce_errors_irdff,
-                    ce_results_endfb8,ce_errors_endfb8,
+        self._plotter(new_order,new_isotope_list,ce_results_1,
+                    ce_errors_1,ce_results_2,ce_errors_2,
+                    ce_results_3,ce_errors_3,
                     isotopic_spectrum_u,library_labels)
         
         # do weighted ave calcs and print
+        # These are set to ENDFB8 calcs for Birmingham TuNED experiments 
+        # feel free to change
         weighted_ave_value = self._weighted_ce(
-            ce_results_endfb8[self.first_we:self.last_we],
-            ce_errors_endfb8[self.first_we:self.last_we])[0]
+            ce_results_3[self.first_we:self.last_we],
+            ce_errors_3[self.first_we:self.last_we])[0]
         weighted_ave_uncert = self._weighted_ce(
-            ce_results_endfb8[self.first_we:self.last_we],
-            ce_errors_endfb8[self.first_we:self.last_we])[1]
-        print(f"weighted C/E for {new_isotope_list[self.first_we:self.last_we]} is "
+            ce_results_3[self.first_we:self.last_we],
+            ce_errors_3[self.first_we:self.last_we])[1]
+        print(f"weighted {library_labels[2]} C/E for "
+              f"{new_isotope_list[self.first_we:self.last_we]} is "
               f"{weighted_ave_value} +- {weighted_ave_uncert}")

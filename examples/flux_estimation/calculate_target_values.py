@@ -1,4 +1,4 @@
-from nfoils.xs_calculator import TargetAnalysis
+from nfoils.target import TargetAnalysis
 import json
 
 #grab deuteron experiment uA data

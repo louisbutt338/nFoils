@@ -1,4 +1,4 @@
-from nfoils.activity_calculator import ActivityCalc
+from nfoils.activity import ActivityCalc
 from datetime import datetime
 
 # choose whether you want reaction rates along with the activities

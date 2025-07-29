@@ -1,4 +1,4 @@
-from nfoils.ascii_summer import AsciiSummer
+from nfoils.ascii import AsciiSummer
 
 folder_path = 'fe_spectra'
 #name of files withoiut their number at the end 

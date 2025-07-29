@@ -1,4 +1,4 @@
-from nfoils.scipy_fitting import CurveFitter
+from nfoils.fitting import CurveFitter
 
 #select folder and dataset
 input_data_path = "gamma_spec_efficiencies"

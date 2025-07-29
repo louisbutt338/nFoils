@@ -1,4 +1,4 @@
-from nfoils.ce_plotter import CEPlotter
+from nfoils.ce import CEPlotter
 
 # select directory with two calculated and experimental results files inside
 experiment_directory = 'deuteron_nov24'

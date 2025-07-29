@@ -1,3 +1,6 @@
+""" module for doing fitting of gamma spec efficiency curves
+"""
+
 import numpy as np 
 import matplotlib.pyplot as plt 
 from matplotlib import rc
@@ -6,43 +9,68 @@ from scipy.optimize import curve_fit
 import json
 
 class CurveFitter:
+    """ class for fitting efficiency functions 
+    """
     def __init__(self,input_data_path,input_data_filename,
                 interpolation_range_start,interpolation_range_end,
                 no_of_monte_carlo_samples):
+        """ initialise class
+        """
+
+        # set parameters
         self.input_data_path = input_data_path
         self.input_data_filename = input_data_filename
         self.interpolation_range_start = interpolation_range_start
         self.interpolation_range_end = interpolation_range_end
         self.no_of_monte_carlo_samples = no_of_monte_carlo_samples
-        # set variables
+        
+        # change some other parameters
         self.experimental_data = json.load(open(f'{input_data_path}/{input_data_filename}.json'))
         self.x_data = [float(i) for i in self.experimental_data.keys()]
         self.y_data = [self.experimental_data[i]["efficiency" ] for i in self.experimental_data.keys()]
         self.errors = [self.experimental_data[i]["uncertainty"] for i in self.experimental_data.keys()]
         self.interpolation_range = np.arange(interpolation_range_start,interpolation_range_end,1)
 
-    #define efficiency polynomial
     def _spec_function(self,energy,a0,a1,a2,a3):
+        """ define efficiency polynomial function
+
+        Parameters
+        ----------
+        energy : float
+            Gamma energy in keV
+        a0 : float
+            Zero term parameter
+        a1 : float
+            1st term parameter for log(E)^1
+        a2 : float
+            1st term parameter for log(E)^2
+        a3 : float
+            1st term parameter for log(E)^3
+        """
         polynomial = a0 + a1*np.log(energy)**1 + a2*np.log(energy)**2 + a3*np.log(energy)**3 
         return np.exp(polynomial)
 
-    #SINGLE FITTING OF DATA
     def _single_fit(self):
+        """ fit the data once and return the equation params
+        """
         params, covs  = curve_fit(self._spec_function, self.x_data, self.y_data, p0=[0,0,0,0],sigma=self.errors,absolute_sigma=True)
-        a0, a1,a2,a3 = params #need this bit to unpack the tuple 
+        a0, a1,a2,a3 = params  
         errs = np.sqrt(np.diag(covs))
         a0_err,a1_err,a2_err,a3_err = errs
+
         #calculated fitted data and find the residuals etc
         fit_data = self._spec_function(self.x_data, *params)
         residuals = self.y_data - fit_data 
         chi_squared = np.sum((residuals / self.errors) ** 2)
-        dof = len(self.y_data) - len(params)  # Degrees of freedom
+        dof = len(self.y_data) - len(params) 
         reduced_chi_squared = chi_squared / dof
         #print(f"Estimated Single Fit Parameters: \n a0 = {a0}+/-{a0_err}, a1 = {a1}+/-{a1_err}, a2 = {a2}+/-{a2_err}, a3 = {a3}+/-{a3_err} \n rChi2 = {reduced_chi_squared}")
         return params
 
-    #MONTE CARLO FITTING OF DATA
     def _monte_carlo_fit(self):
+        """ fit the data with MC method
+        return the mean, stdev and residuals of the final fit
+        """
         N = self.no_of_monte_carlo_samples
         a_samples = []
         a1_samples = []
@@ -57,9 +85,10 @@ class CurveFitter:
                 params_mc, covs_mc = curve_fit(self._spec_function, self.x_data, y_mc, 
                                                p0=[self._single_fit()[0],self._single_fit()[1],self._single_fit()[2],self._single_fit()[3]],
                                                sigma=self.errors, absolute_sigma=True)
-                a0_mc, a1_mc,a2_mc,a3_mc = params_mc #need this bit to unpack the tuple 
+                a0_mc, a1_mc,a2_mc,a3_mc = params_mc
                 errs_mc = np.sqrt(np.diag(covs_mc))
                 a0_err_mc,a1_err_mc,a2_err_mc,a3_err_mc = errs_mc
+
                 #calculated fitted data and find the residuals etc
                 fit_data_mc = self._spec_function(self.interpolation_range, *params_mc)
                 a_samples.append( a0_mc)
@@ -68,8 +97,9 @@ class CurveFitter:
                 a3_samples.append(a3_mc)
                 a_errs_mc.append(errs_mc)
                 mc_solutions.append(fit_data_mc)
+            # Skip failed fits
             except RuntimeError:
-                pass  # Skip failed fits
+                pass
               
         # Compute mean parameter values and uncertainties
         a_mc =  np.mean(a_samples)
@@ -92,8 +122,14 @@ class CurveFitter:
         
         return mc_solutions_mean,mc_solutions_std_dev,residuals_mc
 
-    #plot data
     def _plotter(self,fitting_results):
+        """ plot the data
+
+        Parameters
+        ----------
+        fitting_results: arrays,probably
+            The output of the monte_carlo_fit function
+        """
         solutions = fitting_results[0]
         standard_dev = fitting_results[1]
         residuals = fitting_results[2]
@@ -127,4 +163,6 @@ class CurveFitter:
         #plt.close()
 
     def run(self):
+        """ run the silly thing
+        """
         self._plotter(self._monte_carlo_fit())

@@ -1,4 +1,4 @@
-from nfoils.fispact_tools import JsonRetriever
+from nfoils.fispact import JsonRetriever
 
 # input working directory with the json file in 
 #upper_directory = '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/model_results/approach_1_p/neutrons/calibration_model2/020725_foils_sep_ssf'

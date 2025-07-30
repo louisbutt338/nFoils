@@ -11,7 +11,7 @@ class TargetAnalysis:
                  current_list,timing_list,target_thickness,
                  target_radius,target_mass_density,
                  target_atomic_mass, real_cross_section,
-                 real_source_strength,real_fe_flux):
+                 real_foil_flux,real_target_flux):
         """ Initialise class
         """
 
@@ -25,8 +25,8 @@ class TargetAnalysis:
         self.target_mass_density = target_mass_density
         self.target_atomic_mass = target_atomic_mass
         self.real_cross_section = real_cross_section
-        self.real_source_strength = real_source_strength
-        self.real_fe_flux = real_fe_flux
+        self.real_foil_flux = real_foil_flux
+        self.real_target_flux = real_target_flux
 
     def _no_of_isotopes(self,activity,t_half):
         """ calculate number of atoms
@@ -103,32 +103,36 @@ class TargetAnalysis:
         summed_incident_particles = sum(
             [self._no_of_beam_particles(
                 self.current_list[i],
-                self.timing_list[i]) for i in range(len(self.current_list))])
+                self.timing_list[i]) for i in range(
+                    len(self.current_list))])
         be7_cross_section = self._cross_section(
-            self._no_of_isotopes(self.isotope_activity[0],self.isotope_halflife),
-            self._no_of_target_atoms(self.target_thickness,self.target_mass_density,
-                                      self.target_atomic_mass,self.target_radius),
+            self._no_of_isotopes(self.isotope_activity[0],
+                                 self.isotope_halflife),
+            self._no_of_target_atoms(self.target_thickness,
+                                     self.target_mass_density,
+                                      self.target_atomic_mass,
+                                      self.target_radius),
                                       summed_incident_particles)
-        total_frac_uncert = sqrt((self.isotope_activity[1]/self.isotope_activity[0])**2
-                                  +(self.real_cross_section[1]/self.real_cross_section[0])**2)
+        total_frac_uncert = sqrt(
+            (self.isotope_activity[1]/self.isotope_activity[0])**2
+            +(self.real_cross_section[1])**2)
         print(f"total flux-estimation fractional uncert = {total_frac_uncert} " )
 
         # do calculation for the correction factor
-        # (for the timing/current arrays used here) 
-        # use this to estimate #neutrons per second from lithium and neutron flux on iron foil
         correction_factor = be7_cross_section/self.real_cross_section[0]
         print(f"flux correction factor from simulation is {correction_factor} " 
-              "+- {correction_factor*total_frac_uncert}")
+              f"+- {correction_factor*total_frac_uncert}")
 
-        # do calculations for experimental source strength of lithium target
-        # by benchmarking to mcnp value
-        source_particles_per_second_10ua = 6.24151e+13
-        source_strength = (correction_factor*source_particles_per_second_10ua*
-                           self.real_source_strength)
-        flux = correction_factor*source_particles_per_second_10ua*self.real_fe_flux
-        print(f"Source strength at 10uA is {source_strength:.5e} "
-              "+- {total_frac_uncert*source_strength:.5e} n/s")
-        print(f"Flux at fe foil at 10uA is {flux:.5e} "
-              "+- {total_frac_uncert*flux:.5e} n/cm2/s")
+        # do estimations for source strength of target and iron foil neutron flux
+        # by benchmarking to mcnp values
+        source_p_per_s_10ua = 6.24151e+13
+        target_area = np.pi*(self.target_radius**2)
+        source_strength = (correction_factor*source_p_per_s_10ua*
+                           target_area*self.real_target_flux)
+        flux = correction_factor*source_p_per_s_10ua*self.real_foil_flux
+        print(f"rescaled source strength at FC1=10uA is {source_strength:.5e} "
+              f"+- {total_frac_uncert*source_strength:.5e} n/s")
+        print(f"rescaled flux at FC1=10uA is {flux:.5e} "
+              f"+- {total_frac_uncert*flux:.5e} n/cm2/s")
 
 

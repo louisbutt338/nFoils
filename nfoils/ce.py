@@ -15,8 +15,8 @@ class CEPlotter:
     """
     def __init__(self, experiment,calculated_results_file,
                 experimental_results_file,plotname,y_upper,
-                y_lower,flux_norm_mean,flux_percentage_error,
-                first_we,last_we):
+                y_lower,flux_norm_mean,flux_percent_error,
+                first_we,last_we,libraries,order):
         """ Initialise class
         """
 
@@ -26,11 +26,13 @@ class CEPlotter:
         self.experimental_results_file = experimental_results_file
         self.plotname = plotname
         self.flux_norm_mean = flux_norm_mean
-        self.flux_percentage_error = flux_percentage_error
+        self.flux_percent_error = flux_percent_error
         self.first_we = first_we
         self.last_we = last_we
         self.y_axis_upper = y_upper
         self.y_axis_lower = y_lower
+        self.libraries = libraries
+        self.isotope_order = order
 
     def _c_over_e(self,calc_activities,exp_activities,isotope_list,foil_weight,ssf):
         """ c/e calculation
@@ -54,9 +56,8 @@ class CEPlotter:
             c_over_e_array.append(c_over_e)
         return c_over_e_array
 
-    def _c_over_e_uncerts(self,calc_uncerts,calc_activities,experimental_activities,
-                          experimental_uncertainties,isotope_list,
-                          isotopic_spectrum_percentage_uncerts):
+    def _c_over_e_uncerts(self,calc_uncerts,calc_activities,exp_activities,
+                          exp_uncerts,isotope_list,spectrum_flux_frac_uncerts):
         """ c/e uncertainty calculation
 
         Parameters
@@ -67,11 +68,11 @@ class CEPlotter:
             List of calculated activities
         exp_activities : list
             List of measured activities
-        exp_uncertainties : list
+        exp_uncerts : list
             List of measured uncerts
         isotope_list : list
             List of the isotopes
-        isotopic_spectrum_percentage_uncerts : list
+        spectrum_flux_frac_uncerts : list
             List of the uncerts in the spectrum for all the isotopes
         """
         c_over_e_uncerts = []
@@ -81,8 +82,8 @@ class CEPlotter:
             if self.experiment_directory == 'deuteron_nov24':
                 fispact_error = calc_uncerts[i]
             c_error = np.sqrt( fispact_error**2 
-                              + isotopic_spectrum_percentage_uncerts[i]**2)
-            e_error = experimental_uncertainties[i]/experimental_activities[i]
+                              + spectrum_flux_frac_uncerts[i]**2)
+            e_error = exp_uncerts[i]/exp_activities[i]
             ce_error =  np.sqrt( c_error**2 + e_error**2)
             #ce_error =  np.sqrt( c_error**2 + e_error**2 ) * c_over_e[i]
             #ce_error =  ( c_error + e_error ) * c_over_e[i]
@@ -92,7 +93,7 @@ class CEPlotter:
     def _plotter(self,new_order,new_isotope_list,ce_results_1,
                  ce_errors_1,ce_results_2,ce_errors_2,
                  ce_results_3,ce_errors_3,
-                 isotopic_flux_percentage_uncerts,library_labels):
+                 spectrum_flux_frac_uncerts,library_labels):
         """ plot c/e diagram with flux+spectrum uncertainty as the error bar
         can do three nuclear data libraries
 
@@ -114,10 +115,8 @@ class CEPlotter:
             List of ce results for library 3
         ce_errors_3 : list
             List of ce errors for library 3
-        isotopic_flux_percentage_uncerts : list
-            List of the 
-        isotopic_spectrum_percentage_uncerts : list
-            List of total spectrum+flux uncerts for each isotope
+        spectrum_flux_frac_uncerts : list
+            List of the total spectrum+flux uncerts for each isotope
         library_labels : list
             List of labels of the libraries for the plot
         """
@@ -166,9 +165,9 @@ class CEPlotter:
         ax3.set_xlim(-0.6,len(new_order[:plot_split_integer])-0.8)
         ax1.plot([-1,len(new_order)], np.ones(2), 'Black', ls='--',linewidth=1.5)
         ax1.fill_between(range(len(new_order[:plot_split_integer]))
-                         ,[1-x for x in isotopic_flux_percentage_uncerts
+                         ,[1-x for x in spectrum_flux_frac_uncerts
                            [:plot_split_integer]]
-                         ,[1+x for x in isotopic_flux_percentage_uncerts
+                         ,[1+x for x in spectrum_flux_frac_uncerts
                            [:plot_split_integer]]
                          ,facecolor='lightcoral',alpha=0.3,step='mid')
 
@@ -210,9 +209,9 @@ class CEPlotter:
         ax4.plot([-1,len(new_order[plot_split_integer:])]
                  , np.ones(2), 'Black', ls='--',linewidth=1.5)
         ax4.fill_between(range(len(new_order[plot_split_integer:]))
-                         ,[1-x for x in isotopic_flux_percentage_uncerts
+                         ,[1-x for x in spectrum_flux_frac_uncerts
                            [plot_split_integer:]]
-                         ,[1+x for x in isotopic_flux_percentage_uncerts
+                         ,[1+x for x in spectrum_flux_frac_uncerts
                            [plot_split_integer:]]
                          ,facecolor='lightcoral',alpha=0.3,step='mid')
 
@@ -262,18 +261,20 @@ class CEPlotter:
         #extract foil data and isotopes
         model_results_path = f"{
             self.experiment_directory}/{self.calculated_results_file}.json"
-        model_results_data = json.load(open(model_results_path))
-        isotope_list = model_results_data.keys()
-        foil_weight = [model_results_data[key]["foil_weight"] for key in isotope_list]
-        ssf = [model_results_data[key]["ssf_correction"] for key in isotope_list]
-        isotope_list_mathmode = [model_results_data[key]["mathmode_name"]
-                                  for key in isotope_list]
+        model_results = json.load(open(model_results_path))
+        isotope_list = model_results.keys()
+        foil_weight = [model_results[i]["foil_weight"] for i in isotope_list]
+        ssf = [model_results[i]["self_shielding_factor"] for i in isotope_list]
+        isotope_list_mathmode = [model_results[i]["mathmode_name"]
+                                  for i in isotope_list]
+        library_labels = self.libraries
+        new_order = self.isotope_order
 
         # calculate spectrum + flux uncertainties for each isotope
-        isotopic_spectrum_u = [model_results_data[key]["spectrum_percent_uncert"]
-                                for key in isotope_list]
-        isotopic_spectrum_u = [np.sqrt(self.flux_percentage_error**2 + i**2)
-                                for i in isotopic_spectrum_u]
+        spectrum_frac_u = [model_results[i]["spectrum_fractional_uncertainty"]
+                                for i in isotope_list]
+        spectrum_flux_frac_u = [np.sqrt(self.flux_percent_error**2 + u**2)
+                                for u in spectrum_frac_u]
 
         #extract data for experimental activities (using average activities)
         exp_results_path =  f"{
@@ -283,32 +284,20 @@ class CEPlotter:
                            for key in isotope_list]
         exp_u = [np.mean(exp_results_data[key][f"activity_uncertainties"])
                            for key in isotope_list]
-        
+
         #extract data for calculated activities
-        # These settings are specific to Birmingham TuNED experiments
-        # feel free to change if you are using different libraries
-        library_labels = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
-        calc_a_1 = [model_results_data[key]["tendl21_values"][0]
-                            for key in isotope_list]
-        calc_u_1 = [model_results_data[key]["tendl21_values"][1]
-                            for key in isotope_list]
-        calc_a_2 = [model_results_data[key]["irdff2_values"][0]
-                            for key in isotope_list]
-        calc_u_2 = [model_results_data[key]["irdff2_values"][1]
-                            for key in isotope_list]
-        calc_a_3 = [model_results_data[key]["endfb8_values"][0]
-                            for key in isotope_list]
-        calc_u_3 = [model_results_data[key]["endfb8_values"][1]
-                            for key in isotope_list]
-        
-        #reorder results into capture-to-threshold
-        # These settings are specific to Birmingham TuNED experiments
-        # feel free to change  
-        if self.experiment_directory == 'proton_march24':
-            new_order = [10,2,12,13, 7,5,6,9 ,4,3,0,1,14,11]
-        if self.experiment_directory == 'deuteron_nov24':
-            new_order = [10,18,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,17,11]
-        new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
+        calc_a_1 = [model_results[i]["activities"][0]
+                            for i in isotope_list]
+        calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
+                            for i in isotope_list]
+        calc_a_2 = [model_results[i]["activities"][1]
+                            for i in isotope_list]
+        calc_u_2 = [model_results[i]["fractional_uncertainties"][1]
+                            for i in isotope_list]
+        calc_a_3 = [model_results[i]["activities"][2]
+                            for i in isotope_list]
+        calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
+                            for i in isotope_list]
 
         #perform C/E calculations for the foils
         ce_results_1  = [
@@ -327,20 +316,21 @@ class CEPlotter:
             (self.flux_norm_mean)*
             self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_1,calc_a_1,exp_a,exp_u,isotope_list,
-                                    isotopic_spectrum_u)[i] for i in new_order]
+                                    spectrum_flux_frac_u)[i] for i in new_order]
         ce_errors_2 =   [
             (self.flux_norm_mean)*
             self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_2,calc_a_2,exp_a,exp_u,isotope_list,
-                                    isotopic_spectrum_u)[i]  for i in new_order]
+                                    spectrum_flux_frac_u)[i] for i in new_order]
         ce_errors_3 =  [
             (self.flux_norm_mean)*
             self._c_over_e(calc_a_3,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_3,calc_a_3,exp_a,exp_u,isotope_list,
-                                    isotopic_spectrum_u)[i]for i in new_order]
-        isotopic_spectrum_u = [isotopic_spectrum_u[i] for i in new_order]
+                                    spectrum_flux_frac_u)[i]for i in new_order]
+        spectrum_flux_frac_u = [spectrum_flux_frac_u[i] for i in new_order]
         
         #print some results if you want
+        new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         for i in range(len(new_isotope_list)):
             print(f'*********{new_isotope_list[i]} C/E results')
             print(f"{library_labels[0]} value is "
@@ -354,7 +344,7 @@ class CEPlotter:
         self._plotter(new_order,new_isotope_list,ce_results_1,
                     ce_errors_1,ce_results_2,ce_errors_2,
                     ce_results_3,ce_errors_3,
-                    isotopic_spectrum_u,library_labels)
+                    spectrum_flux_frac_u,library_labels)
         
         # do weighted ave calcs and print
         # These are set to ENDFB8 calcs for Birmingham TuNED experiments 

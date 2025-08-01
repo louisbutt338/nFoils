@@ -7,6 +7,7 @@ calc_results_file = 'c_results_jendl'
 exp_results_file = 'e_results'
 
 #input the plot labels for the three libraries you are analysing
+# in same oder as in c_results file
 libraries = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
 
 # name for the C/E plot
@@ -30,7 +31,7 @@ last_we = 5
 
 # reorder the isotopes in your results files into capture-to-threshold
 #order = [10,2,12,13, 7,5,6,9 ,4,3,0,1,14,11] #for proton_march_24
-order = [10,18,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,17,11] #for deuteron_nov_24
+order = [10,18,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,11] #for deuteron_nov_24
 
 #run 
 ce_plotter = CEPlotter(experiment_directory,calc_results_file,exp_results_file,

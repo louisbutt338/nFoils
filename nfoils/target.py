@@ -130,9 +130,9 @@ class TargetAnalysis:
         source_strength = (correction_factor*source_p_per_s_10ua*
                            target_area*self.real_target_flux)
         flux = correction_factor*source_p_per_s_10ua*self.real_foil_flux
-        print(f"rescaled source strength at FC1=10uA is {source_strength:.5e} "
+        print(f"rescaled source strength when FC1=10uA is {source_strength:.5e} "
               f"+- {total_frac_uncert*source_strength:.5e} n/s")
-        print(f"rescaled flux at FC1=10uA is {flux:.5e} "
+        print(f"rescaled flux when FC1=10uA is {flux:.5e} "
               f"+- {total_frac_uncert*flux:.5e} n/cm2/s")
 
 

@@ -56,7 +56,7 @@ class CEPlotter:
             c_over_e_array.append(c_over_e)
         return c_over_e_array
 
-    def _c_over_e_uncerts(self,calc_uncerts,calc_activities,exp_activities,
+    def _c_over_e_uncerts(self,calc_uncerts,exp_activities,
                           exp_uncerts,isotope_list,spectrum_flux_frac_uncerts):
         """ c/e uncertainty calculation
 
@@ -64,8 +64,6 @@ class CEPlotter:
         ----------
         calc_uncerts : list
             List of calculated uncertainties
-        calc_activities : list
-            List of calculated activities
         exp_activities : list
             List of measured activities
         exp_uncerts : list
@@ -77,10 +75,7 @@ class CEPlotter:
         """
         c_over_e_uncerts = []
         for i in np.arange(len(isotope_list)):
-            if self.experiment_directory == 'proton_march24':
-                fispact_error = calc_uncerts[i]/calc_activities[i]
-            if self.experiment_directory == 'deuteron_nov24':
-                fispact_error = calc_uncerts[i]
+            fispact_error = calc_uncerts[i]
             c_error = np.sqrt( fispact_error**2 
                               + spectrum_flux_frac_uncerts[i]**2)
             e_error = exp_uncerts[i]/exp_activities[i]
@@ -315,17 +310,17 @@ class CEPlotter:
         ce_errors_1 =   [
             (self.flux_norm_mean)*
             self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)[i]
-            *self._c_over_e_uncerts(calc_u_1,calc_a_1,exp_a,exp_u,isotope_list,
+            *self._c_over_e_uncerts(calc_u_1,exp_a,exp_u,isotope_list,
                                     spectrum_flux_frac_u)[i] for i in new_order]
         ce_errors_2 =   [
             (self.flux_norm_mean)*
             self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)[i]
-            *self._c_over_e_uncerts(calc_u_2,calc_a_2,exp_a,exp_u,isotope_list,
+            *self._c_over_e_uncerts(calc_u_2,exp_a,exp_u,isotope_list,
                                     spectrum_flux_frac_u)[i] for i in new_order]
         ce_errors_3 =  [
             (self.flux_norm_mean)*
             self._c_over_e(calc_a_3,exp_a,isotope_list,foil_weight,ssf)[i]
-            *self._c_over_e_uncerts(calc_u_3,calc_a_3,exp_a,exp_u,isotope_list,
+            *self._c_over_e_uncerts(calc_u_3,exp_a,exp_u,isotope_list,
                                     spectrum_flux_frac_u)[i]for i in new_order]
         spectrum_flux_frac_u = [spectrum_flux_frac_u[i] for i in new_order]
         

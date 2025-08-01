@@ -16,7 +16,7 @@ class CEPlotter:
     def __init__(self, experiment,calculated_results_file,
                 experimental_results_file,plotname,y_upper,
                 y_lower,flux_norm_mean,flux_percent_error,
-                first_we,last_we,libraries,order):
+                first_we,last_we,libraries,order,plot_split):
         """ Initialise class
         """
 
@@ -33,6 +33,7 @@ class CEPlotter:
         self.y_axis_lower = y_lower
         self.libraries = libraries
         self.isotope_order = order
+        self.plot_splitter = plot_split
 
     def _c_over_e(self,calc_activities,exp_activities,isotope_list,foil_weight,ssf):
         """ c/e calculation
@@ -116,7 +117,7 @@ class CEPlotter:
             List of labels of the libraries for the plot
         """
         #initial plotting settings
-        plot_split_integer = 5
+        plot_split_integer = self.plot_splitter
         fig, (ax1,ax4) = plt.subplots(
             1,2,figsize=(12,6)
             ,gridspec_kw={'width_ratios': [len(new_order[:plot_split_integer])

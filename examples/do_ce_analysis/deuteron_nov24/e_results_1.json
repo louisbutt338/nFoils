@@ -278,19 +278,19 @@
     },
     "Co57": {
         "activities": [
-            11.985892817204967
+            16.388243538767064
         ],
         "activity_uncertainties": [
-            0.8831826506131557
+            1.013086372676924
         ],
         "pathway_probabilities": [
             1
         ],
         "reaction_rates": [
-            338402.9956521463
+            462696.50426333095
         ],
         "reaction_rate_uncertainty": [
-            24935.285108380416
+            28602.914158895663
         ]
     },
     "Dy165": {
@@ -338,21 +338,21 @@
             2.367198604279661
         ]
     },
-    "Sc44": {
+    "Sc44m": {
         "activities": [
-            2181.002372827198
+            1081.6210519789151
         ],
         "activity_uncertainties": [
-            252.00225304754306
+            124.97507817426673
         ],
         "pathway_probabilities": [
             1
         ],
         "reaction_rates": [
-            38576.14699636481
+            274868.1577412167
         ],
         "reaction_rate_uncertainty": [
-            4457.251435437739
+            31759.43130773575
         ]
     },
     "Y90m": {
@@ -391,21 +391,38 @@
             745.3010545171551
         ]
     },
-    "Mo101": {
+    "Tc99m": {
         "activities": [
-            21448.91457387716
+            9.844765102749088
         ],
         "activity_uncertainties": [
-            973.4060092355936
+            0.569623560918545
         ],
         "pathway_probabilities": [
             1
         ],
         "reaction_rates": [
-            35000.323624912264
+            261.03389928289187
         ],
         "reaction_rate_uncertainty": [
-            1588.4032371117614
+            15.10356597421026
+        ]
+    },
+    "Tc101": {
+        "activities": [
+            3169.2485653784197
+        ],
+        "activity_uncertainties": [
+            143.82851811335235
+        ],
+        "pathway_probabilities": [
+            1
+        ],
+        "reaction_rates": [
+            5084.7585908852425
+        ],
+        "reaction_rate_uncertainty": [
+            230.7592093218596
         ]
     }
 }

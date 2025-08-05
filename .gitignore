@@ -1,3 +1,15 @@
+#ongoing analysis folders
 proton_march24/
 deuteron_nov24/
+
+# Mac DS files
 .DS_Store
+
+# Setuptools distribution folder
+/dist/
+/build/
+
+# Python egg metadata
+/*.egg-info
+/*.egg
+/*.eggs

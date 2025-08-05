@@ -9,7 +9,7 @@ reaction_rates = True
 # or a specific isotope ('isotope')
 # assumes the first two isotopes in your datafile are the target, 
 # and the rest are foils (change run() if not)
-automation = 'foils'
+automation = 'Be7'
 
 # type cd in filename for the input data (without .json)
 data_file_name = 'interspec_data'
@@ -23,7 +23,7 @@ irradiation_end = datetime(2024,11,29, 15,18,45)
 
 # input ave fractional uncertainty on your eff curve fit 
 # across peak energy measurement range
-efficiency_uncert_frac = 0.0375 #endcaps=0.0375 b03/38cm=0.04422
+efficiency_uncert_frac = 0.04422 #endcaps=0.0375 b03/38cm=0.04422
 
 # workin dir for input data and to save results
 json_path = "deuteron_nov24"

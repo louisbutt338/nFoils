@@ -6,7 +6,7 @@ import numpy as np
 deuteron_currents_data = json.load(open('deuteron_experiment_currents.json'))
 
 # activity at end of irradiation and uncertainty (Bq), halflife of isotope
-isotope_activity = [189476,44921] #p:[1.5979e5,7.10764e3] (new cal) d:[189476,44921] 
+isotope_activity = [2.15488e5,9.6301e3] #p:[1.5979e5,7.10764e3] (new cal) d:[189476,44921] [2.15488e5,9.6301e3]
 isotope_halflife = 53.22*(24*3600)
 
 # DEUTERONS: current array in uA, timing array in seconds
@@ -23,7 +23,7 @@ target_mass_density = 0.534
 target_atomic_mass = 6.941
 
 # ENDFB8 7Li()7Be XS (mb) and fractional uncertainty for the energy of particles in the middle of target
-cross_section = [64.3,0.0324] # p:33.5 d:64.3
+cross_section = [64.3,0.05] # p:[33.5,0.0324] d:[64.3,0.05]
 
 # model neutron flux (n/cm2/src p) to rescale
 foil_flux = 5.49226e-05 # p:1.36564e-05 d:5.49226e-05

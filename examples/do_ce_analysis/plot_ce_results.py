@@ -3,15 +3,15 @@ from nfoils.ce import CEPlotter
 # select directory with calculated and experimental results files inside
 # can analyse three different libraries: activities should be inside calc_results
 experiment_directory = 'deuteron_nov24'
-calc_results_file = 'c_results_fzk'
-exp_results_file = 'e_results'
+calc_results_file = 'c_results_jendl'
+exp_results_file = 'e_results_mk1'
 
 #input the plot labels for the three libraries you are analysing
 # in same oder as in c_results file
 libraries = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
 
 # name for the C/E plot
-plotname = 'test_fzk'
+plotname = 'test_jendl'
 
 # set y axis size
 y_upper = 2
@@ -19,11 +19,14 @@ y_lower = 0
 
 # Flux normalisation for C results (if not already applied in fispact sim)
 # calculated using be7 calcs from the xs_calculator program, but you do you
-# 0.7(0.026985 rescale) or 0.801787(0.0309 rescale) for jendl/p-li. 0.8733 for initial unfolded175/p-li 
-flux_norm_mean = 1
+# 0.7(0.026985 rescale) or 0.801787(0.0309 rescale) for jendl/p-li
+# 0.8733 for initial unfolded175/p-li 
+# 1.13728 for initial jendl/fzk/d-li nov24 results
+flux_norm_mean = 1.13728
 # Fractional uncertainty from the fux estimation
 # 0.12783 for be7/p-li 
-flux_frac_error = 0.12783 
+# 0.068216 for be7/d-li nov24
+flux_frac_error = 0.068216
 
 #first weighted ave in list and last weighted ave in list for the WE calculations
 first_we = 5

@@ -116,7 +116,7 @@ class TargetAnalysis:
         total_frac_uncert = sqrt(
             (self.isotope_activity[1]/self.isotope_activity[0])**2
             +(self.real_cross_section[1])**2)
-        print(f"total flux-estimation fractional uncert = {total_frac_uncert} " )
+        print(f"flux-estimation fractional uncert (without FC1 uncert and incident proton energy uncert)= {total_frac_uncert} " )
 
         # do calculation for the correction factor
         correction_factor = be7_cross_section/self.real_cross_section[0]

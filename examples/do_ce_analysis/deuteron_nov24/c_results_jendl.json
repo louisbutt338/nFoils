@@ -4,7 +4,7 @@
         "mathmode_name":"$^{56}Mn$",
         "activities":[6.879E+03,6.875E+03 ,6.873E+03  ],
         "fractional_uncertainties":[9.924E-02, 0, 0.03236],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.0307223,
         "self_shielding_factor":1
     },
     "Au196": {
@@ -12,7 +12,7 @@
         "mathmode_name":"$^{196}Au$",
         "activities":[3.015E+02 ,3.144E+02,3.078E+02   ],
         "fractional_uncertainties":[3.986E-02, 0, 0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.05054545,
         "self_shielding_factor":1
     },
     "Au198": {
@@ -20,7 +20,7 @@
         "mathmode_name":"$^{198}Au$",
         "activities":[1.385E+03 ,1.493E+03 ,1.497E+03 ],
         "fractional_uncertainties":[2.224E-02, 0, 0.01881],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.9441
     },
     "Na24": {
@@ -28,7 +28,7 @@
         "mathmode_name":"$^{24}Na$",
         "activities":[2.602E+03,2.5755E+03 ,2.592E+03  ],
         "fractional_uncertainties":[0,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.03446625,
         "self_shielding_factor":1
     },
     "Mg27": {
@@ -36,7 +36,7 @@
         "mathmode_name":"$^{27}Mg$",
         "activities":[1.968E+05 ,2.092E+05,1.962E+05],
         "fractional_uncertainties":[0,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.0267,
         "self_shielding_factor":1
     },
     "Ni65": {
@@ -44,7 +44,7 @@
         "mathmode_name":"$^{65}Ni$",
         "activities":[ 8.835E+02 ,1e8,4.850E+02],
         "fractional_uncertainties":[0.09027,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":1
     },
     "Cu64": {
@@ -52,7 +52,7 @@
         "mathmode_name":"$^{64}Cu$",
         "activities":[1.076E+03 ,1.152E+03 ,1.111E+03 ],
         "fractional_uncertainties":[0.04581,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.064636,
         "self_shielding_factor":0.8974
     },
     "Cd111m": {
@@ -60,7 +60,7 @@
         "mathmode_name":"$^{111m}Cd$",
         "activities":[3.226E+04,1e8,1e8],
         "fractional_uncertainties":[0.02722 ,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.02206,
         "self_shielding_factor":0.9974
     },
     "Cd117": {
@@ -68,7 +68,7 @@
         "mathmode_name":"$^{117}Cd$",
         "activities":[8.861E+01 ,1e8,2.292E+00],
         "fractional_uncertainties":[0.1527,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.8949
     },
     "In115m": {
@@ -76,7 +76,7 @@
         "mathmode_name":"$^{115m}In$", 
         "activities":[1.914E+04 ,1e8,1e8],
         "fractional_uncertainties":[0.04222,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.02224,
         "self_shielding_factor":1
     },
     "In116m": {
@@ -84,7 +84,7 @@
         "mathmode_name":"$^{116m}In$",
         "activities":[1.038E+05,0.902667E+05,1e8],
         "fractional_uncertainties":[0.03172 ,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.954
     },
     "Ni57": {
@@ -92,7 +92,7 @@
         "mathmode_name":"$^{57}Ni$", 
         "activities":[1.707E+01,1.710E+01,1.428E+01 ],
         "fractional_uncertainties":[0.1193 ,0,0.01011 ],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.09123,
         "self_shielding_factor":1
     },
     "Co58": {
@@ -100,7 +100,7 @@
         "mathmode_name":"$^{58}Co$",
         "activities":[6.204E+01,1.001E+02,1.007E+02],
         "fractional_uncertainties":[0.07096 ,0,0.02453 ],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.024365,
         "self_shielding_factor":1
     },
     "Co61": {
@@ -108,7 +108,7 @@
         "mathmode_name":"$^{61}Co$",
         "activities":[1.385E+02 ,1e8,1.522E+02 ],
         "fractional_uncertainties":[0.1937 ,0,0 ],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.0267,
         "self_shielding_factor":1
     },
     "Co57": {
@@ -116,7 +116,7 @@
         "mathmode_name":"$^{57}Co$",
         "activities":[2.281E+00,1e8,1.702E+00 ],
         "fractional_uncertainties":[0.05688 ,0,0.04949],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.05328 ,
         "self_shielding_factor":1
     },
     "Dy165": {
@@ -124,7 +124,7 @@
         "mathmode_name":"$^{165}Dy$",
         "activities":[5.270E+03 ,1e8,5.680E+03 ],
         "fractional_uncertainties":[0.05791 ,0,0.0496],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.9598
     },
     "Dy157": {
@@ -132,7 +132,7 @@
         "mathmode_name":"$^{157}Dy$",
         "activities":[1.749E+01,1e8,1.618E+01],
         "fractional_uncertainties":[0.06453  ,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.9759
     },
     "Sc44": {
@@ -140,7 +140,7 @@
         "mathmode_name":"$^{44}Sc$", 
         "activities":[3.881E+01 ,1e8,1e8 ],
         "fractional_uncertainties":[0.07367 ,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.07472,
         "self_shielding_factor":1
     },
     "Y90m": {
@@ -148,7 +148,7 @@
         "mathmode_name":"$^{90m}Y$",
         "activities":[3.982E+01,1e8,1e8 ],
         "fractional_uncertainties":[0.1357 ,0,0],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.995
     },
     "Mo99": {
@@ -156,7 +156,7 @@
         "mathmode_name":"$^{99}Mo$", 
         "activities":[8.321E+01,1e8,8.407E+01 ],
         "fractional_uncertainties":[0.03791 ,0,0.05527],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.91956
     },
     "Mo101": {
@@ -164,7 +164,7 @@
         "mathmode_name":"$^{101}Mo$", 
         "activities":[3.961E+02 ,1e8,4.178E+02 ],
         "fractional_uncertainties":[0.1184 ,0,0.0474],
-        "spectrum_fractional_uncertainty":0.0383,
+        "spectrum_fractional_uncertainty":0.232252,
         "self_shielding_factor":0.7578
     }
 }

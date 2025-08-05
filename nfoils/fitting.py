@@ -54,7 +54,7 @@ class CurveFitter:
         """ fit the data once and return the equation params
         """
         params, covs  = curve_fit(self._spec_function, self.x_data, self.y_data, p0=[0,0,0,0],sigma=self.errors,absolute_sigma=True)
-        a0, a1,a2,a3 = params  
+        a0, a1,a2,a3 = params
         errs = np.sqrt(np.diag(covs))
         a0_err,a1_err,a2_err,a3_err = errs
 

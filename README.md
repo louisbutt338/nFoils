@@ -4,7 +4,7 @@ Python toolkit for the measurement of neutron spectra and validation of nuclear 
 
 Dependent on the SANDY package for nuclear data extraction. Also includes some postprocessing and preprocessing codes for FISPACT, OpenMC, MCNP, SPECTRA-UF (but is not dependent on them)
 
-Reference to be provided. Please note that the package is unlicenced, as IP belongs to the University of Birmingham. Please contact me (LJB841@bham.ac.uk) if you would like to use it
+Reference to be provided. Package is unlicenced, as IP belongs to the University of Birmingham: please contact me (LJB841@bham.ac.uk) if you would like to use it
 
 ## installing nFoils
 

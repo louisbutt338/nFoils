@@ -13,3 +13,6 @@ deuteron_nov24/
 /*.egg-info
 /*.egg
 /*.eggs
+
+# pycache
+nfoils/__pycache__/

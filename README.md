@@ -22,9 +22,12 @@ then set the path to the NJOY2016 executable
 export NJOY=/path/to/njoy
 ```
 
-/
-Copyright (C) University of Birmingham - All Rights Reserved
-Unauthorized copying of this file, via any medium is strictly prohibited
-Proprietary and confidential
-Written by Louis Butt LJB841@bham.ac.uk, 06/08/25
-/
+```
+/** 
+ * Copyright (C) University of Birmingham - All Rights Reserved
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Louis Butt LJB841@bham.ac.uk, 06/08/25
+ */
+```

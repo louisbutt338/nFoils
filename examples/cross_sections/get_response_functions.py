@@ -1,4 +1,5 @@
-from nfoils.reaction import ResponseFunction
+from nfoils.reaction import PostprocessReactions
+from nfoils.reaction import IsotopicSpectrumUncertainty
 import sandy
 import os
 
@@ -17,19 +18,30 @@ library = 'jeff_33' # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 data_file_name = 'foil_data'
 
 # list of reaction labels for plotting (must match data in input file)
-reaction_labels = [r'${}^{115}$In(n,$\gamma$)',
-                r'${}^{164}$Dy(n,$\gamma$)',
-                r'${}^{197}$Au(n,$\gamma$)',
-                r"${}^{115}$In(n,n')", 
-                r'${}^{65}$Cu(n,p) *',
-                r'${}^{56}$Fe(n,p)',
-                r'${}^{27}$Al(n,$\alpha$)', 
-                r'${}^{197}$Au(n,2n)',
-                r'${}^{93}$Nb(n,2n)',
-                r'${}^{58}$Ni(n,2n) ']
+reaction_labels = [r"${}^{115}$In(n,n')", 
+                   r'${}^{65}$Cu(n,p) *',
+                   r'${}^{56}$Fe(n,p)']
+
+#reaction_labels = [r'${}^{115}$In(n,$\gamma$)',
+#                   r'${}^{164}$Dy(n,$\gamma$)',
+#                   r'${}^{197}$Au(n,$\gamma$)',
+#                   r"${}^{115}$In(n,n')", 
+#                   r'${}^{65}$Cu(n,p) *',
+#                   r'${}^{56}$Fe(n,p)',
+#                   r'${}^{27}$Al(n,$\alpha$)', 
+#                   r'${}^{197}$Au(n,2n)',
+#                   r'${}^{93}$Nb(n,2n)',
+#                   r'${}^{58}$Ni(n,2n) ']
 #reaction_labels = [r'${}^{56}$Fe(n,p)']
 #reaction_labels = [r'${}^{115}$In(n,$\gamma$)']
 
-# run that shi
-response_fn_plot = ResponseFunction(ek,library,data_file_name,reaction_labels)
-response_fn_plot.run_xs()
+# get some response functions 
+#reactions = PostprocessReactions(ek,library,data_file_name,reaction_labels)
+#reactions.run_rf()
+# or some uncertainties
+#reactions.run_stdev()
+
+# get some spectrum uncertainties 
+spectrum_file = 'fzk_fe_spectra'
+uncertainties = IsotopicSpectrumUncertainty(ek,library,data_file_name,reaction_labels)
+uncertainties.get_isotopic_uncertainties(spectrum_file)

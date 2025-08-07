@@ -42,6 +42,6 @@ reaction_labels = [r"${}^{115}$In(n,n')",
 #reactions.run_stdev()
 
 # get some spectrum uncertainties 
-spectrum_file = 'fzk_fe_spectra'
+spectrum_file = 'spectra'
 uncertainties = IsotopicSpectrumUncertainty(ek,library,data_file_name,reaction_labels)
 uncertainties.get_isotopic_uncertainties(spectrum_file)

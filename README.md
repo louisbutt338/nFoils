@@ -1,4 +1,4 @@
-## nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
+# nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
 Python toolkit for the measurement of neutron spectra and validation of nuclear data with activation foils. Still in development - get in touch if anything is misbehaving
 
@@ -16,7 +16,7 @@ Reference to be provided. Please contact LJB841@bham.ac.uk if you would like to 
 */
 ```
 
-# installing nFoils
+## installing nFoils
 
 Ensure you are set up in your chosen python virtual environment with pip and setuptools installed
 

@@ -25,11 +25,15 @@ class CurveFitter:
         self.no_of_monte_carlo_samples = no_of_monte_carlo_samples
         
         # change some other parameters
-        self.experimental_data = json.load(open(f'{input_data_path}/{input_data_filename}.json'))
+        self.experimental_data = json.load(
+            open(f'{input_data_path}/{input_data_filename}.json'))
         self.x_data = [float(i) for i in self.experimental_data.keys()]
-        self.y_data = [self.experimental_data[i]["efficiency" ] for i in self.experimental_data.keys()]
-        self.errors = [self.experimental_data[i]["uncertainty"] for i in self.experimental_data.keys()]
-        self.interpolation_range = np.arange(interpolation_range_start,interpolation_range_end,1)
+        self.y_data = [self.experimental_data[i]["efficiency" ] 
+                       for i in self.experimental_data.keys()]
+        self.errors = [self.experimental_data[i]["uncertainty"] 
+                       for i in self.experimental_data.keys()]
+        self.interpolation_range = np.arange(interpolation_range_start,
+                                             interpolation_range_end,1)
 
     def _spec_function(self,energy,a0,a1,a2,a3):
         """ define efficiency polynomial function
@@ -47,13 +51,18 @@ class CurveFitter:
         a3 : float
             1st term parameter for log(E)^3
         """
-        polynomial = a0 + a1*np.log(energy)**1 + a2*np.log(energy)**2 + a3*np.log(energy)**3 
+        polynomial = (a0 + a1*np.log(energy)**1 
+                      + a2*np.log(energy)**2 
+                      + a3*np.log(energy)**3 )
         return np.exp(polynomial)
 
     def _single_fit(self):
         """ fit the data once and return the equation params
         """
-        params, covs  = curve_fit(self._spec_function, self.x_data, self.y_data, p0=[0,0,0,0],sigma=self.errors,absolute_sigma=True)
+        params, covs  = curve_fit(self._spec_function, 
+                                  self.x_data, self.y_data, 
+                                  p0=[0,0,0,0],sigma=self.errors,
+                                  absolute_sigma=True)
         a0, a1,a2,a3 = params
         errs = np.sqrt(np.diag(covs))
         a0_err,a1_err,a2_err,a3_err = errs
@@ -77,10 +86,12 @@ class CurveFitter:
         a2_samples = []
         a3_samples = []
         a_errs_mc = []
-        mc_solutions = [(self._spec_function(self.interpolation_range, *self._single_fit()))]
+        mc_solutions = [(self._spec_function(self.interpolation_range,
+                                              *self._single_fit()))]
 
         for i in range(N):
-            y_mc = self.y_data +np.random.normal(size=len(self.y_data), scale=self.errors )
+            y_mc = self.y_data +np.random.normal(size=len(self.y_data),
+                                                 scale=self.errors )
             try:
                 params_mc, covs_mc = curve_fit(self._spec_function, self.x_data, y_mc, 
                                                p0=[self._single_fit()[0],self._single_fit()[1],self._single_fit()[2],self._single_fit()[3]],
@@ -90,7 +101,8 @@ class CurveFitter:
                 a0_err_mc,a1_err_mc,a2_err_mc,a3_err_mc = errs_mc
 
                 #calculated fitted data and find the residuals etc
-                fit_data_mc = self._spec_function(self.interpolation_range, *params_mc)
+                fit_data_mc = self._spec_function(self.interpolation_range,
+                                                  *params_mc)
                 a_samples.append( a0_mc)
                 a1_samples.append(a1_mc)
                 a2_samples.append(a2_mc)
@@ -111,14 +123,16 @@ class CurveFitter:
         mc_solutions_mean = np.mean(mc_solutions,axis=0)
         mc_solutions_std_dev = np.std(mc_solutions,axis=0)
         mc_fractional_uncert = mc_solutions_std_dev/mc_solutions_mean
-        print(f'fractional uncertainty along interpolation range at specified energy is {np.mean(mc_fractional_uncert[self.interpolation_range_start:self.interpolation_range_end])}')
+        print('fractional uncertainty along interpolation range at specified energy '
+              f'is {np.mean(mc_fractional_uncert[self.interpolation_range_start:self.interpolation_range_end])}')
 
         #calculated fitted data for montecarlo and find the chi squared for MC
         fit_data_mc = self._spec_function(self.x_data,  a_mc,a1_mc,a2_mc,a3_mc)
         residuals_mc = self.y_data - fit_data_mc 
         chi_squared_mc = np.sum((residuals_mc / self.errors) ** 2)
         reduced_chi_squared_mc = chi_squared_mc / (len(self.y_data) - len(self._single_fit()))
-        print(f"Estimated MC Parameters: \n a0 = {a_mc}, a1 = {a1_mc}, a2 = {a2_mc}, a3 = {a3_mc} \n rChi2 = {reduced_chi_squared_mc} ")
+        print(f"Estimated MC Parameters: \n a0 = {a_mc}, a1 = {a1_mc} ",
+              f"a2 = {a2_mc}, a3 = {a3_mc} \n rChi2 = {reduced_chi_squared_mc} ")
         
         return mc_solutions_mean,mc_solutions_std_dev,residuals_mc
 

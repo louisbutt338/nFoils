@@ -7,12 +7,16 @@ deuteron_nov24/
 
 # Setuptools distribution folder
 /dist/
+
+# any previously built version of anything
 /build/
+
+
 
 # Python egg metadata
 /*.egg-info
 /*.egg
 /*.eggs
 
-# pycache
+# pycache stuff
 nfoils/__pycache__/

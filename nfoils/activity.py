@@ -6,24 +6,27 @@ import numpy as np
 import actigamma as ag 
 from scipy.integrate import quad 
 from datetime import datetime
+import ctypes
+
+# use ctypes to find the C++ library and import function
+cpp_functions = ctypes.CDLL("/Users/ljb841@student.bham.ac.uk/nFoils/build/libfunctions.so")
+cpp_exp = cpp_functions.exponential
+# argtypes not needed until we have arguments for the function
+cpp_exp.argtypes = [ctypes.c_double, ctypes.c_double]
+cpp_exp.restype = ctypes.c_double
 
 class ActivityCalc:
     """ class that calculates activities for isotope data written in a json
     """
-    def __init__(self, reaction_rate_calculator,automation,
-            data_file_name,efficiency_uncertainty_frac,
-            json_path,irrad_time,irradiation_end):
+    def __init__(self,data_file_name,json_path,irradiation_end):
         """ Initialise class
         """
 
         # set the parameters
-        self.reaction_rate_calculator = reaction_rate_calculator
-        self.automation =  automation
         self.data_file_name = data_file_name
-        self.efficiency_uncertainty_frac = efficiency_uncertainty_frac
         self.json_path = json_path
-        self.irrad_time = irrad_time
         self.irradiation_end = irradiation_end
+
         self.json_file_data = json.load(open(
             f'{self.json_path}/{self.data_file_name}.json'))
 
@@ -35,10 +38,15 @@ class ActivityCalc:
         ----------
         isotope_name : str
             Name of isotope being run
+        Returns
+        -------
+        dec_time : float
+            Decay time of the isotope
         """
         dt_elements = self.json_file_data[isotope_name]['datetime']
         ts = datetime(*dt_elements)
-        return (ts-self.irradiation_end).total_seconds()
+        dec_time = (ts-self.irradiation_end).total_seconds()
+        return dec_time
 
     def _get_decay_database(self,isotope_name):
         """ read the pypact actigamma decay2012 database 
@@ -165,8 +173,8 @@ class ActivityCalc:
         density : float
             Density of foil material in g/cm3
         """
-        xcom=np.loadtxt(f'../../data/XCOM_new/{material}.txt', skiprows=1)
-        mass_coeff = np.interp(E/1000, xcom[:,0], xcom[:,1]) 
+        xcom=np.fromfile(f'../../data/XCOM_new/{material}.txt',sep=" ")
+        mass_coeff = np.interp(E/1000, xcom[::2], xcom[1::2]) 
         self_att_factor = ( (mass_coeff * density * thickness) 
                            / (1 - exp(- mass_coeff * density * thickness)) )
         return self_att_factor
@@ -183,7 +191,7 @@ class ActivityCalc:
         """
         return exp(- log(2) * (t/half_life))
     
-    def _activity_0(self,c,i,e,measurement_distance,isotope_name):
+    def _activity_0(self,c,i,e,measurement_distance,isotope_name,halflife):
         """ calculate initial activity (w/o corrections)
         from the measured activity over a live time
 
@@ -199,12 +207,15 @@ class ActivityCalc:
             Distance from detector to foil in cm
         isotope_name : str
             Name of isotope
+        halflife : float
+            halflife of isotope
         """
-        top_time_band = (self._decay_time(isotope_name)
+        decay_time = self._decay_time(isotope_name)
+        top_time_band = (decay_time
                          +self.json_file_data[isotope_name]['live_time'])
         quad_integral = quad(self._activity_integrand, 
-                             self._decay_time(isotope_name),top_time_band,
-                             args=(self._get_decay_database(isotope_name)[2]))
+                             decay_time,top_time_band,
+                             args=(halflife))
         activity = (self._activity_livetime(c,i,e,measurement_distance,isotope_name)
                      / (quad_integral))[0]
         #activity = ( (activity_livetime(c,i,e)[0]
@@ -229,7 +240,8 @@ class ActivityCalc:
         rr_ave = a / (1 - self._activity_integrand(irradiation_time,halflife))
         return rr_ave
 
-    def _run_one_isotope(self,isotope_name,measurement_distance):
+    def _run_one_isotope(self,isotope_name,measurement_distance,
+                         eff_uncert,irrad_time):
         """ run analysis for one isotope
 
         Parameters
@@ -243,8 +255,8 @@ class ActivityCalc:
         # and uncerts for top 5 gamma emissions
         final_activity_list = []
         final_uncert_list = []
-        intensity,energy,halflife = self._get_decay_database(isotope_name) 
-        for n in range(len(self._get_decay_database(isotope_name)[0][:5])):
+        intensity,energy,halflife = self._get_decay_database(isotope_name)
+        for n in range(len(intensity[:5])):
             if self.json_file_data[isotope_name]['counts'][n] != 0:
             
                 self_attenuation_factor = self._self_attenuation_correction(
@@ -259,7 +271,7 @@ class ActivityCalc:
                     self.json_file_data[isotope_name]['counts'][n],
                     intensity[n],
                     energy[n],
-                    measurement_distance,isotope_name)
+                    measurement_distance,isotope_name,halflife)
                 final_activity = (
                     coincidence_factor * self_attenuation_factor 
                     * uncorrected_activity)
@@ -269,7 +281,7 @@ class ActivityCalc:
                 final_uncertainty = (
                     final_activity 
                     * np.sqrt( counts_frac_uncert**2 
-                              + self.efficiency_uncertainty_frac**2 ))
+                              + eff_uncert**2 ))
                 print(f"(e={energy[n]}keV, i={intensity[n]}) " 
                       "activity at end of irradiation is " 
                        f"{final_activity:.5e} +- {final_uncertainty:.5e} Bq")
@@ -281,20 +293,19 @@ class ActivityCalc:
         pathway_prob = [1]
         final_rr_list = []
         final_rr_uncert_list = []
-        if self.reaction_rate_calculator == True:
-            if "pathway_probabilities" in self.json_file_data[isotope_name]:
-                pathway_prob = (self.json_file_data[isotope_name]
-                                ["pathway_probabilities"])
-            for p in pathway_prob:
-                final_rr = p*self._reaction_rates(np.mean(final_activity_list),
-                                                  self.irrad_time,halflife)
-                final_rr_uncert = p*self._reaction_rates(np.mean(final_uncert_list),
-                                                         self.irrad_time,halflife)
-                final_rr_list.append(final_rr)
-                final_rr_uncert_list.append(final_rr_uncert)
-                print(f"Average (fraction={p}) reaction rate " 
-                      "over irradiation from top peak: "
-                       f"{final_rr:.5e} +- {final_rr_uncert:.5e}") 
+        if "pathway_probabilities" in self.json_file_data[isotope_name]:
+            pathway_prob = (self.json_file_data[isotope_name]
+                            ["pathway_probabilities"])
+        for p in pathway_prob:
+            final_rr = p*self._reaction_rates(np.mean(final_activity_list),
+                                              irrad_time,halflife)
+            final_rr_uncert = p*self._reaction_rates(np.mean(final_uncert_list),
+                                                     irrad_time,halflife)
+            final_rr_list.append(final_rr)
+            final_rr_uncert_list.append(final_rr_uncert)
+            print(f"Average (fraction={p}) reaction rate " 
+                  "over irradiation from top peak: "
+                   f"{final_rr:.5e} +- {final_rr_uncert:.5e}") 
 
         # save activites for all peaks and RRs calculated from top peak 
         # as a dictionary
@@ -307,15 +318,15 @@ class ActivityCalc:
         }}
         return isotope_dictionary
         
-    def run(self):
+    def run(self,automation,efficiency_uncert_frac,irrad_time):
         """ run analysis for all isotopes requested
         """
         # set up for all isotopes requested
         open(f"{self.json_path}/e_results.json", 'w').close()
-        isotope_run_list = list(self.automation.split(" "))
-        if self.automation == 'target':
+        isotope_run_list = list(automation.split(" "))
+        if automation == 'target':
             isotope_run_list = list(self.json_file_data.keys())[:2]
-        if self.automation == 'foils':
+        if automation == 'foils':
             isotope_run_list = list(self.json_file_data.keys())[2:]
 
         # run for all isotopes
@@ -324,9 +335,13 @@ class ActivityCalc:
             print(f"************ activities for {isotope_name} ************")
             measurement_distance = (self.json_file_data[isotope_name]
                                     ['detector_distance_cm'])
+            eff_uncert = efficiency_uncert_frac
             results_dictionary.update(self._run_one_isotope(
-                isotope_name,measurement_distance))
+                isotope_name,measurement_distance,eff_uncert,irrad_time))
 
         # print results as one neat json for postprocessing
         with open(f"{self.json_path}/e_results.json", 'a') as output_file:
             json.dump(results_dictionary,output_file,ensure_ascii=False,indent=4)
+
+        # test C++ library functionality 
+        cpp_exp(11,2)

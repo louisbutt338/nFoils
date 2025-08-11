@@ -8,7 +8,7 @@ setuptools.setup(
     description="Suite of tools for dosimetry foil characterisation of fast neutron sources",
     url="https://github.com/louisbutt338/nFoils",
     packages=setuptools.find_packages(),
-    python_requires = '>3.13',
+    python_requires = '>3',
     install_requires=['numpy', 'matplotlib', 'scipy','sandy', 'actigamma'], # Add dependencies here
     classifiers=["Programming Language :: Python :: 3",
                  "Operating System :: OS Independent"],

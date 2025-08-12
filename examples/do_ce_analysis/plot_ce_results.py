@@ -6,6 +6,9 @@ experiment_directory = '../do_ce_analysis'
 # name for the C/E plot
 plotname = 'test_fzk'
 
+# initialise
+ce_plotter = CEPlotter(experiment_directory,plotname)
+
 # set y axis size
 y_upper = 2
 y_lower = 0
@@ -36,7 +39,7 @@ order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11]
 plot_splitter = 4
 
 #run 
-ce_plotter = CEPlotter(experiment_directory,calc_results_file,exp_results_file,
-                       plotname,y_upper,y_lower,flux_norm_mean,flux_frac_error,
-                       first_we,last_we,libraries,order,plot_splitter)
-ce_plotter.run()
+ce_plotter.run(calc_results_file,exp_results_file,flux_norm_mean,
+               flux_frac_error,first_we,last_we,libraries,order,
+               plot_splitter,y_upper,y_lower)
+

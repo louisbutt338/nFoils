@@ -20,13 +20,12 @@ reaction_labels = [r"${}^{115}$In(n,n')",
                    r'${}^{65}$Cu(n,p) *',
                    r'${}^{56}$Fe(n,p)']
 
-#reactions = PostprocessReactions(ek,library,data_file_name,reaction_labels)
-# get some response functions 
-#reactions.run_rf()
-# or some uncertainties
-#reactions.run_stdev()
+# get some response functions and nuclear data uncertainties
+reactions = PostprocessReactions(ek,library)
+reactions.run_rf(data_file_name,reaction_labels)
+#reactions.run_stdev(data_file_name,reaction_labels)
 
-# get some specific spectrum uncertainties 
-spectrum_file = 'spectra'
-uncertainties = IsotopicSpectrumUncertainty(ek,library,data_file_name,reaction_labels)
-uncertainties.get_isotopic_uncertainties(spectrum_file)
+# or get some reaction-dependent spectrum uncertainties 
+#uncertainties = IsotopicSpectrumUncertainty(ek,library)
+#spectrum_file = 'spectra'
+#uncertainties.get_isotopic_uncertainties(spectrum_file,data_file_name)

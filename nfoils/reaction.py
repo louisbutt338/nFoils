@@ -13,15 +13,13 @@ import csv
 class NuclearData:
     """ class for extracting cross sections and uncertainties with sandy/njoy
     """
-    def __init__(self, ek,library,filename,reaction_labels):
+    def __init__(self, ek,library):
         """ Initialise class
         """
 
         #set parameters
         self.ek = ek
         self.library = library
-        self.data_file_name = filename
-        self.reaction_labels = reaction_labels
 
     def _get_endf_file(self,material):
         """ run the sandy get_endf routine
@@ -138,10 +136,17 @@ class NuclearData:
         response_function[np.isnan(response_function)] = 0
         return response_function
 
-    def _unpack_datafile(self):
+    def _unpack_datafile(self,datafile):
         """ unpack the data in the json into some lists
+
+        Parameters
+        ----------
+        datafile : str
+            name of json data file
+        labels : list
+            list of reaction labels
         """
-        json_file_data = json.load(open(f'{self.data_file_name}.json'))
+        json_file_data = json.load(open(f'{datafile}.json'))
         material_list =   [x['mat_number'] for x in json_file_data.values()]
         mt_list =         [x['mt_value'] for x in json_file_data.values() ]
         density_list =    [x['density_gcm3'] for x in json_file_data.values()]
@@ -149,18 +154,17 @@ class NuclearData:
         abundance_list =  [x['isotope_abundance'] for x in json_file_data.values()]
         atomic_mass_list= [x['foil_atomic_mass'] for x in json_file_data.values()]
         thickness_list =  [x['thickness_cm'] for x in json_file_data.values()]
-        labels_list = self.reaction_labels
         return (material_list,mt_list,density_list,
             mass_list,abundance_list,atomic_mass_list,
-            thickness_list,labels_list)
+            thickness_list)
     
 class PostprocessReactions(NuclearData):
     """ class for exporting and plotting response fn and uncertainty
     """
-    def __init__(self, ek,library,filename,reaction_labels):
+    def __init__(self, ek,library):
         """ Initialise class
         """
-        super().__init__(ek,library,filename,reaction_labels)
+        super().__init__(ek,library)
 
     def _export_and_plot_stdev(
             self,material_list,mt_values_list,reaction_labels):
@@ -294,26 +298,40 @@ class PostprocessReactions(NuclearData):
         fig.supxlabel("Neutron energy (MeV)",y=0.03)
         fig.savefig('response_function.png')
 
-    def run_rf(self):
+    def run_rf(self,datafile,labels):
         """ run for response functions
-        """
-        data_lists = self._unpack_datafile()
-        self._export_and_plot_rf(*data_lists)
 
-    def run_stdev(self):
-        """ run for stdev
+        Parameters
+        ----------
+        datafile : str
+            name of json data file
+        labels : list
+            list of reaction labels
         """
-        data_lists = self._unpack_datafile()
-        self._export_and_plot_stdev(data_lists[0],data_lists[1],data_lists[7])
+        data_lists = self._unpack_datafile(datafile)
+        self._export_and_plot_rf(*data_lists,labels)
+
+    def run_stdev(self,datafile,labels):
+        """ run for stdev
+
+        Parameters
+        ----------
+        datafile : str
+            name of json data file
+        labels : list
+            list of reaction labels
+        """
+        data_lists = self._unpack_datafile(datafile)
+        self._export_and_plot_stdev(data_lists[0],data_lists[1],labels)
 
 
 class IsotopicSpectrumUncertainty(NuclearData):
     """ class for getting isotopic spectrum uncertainty
     """
-    def __init__(self, ek,library,filename,reaction_labels):
+    def __init__(self, ek,library):
         """ Initialise class
         """
-        super().__init__(ek,library,filename,reaction_labels)
+        super().__init__(ek,library)
 
     def _read_spectrum_uncert(self,spectrum_file):
         """ Read spectrum uncertainty from json and output array
@@ -349,10 +367,10 @@ class IsotopicSpectrumUncertainty(NuclearData):
         percent_uncertainty = np.dot(uncertainties, xs)
         return percent_uncertainty
     
-    def get_isotopic_uncertainties(self,spectrum_file):
+    def get_isotopic_uncertainties(self,spectrum_file,datafile):
         """ Get all the uncertainties for your reactions
         """
-        data_lists = self._unpack_datafile()
+        data_lists = self._unpack_datafile(datafile)
 
         # loop through specified materials and MT values
         for (material,mt) in zip(data_lists[0],data_lists[1]):

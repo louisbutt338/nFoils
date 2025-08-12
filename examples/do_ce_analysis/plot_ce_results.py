@@ -1,7 +1,7 @@
 from nfoils.ce import CEPlotter
 
 # select directory with calculated and experimental results files inside
-experiment_directory = 'deuteron_nov24'
+experiment_directory = '../do_ce_analysis'
 
 # name for the C/E plot
 plotname = 'test_fzk'
@@ -10,36 +10,29 @@ plotname = 'test_fzk'
 y_upper = 2
 y_lower = 0
 
-
 # name of calc and exp results files
-calc_results_file = 'c_results_fzk'
-exp_results_file = 'e_results_mk1'
+calc_results_file = 'c_results'
+exp_results_file = 'e_results'
 
 #input the plot labels for the three libraries you are analysing
 # in same oder as in c_results file
 libraries = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
 
-# Flux normalisation for C results (if not already applied in fispact sim)
-# calculated using be7 calcs from the xs_calculator program, but you do you
-# 0.7(0.026985 rescale) or 0.801787(0.0309 rescale) for jendl/p-li
-# 0.8733 for initial unfolded175/p-li 
-# 1.13728 for initial jendl/fzk/d-li nov24 results
-flux_norm_mean = 1.13728
-# Fractional uncertainty from the fux estimation
-# 0.12783 for be7/p-li 
-# 0.068216 for be7/d-li nov24
-flux_frac_error = 0.068216
+# Flux normalisation to scale C results
+flux_norm_mean = 1.1
+
+# Fractional uncertainty on the fux estimation
+flux_frac_error = 0.05
 
 #first weighted ave in list and last weighted ave in list for the WE calculations
 first_we = 5
 last_we = 20
 
 # reorder the isotopes in your results files into capture-to-threshold
-#order = [10,2,12,13, 7,5,6,9 ,4,3,0,1,14,11] #for proton_march_24
-order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11] #for deuteron_nov_24
+order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11] 
 
 # how many isotopes (in the list above) are primarily thermal induced? 
-# for split plot
+# for splitting plot
 plot_splitter = 4
 
 #run 
@@ -47,7 +40,3 @@ ce_plotter = CEPlotter(experiment_directory,calc_results_file,exp_results_file,
                        plotname,y_upper,y_lower,flux_norm_mean,flux_frac_error,
                        first_we,last_we,libraries,order,plot_splitter)
 ce_plotter.run()
-#move following params to run(): 
-# calc_results_file,exp_results_file,
-# flux_norm_mean,flux_frac_error,
-# first_we,last_we,libraries,order,plot_splitter)

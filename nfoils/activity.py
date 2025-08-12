@@ -174,7 +174,8 @@ class ActivityCalc:
             Density of foil material in g/cm3
         """
         xcom=np.fromfile(f'../../data/XCOM_new/{material}.txt',sep=" ")
-        mass_coeff = np.interp(E/1000, xcom[::2], xcom[1::2]) 
+        mass_coeff = np.interp(E/1000, xcom[::2], xcom[1::2])
+        
         self_att_factor = ( (mass_coeff * density * thickness) 
                            / (1 - exp(- mass_coeff * density * thickness)) )
         return self_att_factor

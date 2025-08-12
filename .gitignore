@@ -1,6 +1,5 @@
-#ongoing analysis folders
-proton_march24/
-deuteron_nov24/
+#ongoing analysis folder
+lab/
 
 # Mac DS files
 .DS_Store
@@ -10,8 +9,6 @@ deuteron_nov24/
 
 # any previously built version of anything
 /build/
-
-
 
 # Python egg metadata
 /*.egg-info

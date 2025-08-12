@@ -1,35 +1,29 @@
 from nfoils.target import TargetAnalysis
-import json
 import numpy as np
 
-#grab deuteron experiment uA data
-deuteron_currents_data = json.load(open('deuteron_experiment_currents.json'))
-
-# activity at end of irradiation and uncertainty (Bq), halflife of isotope
-isotope_activity = [2.15488e5,9.6301e3] #p:[1.5979e5,7.10764e3] (new cal) d:[189476,44921] [2.15488e5,9.6301e3]
+# be7 activity at end of irradiation and uncertainty (Bq), halflife of isotope
+isotope_activity = [1e5,1e3]
 isotope_halflife = 53.22*(24*3600)
 
-# DEUTERONS: current array in uA, timing array in seconds
-current_list = deuteron_currents_data["currents_in_ua"]
-timing_list = np.ones(5530)
-# PROTONS: current array in uA, timing array in seconds
-#current_list = [5.5,9,10]    # p:[5.5,9,10] or [8.778]
-#timing_list  = [i*60 for i in [20,67,41.5]]  # p:[20,67,41.5] or [128.5]
+# current array in uA, timing array in seconds
+current_list = [8]   
+timing_list  = [120] 
 
 # target thickness (cm), radius (cm), material density (g/cm3), atomic mass (g/mol)
-target_thickness = 0.05
-target_radius = 0.60
-target_mass_density = 0.534
-target_atomic_mass = 6.941
+target_thickness = 0.1
+target_radius = 0.1
+target_mass_density = 0.1
+target_atomic_mass = 5
 
-# ENDFB8 7Li()7Be XS (mb) and fractional uncertainty for the energy of particles in the middle of target
-cross_section = [64.3,0.05] # p:[33.5,0.0324] d:[64.3,0.05]
+# ENDFB8 7Li()7Be XS (mb) and fractional uncertainty 
+# for the energy of particles in the middle of target
+cross_section = [50,1]
 
-# model neutron flux (n/cm2/src p) to rescale
-foil_flux = 5.49226e-05 # p:1.36564e-05 d:5.49226e-05
+# model neutron flux (n/cm2/src p) you want to rescale
+foil_flux = 1e-05 
 
-# model li target neutron flux (n/cm2/src p) to rescale src strength
-target_flux = 0.004986699 # p:2.788406e-3 d: 0.004986699
+# model another neutron flux (n/cm2/src p) to rescale
+target_flux = 0.005 
 
 #run
 analyse_target = TargetAnalysis(isotope_activity,isotope_halflife,current_list,

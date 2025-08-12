@@ -54,7 +54,8 @@ class CurveFitter:
         polynomial = (a0 + a1*np.log(energy)**1 
                       + a2*np.log(energy)**2 
                       + a3*np.log(energy)**3 )
-        return np.exp(polynomial)
+        exp_of_poly = np.exp(polynomial)
+        return exp_of_poly
 
     def _single_fit(self):
         """ fit the data once and return the equation params
@@ -92,26 +93,24 @@ class CurveFitter:
         for i in range(N):
             y_mc = self.y_data +np.random.normal(size=len(self.y_data),
                                                  scale=self.errors )
-            try:
-                params_mc, covs_mc = curve_fit(self._spec_function, self.x_data, y_mc, 
-                                               p0=[self._single_fit()[0],self._single_fit()[1],self._single_fit()[2],self._single_fit()[3]],
+            params_mc, covs_mc = curve_fit(self._spec_function, self.x_data, y_mc, 
+                                           p0=[self._single_fit()[0],
+                                               self._single_fit()[1],
+                                               self._single_fit()[2],
+                                               self._single_fit()[3]],
                                                sigma=self.errors, absolute_sigma=True)
-                a0_mc, a1_mc,a2_mc,a3_mc = params_mc
-                errs_mc = np.sqrt(np.diag(covs_mc))
-                a0_err_mc,a1_err_mc,a2_err_mc,a3_err_mc = errs_mc
-
-                #calculated fitted data and find the residuals etc
-                fit_data_mc = self._spec_function(self.interpolation_range,
-                                                  *params_mc)
-                a_samples.append( a0_mc)
-                a1_samples.append(a1_mc)
-                a2_samples.append(a2_mc)
-                a3_samples.append(a3_mc)
-                a_errs_mc.append(errs_mc)
-                mc_solutions.append(fit_data_mc)
-            # Skip failed fits
-            except RuntimeError:
-                pass
+            a0_mc, a1_mc,a2_mc,a3_mc = params_mc
+            errs_mc = np.sqrt(np.diag(covs_mc))
+            a0_err_mc,a1_err_mc,a2_err_mc,a3_err_mc = errs_mc
+            #calculated fitted data and find the residuals etc
+            fit_data_mc = self._spec_function(self.interpolation_range,
+                                              *params_mc)
+            a_samples.append( a0_mc)
+            a1_samples.append(a1_mc)
+            a2_samples.append(a2_mc)
+            a3_samples.append(a3_mc)
+            a_errs_mc.append(errs_mc)
+            mc_solutions.append(fit_data_mc)
               
         # Compute mean parameter values and uncertainties
         a_mc =  np.mean(a_samples)

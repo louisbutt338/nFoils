@@ -1,8 +1,8 @@
 from nfoils.fitting import CurveFitter
 
 #select folder and dataset
-input_data_path = "gamma_spec_efficiencies"
-input_data_filename = "g11_endcap_data"
+input_data_path = "../gamma_spec"
+input_data_filename = "endcap_data"
 
 # energy range in keV for fitting the data in montecarlo and finding the average uncertainty
 interpolation_range_start = 100

@@ -7,8 +7,8 @@ data_file_name = 'interspec_data'
 # input datetime for the end of the irradiation
 irradiation_end = datetime(2024,11,29, 14,00,00)
 
-# workin dir for input data and to save results e..g 'test'
-experiment_dir = "../do_ce_analysis"
+# workin dir for input data and to save results e..g 'example'
+experiment_dir = "example"
 
 # input instance params
 get_activities = ActivityCalc(data_file_name,experiment_dir,

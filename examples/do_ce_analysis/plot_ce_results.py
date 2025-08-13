@@ -1,21 +1,14 @@
 from nfoils.ce import CEPlotter
 
-# select directory with calculated and experimental results files inside
-experiment_directory = '../do_ce_analysis'
-
-# name for the C/E plot
-plotname = 'test_fzk'
+# path and name for the C/E plot to have
+plotname = 'example/test'
 
 # initialise
-ce_plotter = CEPlotter(experiment_directory,plotname)
-
-# set y axis size
-y_upper = 2
-y_lower = 0
+ce_plotter = CEPlotter(plotname)
 
 # name of calc and exp results files
-calc_results_file = 'c_results'
-exp_results_file = 'e_results'
+calc_results_file = 'example/c_results'
+exp_results_file = 'example/e_results'
 
 #input the plot labels for the three libraries you are analysing
 # in same oder as in c_results file
@@ -37,6 +30,10 @@ order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11]
 # how many isotopes (in the list above) are primarily thermal induced? 
 # for splitting plot
 plot_splitter = 4
+
+# set y axis size
+y_upper = 2
+y_lower = 0
 
 #run 
 ce_plotter.run(calc_results_file,exp_results_file,flux_norm_mean,

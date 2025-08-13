@@ -334,7 +334,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         super().__init__(ek,library)
 
     def _read_spectrum_uncert(self,spectrum_file):
-        """ Read spectrum uncertainty from json and output array
+        """ Read fractional spectrum uncertainty from txt
 
         Parameters
         ----------
@@ -342,17 +342,18 @@ class IsotopicSpectrumUncertainty(NuclearData):
             name of spectrum file
         Returns
         ----------
-        uncert_array : array
-            full spectrum uncertainty array
+        frac_uncert : array
+            full spectrum fractional uncertainty array
         """
-        spectrum_json = json.load(open(f'{spectrum_file}.json'))
-        uncert_array = np.array(spectrum_json['unc_value'])
+        spectrum_data=np.fromfile(f'{spectrum_file}.txt',sep=" ")
+        frac_uncert = np.divide( spectrum_data[1::2], spectrum_data[::2])
 
-        ######## JUST EXAMPLE: FIX THIS BIT WHEN DOING PROPERLY
-        uncert_array = uncert_array[:238]
-        ################
-        
-        return uncert_array
+        #spectrum_json = json.load(open(f'{spectrum_file}.json'))
+        #frac_uncert = np.array(spectrum_json['unc_value'])
+
+        #frac_uncert[np.isnan(frac_uncert)] = 0
+        #frac_uncert[frac_uncert == np.inf] = 0
+        return frac_uncert
 
     def _normalise_xs(self,xs):
         """ Normalise cross section and output array
@@ -385,12 +386,14 @@ class IsotopicSpectrumUncertainty(NuclearData):
         percent_uncertainty = np.dot(uncertainties, xs)
         return percent_uncertainty
     
-    def get_isotopic_uncertainties(self,spectrum_file,datafile):
+    def get_isotopic_uncertainties(self,spectrum_file,datafile,cutoff):
         """ Get all the uncertainties for your reactions
         """
         data_lists = self._unpack_datafile(datafile)
+        self.ek = self.ek[:-cutoff]
 
         # loop through specified materials and MT values
+        uncertainties = []
         for (material,mt) in zip(data_lists[0],data_lists[1]):
             nuclear_data = self._get_gendf_data(material,mt)
             array_of_arrays = self._extract_array_data(nuclear_data)
@@ -400,7 +403,8 @@ class IsotopicSpectrumUncertainty(NuclearData):
                 for m in range(len(array_of_arrays)):
                     cross_section = array_of_arrays[m]
                     norm_cross_section = self._normalise_xs(cross_section)
-                    spectrum_uncert_array = self._read_spectrum_uncert(spectrum_file)
+                    spectrum_uncert_array = self._read_spectrum_uncert(spectrum_file)[:-cutoff]
                     uncertainty = self._isotopic_uncertainty(
                         spectrum_uncert_array,norm_cross_section)
-                    print(uncertainty)
+                    uncertainties.append(uncertainty)
+        print('List of isotopic spectrum uncertainties:',np.array(uncertainties))

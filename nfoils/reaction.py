@@ -335,6 +335,15 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
     def _read_spectrum_uncert(self,spectrum_file):
         """ Read spectrum uncertainty from json and output array
+
+        Parameters
+        ----------
+        spectrum_file : str
+            name of spectrum file
+        Returns
+        ----------
+        uncert_array : array
+            full spectrum uncertainty array
         """
         spectrum_json = json.load(open(f'{spectrum_file}.json'))
         uncert_array = np.array(spectrum_json['unc_value'])
@@ -347,6 +356,15 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
     def _normalise_xs(self,xs):
         """ Normalise cross section and output array
+
+        Parameters
+        ----------
+        xs : array
+            xs array in the same group structure
+        Returns
+        ----------
+        normalised_xs : array
+            normalised xs array
         """
         total_xs = sum(xs)
         normalised_xs = np.array([i/total_xs for i in xs])

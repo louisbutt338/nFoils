@@ -1,24 +1,20 @@
 """ module for performing ce analysis for some isotopes
 """
 
-import os
 import numpy as np 
 import matplotlib.pyplot as plt 
 from matplotlib import rc
 rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
 import json
-from pathlib import Path
-import math
 
 class CEPlotter:
     """ class for doing the ce analysis
     """
-    def __init__(self, experiment,plotname):
+    def __init__(self, plotname):
         """ Initialise class
         """
 
         # set params
-        self.experiment_directory = experiment
         self.plotname = plotname
 
     def _c_over_e(self,calc_activities,exp_activities,
@@ -216,9 +212,7 @@ class CEPlotter:
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         fig.set_size_inches((17, 6))
-        fig.savefig(os.path.join(
-            f"{self.experiment_directory}", f'{self.plotname}.png')
-            ,transparent=False, bbox_inches='tight')
+        fig.savefig(f"{self.plotname}.png",transparent=False,bbox_inches='tight')
 
     def _weighted_ce(self,ce_value_array,ce_error_array):
         """ calculate some weighted c/e averages from first_we to last_we
@@ -250,8 +244,7 @@ class CEPlotter:
         """ run the analysis
         """
         #extract foil data and isotopes
-        model_results_path = f"{
-            self.experiment_directory}/{calc_results}.json"
+        model_results_path = f"{calc_results}.json"
         model_results = json.load(open(model_results_path))
         isotope_list = model_results.keys()
         foil_weight = [model_results[i]["foil_weight"] for i in isotope_list]
@@ -266,8 +259,7 @@ class CEPlotter:
                                 for u in spectrum_frac_u]
 
         #extract data for experimental activities (using average activities)
-        exp_results_path =  f"{
-            self.experiment_directory}/{exp_results}.json" 
+        exp_results_path =  f"{exp_results}.json" 
         exp_results_data = json.load(open(exp_results_path))
         exp_a = [np.mean(exp_results_data[key][f"activities"])
                            for key in isotope_list]

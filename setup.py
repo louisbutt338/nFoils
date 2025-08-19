@@ -1,4 +1,5 @@
 import setuptools
+import subprocess
 
 setuptools.setup(
     name="nfoils",
@@ -13,3 +14,5 @@ setuptools.setup(
     classifiers=["Programming Language :: Python :: 3",
                  "Operating System :: OS Independent"],
 )
+subprocess.run(["cmake","-S","src","-B","build"])
+subprocess.run(["cmake","--build","build"])

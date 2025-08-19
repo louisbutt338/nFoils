@@ -1,5 +1,6 @@
 /*
-C++ functions .h file
+Header file for functions
+include smart pointers and extern C to stop data C++ wranglings
 */
 
 // to stop C++ wrangling

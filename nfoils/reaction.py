@@ -390,7 +390,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         """ Get all the uncertainties for your reactions
         """
         data_lists = self._unpack_datafile(datafile)
-        self.ek = self.ek[:-cutoff]
+        #self.ek = self.ek[:-cutoff]
 
         # loop through specified materials and MT values
         uncertainties = []
@@ -402,9 +402,10 @@ class IsotopicSpectrumUncertainty(NuclearData):
             if array_of_arrays != None:
                 for m in range(len(array_of_arrays)):
                     cross_section = array_of_arrays[m]
-                    norm_cross_section = self._normalise_xs(cross_section)
+                    norm_cross_section = self._normalise_xs(cross_section)[:-cutoff]
                     spectrum_uncert_array = self._read_spectrum_uncert(spectrum_file)[:-cutoff]
                     uncertainty = self._isotopic_uncertainty(
                         spectrum_uncert_array,norm_cross_section)
                     uncertainties.append(uncertainty)
+
         print('List of isotopic spectrum uncertainties:',np.array(uncertainties))

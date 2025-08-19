@@ -6,14 +6,6 @@ import numpy as np
 import actigamma as ag 
 from scipy.integrate import quad 
 from datetime import datetime
-import ctypes
-
-# use ctypes to find the C++ library and import function
-cpp_functions = ctypes.CDLL("/Users/ljb841@student.bham.ac.uk/nFoils/build/libfunctions.so")
-cpp_exp = cpp_functions.exponential
-# argtypes not needed until we have arguments for the function
-cpp_exp.argtypes = [ctypes.c_double, ctypes.c_double]
-cpp_exp.restype = ctypes.c_double
 
 class ActivityCalc:
     """ class that calculates activities for isotope data written in a json
@@ -343,6 +335,3 @@ class ActivityCalc:
         # print results as one neat json for postprocessing
         with open(f"{self.json_path}/e_results.json", 'a') as output_file:
             json.dump(results_dictionary,output_file,ensure_ascii=False,indent=4)
-
-        # test C++ library functionality 
-        cpp_exp(11,2)

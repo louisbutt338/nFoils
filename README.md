@@ -18,7 +18,7 @@ Reference to be provided. Please contact LJB841@bham.ac.uk if you would like to 
 
 ## installing nFoils
 
-Ensure you are set up in your chosen python virtual environment with pip and setuptools installed
+Ensure you are set up in your chosen python virtual environment with pip, setuptools, CMake and a working C++ compiler installed
 
 to install non-editable versions of the python modules and build C++ modules (feel free to install an editable version and/or make your own extra functions):
 ```

@@ -7,6 +7,6 @@ include smart pointers and extern C to stop data C++ wranglings
 extern "C" {
 
 // put the functions you want in here
-double exponential(double num, double exponent);
+double polynomial_efficiency(double e, double a0,double a1,double a2,double a3);
 
 } // extern "C"

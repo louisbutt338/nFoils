@@ -11,10 +11,9 @@ import ctypes
 
 # use ctypes to find the C++ library and import function
 cpp_functions = ctypes.CDLL("/Users/ljb841@student.bham.ac.uk/nFoils/build/libfunctions.so")
-cpp_exp = cpp_functions.exponential
-# argtypes not needed until we have arguments for the function
-cpp_exp.argtypes = [ctypes.c_double, ctypes.c_double]
-cpp_exp.restype = ctypes.c_double
+cpp_poly_eff = cpp_functions.polynomial_efficiency
+cpp_poly_eff.argtypes = [ctypes.c_double,ctypes.c_double,ctypes.c_double, ctypes.c_double,ctypes.c_double]
+cpp_poly_eff.restype = ctypes.c_double
 
 class CurveFitter:
     """ class for fitting efficiency functions 
@@ -44,12 +43,12 @@ class CurveFitter:
                                              interpolation_range_end,1)
 
     def _spec_function(self,energy,a0,a1,a2,a3):
-        """ define efficiency polynomial function
+        """ define efficiency polynomial function - output float list
 
         Parameters
         ----------
-        energy : float
-            Gamma energy in keV
+        energy : float list
+            Gamma energies in keV
         a0 : float
             Zero term parameter
         a1 : float
@@ -59,18 +58,16 @@ class CurveFitter:
         a3 : float
             1st term parameter for log(E)^3
         """
-        print(type(energy),type(a0),type(a1))
         polynomial = (a0 + a1*np.log(energy)**1 
                       + a2*np.log(energy)**2 
                       + a3*np.log(energy)**3 )
-        exp_of_poly = np.exp(polynomial)
-        return exp_of_poly
+        poly_array = np.exp(polynomial)
+        return poly_array
 
     def _residuals(self,x_list,params_list,y_list):
         """calculated fitted data and find the residuals and rChi2
         """
-        fit_data = self._spec_function(x_list, *params_list)
-        print(fit_data)
+        fit_data = np.array(self._spec_function(x_list, *params_list))
         residuals = y_list - fit_data 
         chi_squared = np.sum((residuals / self.errors) ** 2)
         dof = len(y_list) - len(params_list) 
@@ -198,6 +195,3 @@ class CurveFitter:
         
         #plot
         self._mc_plotter(mc_solutions_mean,mc_solutions_std_dev,residuals)
-
-        # test C++ library functionality
-        print(cpp_exp(12,2))

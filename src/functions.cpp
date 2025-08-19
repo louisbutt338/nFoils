@@ -5,15 +5,21 @@ C++ functions to use in the package
 #include <cmath>
 #include "functions.h"
 
-// exponential function
-double exponential(double num, double exponent){
+// hpge efficiency function
+double polynomial_efficiency(double e, double a0,double a1,double a2,double a3){
 
-  //declare numexp variable
-  double numexp=pow(num,exponent);
+  //declare terms of the equation
+  double term0 = a0;
+  double term1 = a1*std::pow(std::log(e),1);
+  double term2 = a2*std::pow(std::log(e),2);
+  double term3 = a3*std::pow(std::log(e),3);
 
-  std::cout << "testing C++ functionality\n";
+  //declare the final value
+  double poly_term = std::exp(term0+term1+term2+term3);
+
+  std::cout << "testing C++ eff fn \n";
   //std::cout << "test result = "<< numexp <<"\n";
-  return numexp;
+  return poly_term;
 }
 
 // main function

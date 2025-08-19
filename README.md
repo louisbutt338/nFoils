@@ -20,17 +20,11 @@ Reference to be provided. Please contact LJB841@bham.ac.uk if you would like to 
 
 Ensure you are set up in your chosen python virtual environment with pip and setuptools installed
 
-to install non-editable version of the python package (feel free to install an editable version and/or make your own extra C++ functions):
+to install non-editable versions of the python modules and build C++ modules (feel free to install an editable version and/or make your own extra functions):
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
 pip install .
-```
-to build the C++ library:
-```
-cd nFoils
-cmake -S src -B build
-cmake --build build
 ```
 
 to use the SANDY nuclear data extraction tool, NJOY2016 must also be installed

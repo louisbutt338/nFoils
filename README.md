@@ -5,7 +5,7 @@ Python toolkit for the measurement of neutron spectra and validation of nuclear 
 
 Dependent on the SANDY package for nuclear data extraction, actigamma package for radioactive isotope properties, plus numpy/scipy/matplotlib for the usual. Also includes some postprocessing and preprocessing codes for FISPACT, OpenMC, MCNP, SPECTRA-UF
 
-Reference to be provided. Please contact LJB841@bham.ac.uk if you would like to use the package, as it is property of th University of Birmingham
+Reference to be provided. Please contact LJB841@bham.ac.uk if you would like to use the package
 
 ## installing nFoils
 

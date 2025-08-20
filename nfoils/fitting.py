@@ -7,13 +7,6 @@ from matplotlib import rc
 rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
 from scipy.optimize import curve_fit 
 import json
-import ctypes
-
-# use ctypes to find the C++ library and import function
-cpp_functions = ctypes.CDLL("/Users/ljb841@student.bham.ac.uk/nFoils/build/libfunctions.so")
-cpp_poly_eff = cpp_functions.polynomial_efficiency
-cpp_poly_eff.argtypes = [ctypes.c_double,ctypes.c_double,ctypes.c_double, ctypes.c_double,ctypes.c_double]
-cpp_poly_eff.restype = ctypes.c_double
 
 class CurveFitter:
     """ class for fitting efficiency functions 

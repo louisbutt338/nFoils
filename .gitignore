@@ -7,8 +7,9 @@ lab/
 # Setuptools distribution folder
 /dist/
 
-# any previously built version of anything
+# unnecessary c++ functionality
 /build/
+/src/
 
 # Python egg metadata
 /*.egg-info

@@ -398,7 +398,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
             nuclear_data = self._get_gendf_data(material,mt)
             array_of_arrays = self._extract_array_data(nuclear_data)
 
-            # get the uncerts for each
+            # get the uncertainties for each
             if array_of_arrays != None:
                 for m in range(len(array_of_arrays)):
                     cross_section = array_of_arrays[m]

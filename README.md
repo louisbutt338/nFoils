@@ -11,12 +11,13 @@ Reference to be provided. Please contact LJB841@bham.ac.uk if you would like to 
 
 Ensure you are set up in your chosen python virtual environment with pip and setuptools
 
-to install non-editable versions of the python modules (feel free to install an editable version and make your own extra functions):
+to install the modules as-is:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
 pip install .
 ```
+(or install an editable version with "pip install -e .")
 
 to use the SANDY nuclear data extraction tool, NJOY2016 must also be installed
 clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html).

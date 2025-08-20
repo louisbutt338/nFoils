@@ -1,5 +1,5 @@
 # nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
-Copyright (C) University of Birmingham - All Rights Reserved
+*Copyright (C) University of Birmingham - All Rights Reserved*
 
 Python toolkit for the measurement of neutron spectra and validation of nuclear data with activation foils. Still in development - get in touch if anything is misbehaving
 

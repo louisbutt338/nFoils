@@ -8,7 +8,7 @@ Reference to be provided late 2025. Please contact LJB841@bham.ac.uk for further
 
 ## installing nFoils
 
-Ensure you are set up in your chosen python virtual environment with pip and setuptools
+Ensure you are set up in your chosen environment with python and pip 
 
 to install the modules as-is:
 ```

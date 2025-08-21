@@ -1,10 +1,4 @@
 """ 
-* Copyright (C) University of Birmingham - All Rights Reserved
-*
-* Unauthorized copying of this file, via any medium is strictly prohibited 
-* Proprietary and confidential
-* Written by Louis Butt LJB841@bham.ac.uk, 20/08/25
-
 module for dealing with ASCII spe files
 """
 

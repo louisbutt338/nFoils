@@ -59,7 +59,7 @@ class ActivityCalc:
         e, i = zip(*reversed(sorted_lists))
         return(i,e,half_life)
 
-    def _solid_angle(self,crystal_radius: float, distance: float) -> float:
+    def _solid_angle(self,crystal_radius, distance):
         """ solid angle approximation (knoll, p120)
 
         Parameters
@@ -71,8 +71,7 @@ class ActivityCalc:
         """
         return 2 * pi * (1 - distance / sqrt(distance**2 + crystal_radius**2))
 
-    def _solid_angle_disc(self,crystal_radius: float, 
-                          distance: float, foil_radius: float) -> float:
+    def _solid_angle_disc(self,crystal_radius,distance,foil_radius):
         """ solid angle approximation for foils/discs (knoll, p121)
 
         Parameters
@@ -95,8 +94,7 @@ class ActivityCalc:
                             - (3/8)*((alpha*beta)/((1+beta)**(5/2)))
                               + (alpha**2)*f_1 - (alpha**3)*f_2 ) )
 
-    def _efficiency_abs(self,energy:float,
-                        n0:float,n1:float,n2:float,n3:float) -> float:
+    def _efficiency_abs(self,energy,n0,n1,n2,n3):
         """ equation for the log-polynomial efficiency curves
 
         Parameters

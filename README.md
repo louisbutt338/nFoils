@@ -17,7 +17,8 @@ cd nFoils
 pip install .
 ```
 (to install an editable version use *pip install -e .*)
-(to install spcific dependency versions used during development see requirements.txt)
+
+(to install specific dependency versions used during development see requirements.txt)
 
 to use the SANDY nuclear data extraction tool, NJOY2016 must also be installed
 clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html).

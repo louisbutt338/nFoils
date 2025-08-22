@@ -14,9 +14,10 @@ to install the modules as-is:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -r requirements.txt
+pip install .
 ```
-(or install an editable version with *pip install -e requirements.txt*)
+(to install an editable version use *pip install -e .*)
+(to install spcific dependency versions used during development see requirements.txt)
 
 to use the SANDY nuclear data extraction tool, NJOY2016 must also be installed
 clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html).

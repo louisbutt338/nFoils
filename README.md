@@ -27,4 +27,4 @@ then set the path to the NJOY2016 executable
 export NJOY=/path/to/njoy
 ```
 
-*This package was developed under (a) the LIBRTI programme, 'Development of a small solid lithium ceramic breeder with in-line tritium detection capability for calibrated neutron sources' (b) the University of Birmingham-UKAEA Joint Research Laboratory for Fusion Environment Impact on Materials, part-funded by the EPSRC Energy Programme [grant number EP/W006839/1]*
+*This package was developed under (a) the LIBRTI programme, 'Develop a small solid lithium ceramic breeder with in-line tritium detection capability for calibrated neutron sources' (b) the University of Birmingham-UKAEA Joint Research Laboratory for Fusion Environment Impact on Materials, part-funded by the EPSRC Energy Programme [grant number EP/W006839/1]*

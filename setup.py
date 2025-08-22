@@ -9,7 +9,7 @@ setuptools.setup(
     url="https://github.com/louisbutt338/nFoils",
     packages=setuptools.find_packages(),
     python_requires = '>3',
-    install_requires=['numpy', 'matplotlib', 'scipy','sandy', 'actigamma'], # Add dependencies here
+    install_requires=['numpy>=2.2.4', 'matplotlib>=3.10.1', 'scipy>=1.15.2','sandy>=1.0.40', 'actigamma>=0.1.5'], # Add dependencies here
     classifiers=["Programming Language :: Python :: 3",
                  "Operating System :: OS Independent"],
 )

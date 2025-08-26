@@ -2,7 +2,7 @@
 
 Python toolkit for the measurement of neutron spectra and validation of nuclear data with activation foils. Still in development - get in touch if anything is misbehaving
 
-Dependent on the SANDY package for nuclear data extraction, actigamma package for radioactive isotope properties, plus numpy/scipy/matplotlib for the usual. Also includes some postprocessing and preprocessing codes for FISPACT, OpenMC, MCNP, SPECTRA-UF
+Dependent on the SANDY package for nuclear data extraction, actigamma package for radioactive isotope properties, plus numpy/scipy/matplotlib for the usual. Also includes some postprocessing and preprocessing codes related to FISPACT and SPECTRA-UF
 
 Reference to be provided late 2025. Please contact LJB841@bham.ac.uk for further information
 

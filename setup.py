@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="nfoils",
-    version="1.0.0",
+    version="1.1",
     author="Louis Butt",
     author_email="LJB841@bham.ac.uk",
     description="Suite of tools for dosimetry foil characterisation of fast neutron sources",

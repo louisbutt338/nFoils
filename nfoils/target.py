@@ -95,7 +95,8 @@ class TargetAnalysis:
         beam_flux : float
             Flux of the incident beam
         """
-        return (1e27*no_isotopes)/(target_atoms*beam_flux*0.925)
+        lithium7_xs = (1e27*no_isotopes)/(target_atoms*beam_flux*0.925)
+        return lithium7_xs
 
     def run(self):
         """ run the thing for be7 in a lithium target

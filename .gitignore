@@ -8,8 +8,8 @@ lab/
 /dist/
 
 # unnecessary c++ functionality
-/build/
-/src/
+build/
+src/
 
 # Python egg metadata
 /*.egg-info
@@ -18,3 +18,6 @@ lab/
 
 # pycache stuff
 nfoils/__pycache__/
+
+# vs code
+.vscode/

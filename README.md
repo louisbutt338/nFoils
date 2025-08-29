@@ -8,17 +8,14 @@ Please reference this repo appropriately in your work - accompanying paper to be
 
 ## installing nFoils
 
-Ensure you are set up in your chosen environment with python and pip 
+Ensure you are set up in your chosen environment with python/pip/setuptools/git 
 
-to install the modules as-is:
+to install an editable version of the package (recommend):
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install .
+pip install -r requirements.txt -e .
 ```
-(to install an editable version use *pip install -e .*)
-
-(to install specific dependency versions used during development see requirements.txt)
 
 to use the SANDY nuclear data extraction tool, NJOY2016 must also be installed
 clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html).

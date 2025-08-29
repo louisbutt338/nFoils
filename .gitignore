@@ -5,10 +5,12 @@ lab/
 .DS_Store
 
 # Setuptools distribution folder
-/dist/
+dist/
 
-# unnecessary c++ functionality
+# c++ source build
 build/
+
+# c++ code
 src/
 
 # Python egg metadata

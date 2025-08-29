@@ -63,7 +63,7 @@ class CurveFitter:
         """
         fit_data = np.array(self._spec_function(x_list, *params_list))
         residuals = y_list - fit_data 
-        chi_squared = np.sum((residuals / self.errors) ** 2)
+        chi_squared = np.sum(residuals / self.errors) ** 2
         dof = len(y_list) - len(params_list) 
         reduced_chi_squared = chi_squared / dof
         return residuals,reduced_chi_squared

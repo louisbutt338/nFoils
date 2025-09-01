@@ -15,7 +15,7 @@ data_file_name = 'reactions/foil_data'
 
 # list of reaction labels for plotting (must match data in input file)
 reaction_labels = [r"${}^{115}$In(n,n')", 
-                   r'${}^{65}$Cu(n,p) *',
+                   r'${}^{65}$Cu(n,p)',
                    r'${}^{56}$Fe(n,p)']
 
 # point to the spectrum file you are interested in

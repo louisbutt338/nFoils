@@ -310,16 +310,18 @@ class ActivityCalc:
         }}
         return isotope_dictionary
         
-    def run(self,automation,efficiency_uncert_frac,irrad_time):
+    def run(self,which_isotopes,efficiency_uncert_frac,irrad_time):
         """ run analysis for all isotopes requested
         """
         # set up for all isotopes requested
         open(f"{self.json_path}/e_results.json", 'w').close()
-        isotope_run_list = list(automation.split(" "))
-        if automation == 'target':
-            isotope_run_list = list(self.json_file_data.keys())[:2]
-        if automation == 'foils':
-            isotope_run_list = list(self.json_file_data.keys())[2:]
+        if isinstance(which_isotopes,int):
+            isotope_run_list = list(self.json_file_data.keys())[which_isotopes:]
+        else:
+            if which_isotopes == 'all':
+                isotope_run_list = list(self.json_file_data.keys())
+            else:
+                isotope_run_list = list(which_isotopes.split(" "))
 
         # run for all isotopes
         results_dictionary = {}

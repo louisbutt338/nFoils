@@ -16,11 +16,9 @@ experiment_dir = "example"
 get_activities = ActivityCalc(data_file_name,experiment_dir,
                               irradiation_end)
 
-
-# choose to analyse the first two isotopes in the data json ('target') 
-# or all other isotopes ('foils')
-# or a specific isotope ('isotope')
-automation = 'foils'
+# choose which isotopes to analyse from the data json:
+# 'all' or specific isotope i.e. 'Mn56'
+which_isotopes = 1
 
 # input ave fractional uncertainty on your eff curve fit 
 # across peak energy measurement range
@@ -30,4 +28,4 @@ efficiency_uncert_frac = 0.05
 irrad_time = 600
 
 # run get_activities
-get_activities.run(automation,efficiency_uncert_frac,irrad_time)
+get_activities.run(which_isotopes,efficiency_uncert_frac,irrad_time)

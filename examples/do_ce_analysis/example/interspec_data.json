@@ -1,29 +1,4 @@
 {
-    "Be7": {
-            "live_time": 10,
-            "datetime": [2024,12,19, 14,2,1],
-            "counts": [1000,0,0,0,0],
-            "uncertainty": [100,0,0,0,0],
-            "inv_coincidence_factor": [1,1,1,1,1],
-            "foil_radius_cm": 0.6,
-            "detector_distance_cm": 38,
-            "thickness_cm": 0.05,
-            "density_gcm3": 0.534,
-            "foil_material": "li"
-        },
-    "Zn65": {
-            "live_time": 10,
-            "datetime": [2024,12,19, 14,2,1],
-            "counts": [1000,0,0,0,0],
-            "uncertainty": [100,0,0,0,0],
-            "inv_coincidence_factor": [1,1,1,1,1],
-            "foil_radius_cm": 0.6,
-            "detector_distance_cm": 38,
-            "thickness_cm": 0.1,
-            "density_gcm3": 8.96,
-            "foil_material": "cu"
-        },
-
     "Mn56": {
             "live_time": 100,
             "datetime": [2024,11,29, 16,1,18],

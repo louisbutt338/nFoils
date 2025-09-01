@@ -1,6 +1,8 @@
 from nfoils.activity import ActivityCalc
 from datetime import datetime
 
+# generates an e_results file to plot against some example c_results
+
 # type cd in filename for the input data (without .json)
 data_file_name = 'interspec_data'
 
@@ -18,8 +20,7 @@ get_activities = ActivityCalc(data_file_name,experiment_dir,
 # choose to analyse the first two isotopes in the data json ('target') 
 # or all other isotopes ('foils')
 # or a specific isotope ('isotope')
-# feel free to change ActivityCalc.run for your own purpose
-automation = 'Be7'
+automation = 'foils'
 
 # input ave fractional uncertainty on your eff curve fit 
 # across peak energy measurement range

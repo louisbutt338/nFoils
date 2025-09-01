@@ -15,4 +15,4 @@ no_of_monte_carlo_samples = 10000
 curve_fitter = CurveFitter(input_data_path,input_data_filename,
                        interpolation_range_start,interpolation_range_end,
                        no_of_monte_carlo_samples)
-curve_fitter.run()
+curve_fitter.run_mc()

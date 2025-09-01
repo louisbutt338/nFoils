@@ -316,7 +316,11 @@ class ActivityCalc:
         # set up for all isotopes requested
         open(f"{self.json_path}/e_results.json", 'w').close()
         if isinstance(which_isotopes,int):
-            isotope_run_list = list(self.json_file_data.keys())[which_isotopes:]
+            if which_isotopes > 0:
+                isotope_run_list = list(self.json_file_data.keys())[which_isotopes:]
+            if which_isotopes<0:
+                file_isotopes = len(self.json_file_data.keys())
+                isotope_run_list = list(self.json_file_data.keys())[:file_isotopes+which_isotopes]
         else:
             if which_isotopes == 'all':
                 isotope_run_list = list(self.json_file_data.keys())

@@ -3,7 +3,8 @@ module for doing analysis on a lithium target
 """
 
 from math import pi, sqrt, log
-import numpy as np 
+import numpy as np
+
 
 class TargetAnalysis:
     """ class to estimate flux from be7 activity
@@ -42,7 +43,7 @@ class TargetAnalysis:
         activity_lambda = log(2)/t_half
         isotopes = activity/activity_lambda 
         #isotopes = activity/(1-exp(-irrad_time*activity_lambda))
-        return isotopes 
+        return isotopes
 
     def _no_of_target_atoms(self,thickness,mass_density,atom_mass,radius):
         """ calculate number of atoms in a target
@@ -81,7 +82,7 @@ class TargetAnalysis:
         #     scaling_factor_1ua = 6.24151e13
         # particle_flux = total_flux*scaling_factor_1ua*current
 
-        return no_particles 
+        return no_particles
 
     def _cross_section(self,no_isotopes,target_atoms,beam_flux):
         """ calculate a cross-section in millibarns
@@ -112,29 +113,29 @@ class TargetAnalysis:
                                  self.isotope_halflife),
             self._no_of_target_atoms(self.target_thickness,
                                      self.target_mass_density,
-                                      self.target_atomic_mass,
-                                      self.target_radius),
-                                      summed_incident_particles)
+                                     self.target_atomic_mass,
+                                     self.target_radius),
+            summed_incident_particles)
         total_frac_uncert = sqrt(
             (self.isotope_activity[1]/self.isotope_activity[0])**2
             +(self.real_cross_section[1])**2)
-        print(f"flux-estimation fractional uncert (without FC1 uncert and incident proton energy uncert)= {total_frac_uncert} " )
+        print("flux-estimation fractional uncert "
+              "(without FC1 uncert and incident proton energy uncert)= " 
+              f"{total_frac_uncert}" )
 
         # do calculation for the correction factor
         correction_factor = be7_cross_section/self.real_cross_section[0]
-        print(f"flux correction factor from simulation is {correction_factor} " 
+        print(f"flux correction factor from simulation is {correction_factor}" 
               f"+- {correction_factor*total_frac_uncert}")
 
-        # do estimations for source strength of target and iron foil neutron flux
+        # do estimations for source strength of target and Fe foil neutron flux
         # by benchmarking to mcnp values
         source_p_per_s_10ua = 6.24151e+13
         target_area = np.pi*(self.target_radius**2)
         source_strength = (correction_factor*source_p_per_s_10ua*
                            target_area*self.real_target_flux)
         flux = correction_factor*source_p_per_s_10ua*self.real_foil_flux
-        print(f"rescaled source strength when FC1=10uA is {source_strength:.5e} "
-              f"+- {total_frac_uncert*source_strength:.5e} n/s")
-        print(f"rescaled flux when FC1=10uA is {flux:.5e} "
+        print(f"rescaled source strength when FC1=10uA: {source_strength:.5e}"
+              f" +- {total_frac_uncert*source_strength:.5e} n/s")
+        print(f"rescaled flux when FC1=10uA: {flux:.5e} "
               f"+- {total_frac_uncert*flux:.5e} n/cm2/s")
-
-

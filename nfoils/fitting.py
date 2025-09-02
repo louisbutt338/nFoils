@@ -2,19 +2,21 @@
 module for doing fitting of gamma spec efficiency curves
 """
 
+import json
 import numpy as np 
 import matplotlib.pyplot as plt 
 from matplotlib import rc
-rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
 from scipy.optimize import curve_fit 
-import json
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
+   weight='normal',size=20)
+
 
 class CurveFitter:
     """ class for fitting efficiency functions 
     """
     def __init__(self,input_data_path,input_data_filename,
-                interpolation_range_start,interpolation_range_end,
-                no_of_monte_carlo_samples):
+                 interpolation_range_start,interpolation_range_end,
+                 no_of_monte_carlo_samples):
         """ initialise class
         """
 
@@ -169,23 +171,25 @@ class CurveFitter:
         a0_err, a1_err,a2_err,a3_err = single_fit_results[1]
         reduced_chi_squared = single_fit_results[2]
         print(f"Estimated Single Fit Parameters: \n a0 = {a0}+/-{a0_err},"
-              f" a1 = {a1}+/-{a1_err}, a2 = {a2}+/-{a2_err}, a3 = {a3}+/-{a3_err}"
+              f" a1 = {a1}+/-{a1_err}, a2 = {a2}+/-{a2_err},"
+              f" a3 = {a3}+/-{a3_err}"
               f" \n rChi2 = {reduced_chi_squared}")
 
     def run_mc(self):
         """ run the mc fit
         """
-        params_mc,residuals,r_chi_squared,mc_solutions = self._monte_carlo_fit()
+        params_mc,residuals,r_chi_s,mc_solutions = self._monte_carlo_fit()
         a_mc,a1_mc,a2_mc,a3_mc = params_mc
         print(f"Estimated MC Parameters: \n a0 = {a_mc}, a1 = {a1_mc} ",
-              f"a2 = {a2_mc}, a3 = {a3_mc} \n rChi2 = {r_chi_squared} ")
+              f"a2 = {a2_mc}, a3 = {a3_mc} \n rChi2 = {r_chi_s} ")
 
         # calculate the average fit for plotting and the error
         mc_solutions_mean = np.mean(mc_solutions,axis=0)
         mc_solutions_std_dev = np.std(mc_solutions,axis=0)
         mc_frac_uncert = mc_solutions_std_dev/mc_solutions_mean
-        print('fractional uncertainty along interpolation range at specified energy '
-              f'is {np.mean(mc_frac_uncert[self.int_range_start:self.int_range_end])}')
+        print('fractional uncert along interpolation range at specified E'
+              f'is {np.mean(mc_frac_uncert[
+                    self.int_range_start:self.int_range_end])}')
         
         #plot
         self._mc_plotter(mc_solutions_mean,mc_solutions_std_dev,residuals)

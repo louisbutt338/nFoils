@@ -3,6 +3,7 @@ module for performing coincidence summing calculations and corrections
 wahey no dependencies
 """
 
+
 class SimpleCorrection():
     def __init__(self,source_dict_near,source_dict_far,
                  am241_dict_near,am241_dict_far):

@@ -1,3 +1,5 @@
+""" setup the nFoils package
+"""
 import setuptools
 
 setuptools.setup(
@@ -5,11 +7,16 @@ setuptools.setup(
     version="1.0.0",
     author="Louis Butt",
     author_email="LJB841@bham.ac.uk",
-    description="Suite of tools for dosimetry foil characterisation of fast neutron sources",
+    description="nFoils suite for foil neutron measurements",
+    long_description=("README.md").read_text(),
     url="https://github.com/louisbutt338/nFoils",
     packages=setuptools.find_packages(),
-    python_requires = '>3.11',
-    install_requires=['numpy', 'matplotlib', 'scipy','sandy', 'actigamma'],
+    python_requires='>3.11',
+    install_requires=['numpy',
+                      'matplotlib',
+                      'scipy',
+                      'sandy',
+                      'actigamma'],
     classifiers=["Development Status :: 4 - Beta",
                  "Intended Audience :: Developers",
                  "Intended Audience :: Science/Research",

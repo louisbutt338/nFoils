@@ -3,6 +3,7 @@ module for analysis of irradiation histories
 look no dependencies hooray
 """
 
+
 class IrradTimings:
     """ class for processing timings into fispact irradiation history
     and list of currents

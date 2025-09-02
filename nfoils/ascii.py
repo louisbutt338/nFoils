@@ -6,7 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
 import os
-rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
+   weight='normal',size=20)
+
 
 class AsciiSummer:
     """ class for summing time-binned ascii files together and plotting
@@ -28,14 +30,16 @@ class AsciiSummer:
         spectrum_number : str
             Number at the end of the .spe filename
         """
-        filename = f"{self.folder_path}/{self.ascii_filetag}_{spectrum_number}.Spe"
+        filename = (f"{self.folder_path}/{self.ascii_filetag}"
+                    f"_{spectrum_number}.Spe")
         with open(filename,'r') as ascii_data_file:
             ascii_contents = ascii_data_file.readlines()
             ascii_header = ascii_contents[:12]
             ascii_footer = ascii_contents[8204:]
         with open(filename,'r') as ascii_data_file:
-            ascii_data_strings = ascii_data_file.read().replace(" ", "").strip().split('\n')[12:8204]
-            ascii_data = [int(x) for x in ascii_data_strings]
+            asc_strings = ascii_data_file.read().replace(" ", "")
+            asc_strings_mod = asc_strings.strip().split('\n')[12:8204]
+            ascii_data = [int(x) for x in asc_strings_mod]
         return ascii_header,ascii_data,ascii_footer
 
     def _loop_parser(self):
@@ -46,7 +50,8 @@ class AsciiSummer:
         spectrum_number : str
             Number at the end of the .spe filename
         """
-        ascii_number_array = np.arange(self.first_file_number,self.last_file_number+1)
+        ascii_number_array = np.arange(self.first_file_number,
+                                       self.last_file_number+1)
         ascii_number_array_strings = []
         all_ascii_data = []
         for n in ascii_number_array:
@@ -75,7 +80,8 @@ class AsciiSummer:
         ax1.plot(kev_array, ascii_data , 'b-' )
         ax1.grid(which='major')
         fig.set_size_inches((12, 6))
-        fig.savefig( 'gamma_spectrum.png', transparent=False, bbox_inches='tight')
+        fig.savefig('gamma_spectrum.png', transparent=False,
+                    bbox_inches='tight')
 
     def run(self):
         """ writes the summed output file 
@@ -92,6 +98,7 @@ class AsciiSummer:
                 ascii_histogram_file.write(line)
         summed_spe_data = self._parse_ascii('000')[1]
         self._plot_ascii(summed_spe_data)
+
 
 class AsciiPreprocessing(AsciiSummer):
     """ class for processing MAESTRO .spe file 
@@ -126,10 +133,10 @@ class AsciiPreprocessing(AsciiSummer):
             f"new_format_spectra/{self.which_foil}_data/{spec_numerator}.spe")
         with open(example_path,'r') as example_input_spectra:
             input_file = example_input_spectra.readlines()
-            input_file[11-1] = f"Real Time: "
+            input_file[11-1] = "Real Time: "
             f"{int(ascii_headers[spec_numerator][10-1].split()[0])*(
                 spec_numerator+1)}\n"
-            input_file[12-1] = f"Live Time: "
+            input_file[12-1] = "Live Time: "
             f"{int(ascii_headers[spec_numerator][10-1].split()[1])*(
                 spec_numerator+1)}\n"
             input_file[13-1] = "Acquisition start date: "

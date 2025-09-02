@@ -23,3 +23,6 @@ nfoils/__pycache__/
 
 # vs code
 .vscode/
+
+#Linter
+.flake8

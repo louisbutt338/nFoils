@@ -18,7 +18,7 @@ get_activities = ActivityCalc(data_file_name,experiment_dir,
 
 # choose which isotopes to analyse from the data json:
 # 'all' or specific isotope i.e. 'Mn56'
-which_isotopes = -2
+which_isotopes = 'all'
 
 # input ave fractional uncertainty on your eff curve fit 
 # across peak energy measurement range

@@ -2,12 +2,14 @@
 module for doing various fispact-y things
 """
 
+import json
+import actigamma as ag 
 import os
 import matplotlib.pyplot as plt 
 from matplotlib import rc
-rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=22)
-import json
-import actigamma as ag 
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
+   weight='normal',size=22)
+
 
 class JsonRetriever:
     """ retrieve activities at a specified time interval from fispact json
@@ -27,16 +29,17 @@ class JsonRetriever:
         """
         try:
             json_file_data = json.load(open(f'{self.filepath}'))
-        except:
-            FileNotFoundError
+        except FileNotFoundError:
             return 'file not found'
-        nuclides_list = json_file_data['inventory_data'][self.interval]['nuclides']
+        nuclides_list = (json_file_data['inventory_data'][self.interval]
+                         ['nuclides'])
         nuclides_dict = {item['zai']:item for item in nuclides_list}
         if self.zai in nuclides_dict.keys():
             isotope_activity = nuclides_dict[self.zai]['activity']
             return isotope_activity
         else:
             return 'isotope not calculated'
+
 
 class ActivitiesCollector:
     """ class to collect activities from a json
@@ -46,20 +49,25 @@ class ActivitiesCollector:
         """
         # set parameters
         self.library = 'tendl21'
-        self.fispact_results_folder =  (
-            f'/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/040924_foils_fe_flux_analysis/{self.library}')
+        self.fispact_results_folder = (
+            '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/'
+            f'uBB/040924_foils_fe_flux_analysis/{self.library}')
         self.materials = [
-            'au', 'al', 'fe', 'in', 'nb', 'ni', 'rh', 'sc', 'y', 'dy', 'cd','cu']
+            'au', 'al', 'fe', 'in', 'nb', 'ni', 'rh',
+            'sc', 'y', 'dy', 'cd','cu']
 
     def run(self):
         """ run for all materials requested 
         """
         for m in self.materials:
             calculated_result_json = json.load(
-                open('{}/uBB_{}_cell12.json'.format(self.fispact_results_folder,m)))
+                open('{}/uBB_{}_cell12.json'.format(
+                    self.fispact_results_folder,m)))
             activity = calculated_result_json['neutron_cell_flux'][3]['value']
-            activity_uncert = calculated_result_json['neutron_cell_flux'][3]['value']
+            activity_uncert = (calculated_result_json['neutron_cell_flux']
+                               [3]['value'])
             print(activity,activity_uncert)
+
 
 class JsonPlotter:
     """ class to plot activities from a json
@@ -79,10 +87,10 @@ class JsonPlotter:
         inventory_data : dict
             Json dictionary of data
         """
-        timestep_array = [] # in days
-        total_activity_array = [] # in Bq
-        total_activity_normalised_array = [] # in Bq/g
-        total_dose_array = [] # in Sv/hr
+        timestep_array = []  # in days
+        total_activity_array = []  # in Bq
+        total_activity_normalised_array = []  # in Bq/g
+        total_dose_array = []  # in Sv/hr
         for timestep in range(0,len(inventory_data)):
             if inventory_data[timestep]['irradiation_time'] != 0:
                 timestep_array.append(
@@ -116,19 +124,19 @@ class JsonPlotter:
         #ax1.set_ylim(1e0,1e6)
         ax1.set_yscale("log")
         ax1.plot(timestep_array, total_activity_normalised_array ,
-                  'k-' ,     linewidth=1.5)
+                 'k-' ,     linewidth=1.5)
         ax1.axhline(y=1e5, ls='-', c='green', lw=1.5)
         ax1.axvline(x=0.04167, ls='--', c='grey')
         ax1.axvline(x=1e0, ls='--', c='grey')
         ax1.axvline(x=30, ls='--', c='grey')
         ax1.text(1.02, 0.9, 'Approx. background', 
-                 transform = ax1.transAxes, fontsize=12, c='green')
+                 transform=ax1.transAxes, fontsize=12, c='green')
         ax1.text(0.2, 1.02, '1 hour', 
-                 transform = ax1.transAxes, fontsize=12, c='grey')
+                 transform=ax1.transAxes, fontsize=12, c='grey')
         ax1.text(0.44, 1.02, '1 day', 
-                 transform = ax1.transAxes, fontsize=12, c='grey')
+                 transform=ax1.transAxes, fontsize=12, c='grey')
         ax1.text(0.654, 1.02, '1 month',
-                 transform = ax1.transAxes, fontsize=12, c='grey')
+                 transform=ax1.transAxes, fontsize=12, c='grey')
         ax1.grid(which='major')
         fig.set_size_inches((8, 6))
         fig.savefig(os.path.join(
@@ -158,22 +166,24 @@ class JsonPlotter:
         ax1.axvline(x=1e0, ls='--', c='grey')
         ax1.axvline(x=30, ls='--', c='grey')
         ax1.text(1.02, 0.9, 'Approx. background', 
-                 transform = ax1.transAxes, fontsize=12, c='green')
+                 transform=ax1.transAxes, fontsize=12, c='green')
         ax1.text(0.2, 1.02, '1 hour',
-                 transform = ax1.transAxes, fontsize=12, c='grey')
+                 transform=ax1.transAxes, fontsize=12, c='grey')
         ax1.text(0.44, 1.02, '1 day',
-                 transform = ax1.transAxes, fontsize=12, c='grey')
+                 transform=ax1.transAxes, fontsize=12, c='grey')
         ax1.text(0.654, 1.02, '1 month',
-                 transform = ax1.transAxes, fontsize=12, c='grey')
+                 transform=ax1.transAxes, fontsize=12, c='grey')
         ax1.grid(which='major')
         fig.set_size_inches((8, 6))
-        fig.savefig(os.path.join(self.directory, 'total_dose_{}.png'.format(self.json_name))
+        fig.savefig(os.path.join(self.directory, 
+                                 'total_dose_{}.png'.format(self.json_name))
                     , transparent=False, bbox_inches='tight')
 
     def run(self):
         """ run both plottings
         """
-        dictionary = json.load(open('{}/{}.json'.format(self.directory,self.json_name), 'r'))
+        dictionary = json.load(open('{}/{}.json'.format(self.directory,
+                                                        self.json_name), 'r'))
         inventory_data = dictionary['inventory_data']
         #print(inventory_data[0]['nuclides'][0])
         print('********************',
@@ -184,6 +194,7 @@ class JsonPlotter:
         self._activity_plotter()
         self._dose_plotter()
 
+
 class GammaSpectrumModel:
     """ simple gamma spectrum modeller with actigamma
     """
@@ -192,7 +203,8 @@ class GammaSpectrumModel:
         """
         # set params
         self.folder_path = (
-            '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/analysis/fispact_gammaspec')
+            '/Users/ljb841@student.bham.ac.uk/fispact/'
+            'WORKSHOP/uBB/analysis/fispact_gammaspec')
         self.isotope_name = 'Mn56'
         self.activity = 3.82e7
 

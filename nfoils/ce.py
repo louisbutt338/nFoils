@@ -2,11 +2,13 @@
 module for performing ce analysis for some isotopes
 """
 
+import json
 import numpy as np 
 import matplotlib.pyplot as plt 
 from matplotlib import rc
-rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},weight='normal',size=20)
-import json
+rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
+   weight='normal',size=20)
+
 
 class CEPlotter:
     """ class for doing the ce analysis
@@ -37,7 +39,8 @@ class CEPlotter:
         """
         c_over_e_array = []
         for i in np.arange(len(isotope_list)):
-            c_over_e =  (foil_weight[i]*ssf[i]*calc_activities[i])/exp_activities[i]
+            c_over_e =  ((foil_weight[i]*ssf[i]*calc_activities[i])/
+                         exp_activities[i])
             c_over_e_array.append(c_over_e)
         return c_over_e_array
 
@@ -61,8 +64,8 @@ class CEPlotter:
         c_over_e_uncerts = []
         for i in np.arange(len(isotope_list)):
             fispact_error = calc_uncerts[i]
-            c_error = np.sqrt( fispact_error**2 
-                              + spectrum_flux_frac_uncerts[i]**2)
+            c_error = np.sqrt(fispact_error**2 
+                              +spectrum_flux_frac_uncerts[i]**2)
             e_error = exp_uncerts[i]/exp_activities[i]
             ce_error =  np.sqrt( c_error**2 + e_error**2)
             #ce_error =  np.sqrt( c_error**2 + e_error**2 ) * c_over_e[i]
@@ -109,17 +112,20 @@ class CEPlotter:
         """
         #initial plotting settings
         fig, (ax1,ax4) = plt.subplots(
-            1,2,figsize=(12,6)
-            ,gridspec_kw={'width_ratios': [len(new_order[:plot_split_integer])
-                                           , len(new_order[plot_split_integer:])]})
+            1,2,figsize=(12,6),
+            gridspec_kw={'width_ratios':[len(new_order[:plot_split_integer])
+                                         ,len(new_order[plot_split_integer:]
+                                              )]})
         fig.supxlabel('Neutron-transmuted isotopes',x=0.5,y=-0.14) 
         fig.supylabel('C/E',x=0.06,y=0.5)
         plt.subplots_adjust(wspace=0.05)
 
         # plotting the first half of plot (significant capture reactions)
-        ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,top=True)
+        ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,
+                        top=True)
         ax1.set_xticks(np.arange(len(new_order[:plot_split_integer]))
-                       , labels=new_isotope_list[:plot_split_integer] ,rotation=45)
+                       ,labels=new_isotope_list[:plot_split_integer],
+                       rotation=45)
         ax1.set_ylim(y_lower,y_upper)
         ax1.scatter (new_isotope_list[:plot_split_integer]
                      ,ce_results_1[:plot_split_integer]
@@ -137,7 +143,8 @@ class CEPlotter:
                      ,ce_results_2[:plot_split_integer]
                      ,ce_errors_2[:plot_split_integer]
                      ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax2.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax2.tick_params(top=False, labeltop=False, bottom=False,
+                        labelbottom=False)
         ax2.set_xlim(-0.2,len(new_order[:plot_split_integer])-0.4)
         ax3 = ax1.twiny()
         ax3.scatter (new_isotope_list[:plot_split_integer]
@@ -147,9 +154,11 @@ class CEPlotter:
                      ,ce_results_3[:plot_split_integer]
                      ,ce_errors_3[:plot_split_integer]
                      ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax3.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax3.tick_params(top=False, labeltop=False, bottom=False,
+                        labelbottom=False)
         ax3.set_xlim(-0.6,len(new_order[:plot_split_integer])-0.8)
-        ax1.plot([-1,len(new_order)], np.ones(2), 'Black', ls='--',linewidth=1.5)
+        ax1.plot([-1,len(new_order)], np.ones(2), 'Black', ls='--',
+                 linewidth=1.5)
         ax1.fill_between(range(len(new_order[:plot_split_integer]))
                          ,[1-x for x in spectrum_flux_frac_uncerts
                            [:plot_split_integer]]
@@ -161,7 +170,8 @@ class CEPlotter:
         ax4.tick_params(axis='y',right=False,labelright=False
                         ,left=False,labelleft=False,bottom=False)
         ax4.set_xticks(np.arange(len(new_order[plot_split_integer:]))
-                       ,labels=new_isotope_list[plot_split_integer:],rotation=45)
+                       ,labels=new_isotope_list[plot_split_integer:],
+                       rotation=45)
         ax4.set_ylim(y_lower,y_upper)
         ax4.scatter (new_isotope_list[plot_split_integer:]
                      ,ce_results_1[plot_split_integer:]
@@ -180,7 +190,8 @@ class CEPlotter:
                      ,ce_results_2[plot_split_integer:]
                      ,ce_errors_2[plot_split_integer:]
                      ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax5.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax5.tick_params(top=False, labeltop=False, bottom=False,
+                        labelbottom=False)
         ax5.set_xlim(-0.2,len(new_order[plot_split_integer:])-0.4)
         ax6 = ax4.twiny()
         ax6.scatter (new_isotope_list[plot_split_integer:]
@@ -190,7 +201,8 @@ class CEPlotter:
                      ,ce_results_3[plot_split_integer:]
                      ,ce_errors_3[plot_split_integer:]
                      ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax6.tick_params(top=False, labeltop=False, bottom=False, labelbottom=False)
+        ax6.tick_params(top=False, labeltop=False, bottom=False,
+                        labelbottom=False)
         ax6.set_xlim(-0.6,len(new_order[plot_split_integer:])-0.8)
         ax4.plot([-1,len(new_order[plot_split_integer:])]
                  , np.ones(2), 'Black', ls='--',linewidth=1.5)
@@ -213,7 +225,8 @@ class CEPlotter:
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         fig.set_size_inches((17, 6))
-        fig.savefig(f"{self.plotname}.png",transparent=False,bbox_inches='tight')
+        fig.savefig(f"{self.plotname}.png",transparent=False,
+                    bbox_inches='tight')
 
     def _weighted_ce(self,ce_value_array,ce_error_array):
         """ calculate some weighted c/e averages from first_we to last_we
@@ -251,35 +264,35 @@ class CEPlotter:
         foil_weight = [model_results[i]["foil_weight"] for i in isotope_list]
         ssf = [model_results[i]["self_shielding_factor"] for i in isotope_list]
         isotope_list_mathmode = [model_results[i]["mathmode_name"]
-                                  for i in isotope_list]
+                                 for i in isotope_list]
 
         # calculate spectrum + flux uncertainties for each isotope
         spectrum_frac_u = [model_results[i]["spectrum_fractional_uncertainty"]
-                                for i in isotope_list]
+                           for i in isotope_list]
         spectrum_flux_frac_u = [np.sqrt(flux_error**2 + u**2)
                                 for u in spectrum_frac_u]
 
         #extract data for experimental activities (using average activities)
         exp_results_path =  f"{exp_results}.json" 
         exp_results_data = json.load(open(exp_results_path))
-        exp_a = [np.mean(exp_results_data[key][f"activities"])
-                           for key in isotope_list]
-        exp_u = [np.mean(exp_results_data[key][f"activity_uncertainties"])
-                           for key in isotope_list]
+        exp_a = [np.mean(exp_results_data[key]["activities"])
+                 for key in isotope_list]
+        exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
+                 for key in isotope_list]
 
         #extract data for calculated activities
         calc_a_1 = [model_results[i]["activities"][0]
-                            for i in isotope_list]
+                    for i in isotope_list]
         calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
-                            for i in isotope_list]
+                    for i in isotope_list]
         calc_a_2 = [model_results[i]["activities"][1]
-                            for i in isotope_list]
+                    for i in isotope_list]
         calc_u_2 = [model_results[i]["fractional_uncertainties"][1]
-                            for i in isotope_list]
+                    for i in isotope_list]
         calc_a_3 = [model_results[i]["activities"][2]
-                            for i in isotope_list]
+                    for i in isotope_list]
         calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
-                            for i in isotope_list]
+                    for i in isotope_list]
 
         #perform C/E calculations for the foils
         ce_results_1  = [
@@ -298,12 +311,14 @@ class CEPlotter:
             (flux_norm)*
             self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_1,exp_a,exp_u,isotope_list,
-                                    spectrum_flux_frac_u)[i] for i in new_order]
+                                    spectrum_flux_frac_u
+                                    )[i] for i in new_order]
         ce_errors_2 =   [
             (flux_norm)*
             self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_2,exp_a,exp_u,isotope_list,
-                                    spectrum_flux_frac_u)[i] for i in new_order]
+                                    spectrum_flux_frac_u
+                                    )[i] for i in new_order]
         ce_errors_3 =  [
             (flux_norm)*
             self._c_over_e(calc_a_3,exp_a,isotope_list,foil_weight,ssf)[i]
@@ -316,18 +331,18 @@ class CEPlotter:
         for i in range(len(new_isotope_list)):
             print(f'*********{new_isotope_list[i]} C/E results')
             print(f"{libraries[0]} value is "
-            f"{ce_results_1[i]} pm {ce_errors_1[i] }")
+                  f"{ce_results_1[i]} pm {ce_errors_1[i] }")
             print(f"{libraries[1]} value is "
-            f"{ce_results_2[i]} pm {ce_errors_2[i] }")
+                  f"{ce_results_2[i]} pm {ce_errors_2[i] }")
             print(f"{libraries[2]} value is "
-            f"{ce_results_3[i]} pm {ce_errors_3[i] }")
+                  f"{ce_results_3[i]} pm {ce_errors_3[i] }")
         
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_1,
-                    ce_errors_1,ce_results_2,ce_errors_2,
-                    ce_results_3,ce_errors_3,
-                    spectrum_flux_frac_u,libraries,plot_splitter,
-                    y_upper,y_lower)
+                      ce_errors_1,ce_results_2,ce_errors_2,
+                      ce_results_3,ce_errors_3,
+                      spectrum_flux_frac_u,libraries,plot_splitter,
+                      y_upper,y_lower)
         
         # do weighted ave calcs and print
         # These are set to ENDFB8 calcs for Birmingham TuNED experiments 

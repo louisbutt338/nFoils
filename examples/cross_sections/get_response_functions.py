@@ -1,14 +1,14 @@
-from nfoils.reaction import PostprocessReactions,IsotopicSpectrumUncertainty
 import numpy as np
-#import sandy
+from nfoils.reaction import PostprocessReactions
+#from nfoils.reaction import IsotopicSpectrumUncertainty
 
 # set energy grids with sandy or make your own
 #ek=sandy.energy_grids.SCALE238
-ek=np.fromfile(f'../../data/energy_grids/group_structure_175.txt',sep=" ")
+ek=np.fromfile('../../data/energy_grids/group_structure_175.txt',sep=" ")
 
 # set library (check if availble in sandy)
 # need internet to get library data 
-library = 'jeff_33' # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
+library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 
 # filename for input data
 data_file_name = 'reactions/foil_data'
@@ -21,7 +21,8 @@ reaction_labels = [r"${}^{115}$In(n,n')",
 # point to the spectrum file you are interested in
 spectrum_file = 'spectra/example'
 
-# cut off for the end of the group structure for which there are no spectrum values
+# cut off for the end of the group structure
+# for which there are no spectrum values
 cutoff = 0
 
 # get some response functions and nuclear data uncertainties

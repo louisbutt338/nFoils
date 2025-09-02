@@ -27,8 +27,8 @@ cutoff = 0
 
 # get some response functions and nuclear data uncertainties
 reactions = PostprocessReactions(ek,library)
-reactions.run_rf(data_file_name,reaction_labels)
-#reactions.run_stdev(data_file_name,reaction_labels)
+#reactions.run_rf(data_file_name,reaction_labels)
+reactions.run_stdev(data_file_name,reaction_labels)
 
 # or get some reaction-dependent spectrum uncertainties 
 #uncertainties = IsotopicSpectrumUncertainty(ek,library)

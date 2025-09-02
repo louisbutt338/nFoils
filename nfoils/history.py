@@ -17,7 +17,14 @@ class IrradTimings:
         self.output_filename = output_file
 
     def _parse_txt(self):
-        """ Parse txt data into two arrays
+        """ Parse txt data into time and countrate lists
+
+        Returns
+        -------
+        time : list
+            List of times
+        countrate : list
+            List of counts
         """
         input_filepath = self.filename
         with open(input_filepath,'r') as txt_data_file:
@@ -31,7 +38,12 @@ class IrradTimings:
 
     def _proton_flux_conversion(self):
         """ return protons per second for each time interval,
-        based on 12uA=190k counts
+        based on 12uA=190k counts (deuteron experiment Nov2024)
+
+        Returns
+        -------
+        target_protons_per_s : list
+            List of protons per s for each time interval
         """
         cps_to_protons_per_s = 6.24151e12 * (12/190000)
         target_protons_per_s = [
@@ -39,7 +51,7 @@ class IrradTimings:
         return target_protons_per_s
 
     def fispact_hist_writer(self):
-        """ write a fispact irradiation history
+        """ write a fispact irradiation history to file
         """
         with open(self.output_filename, 'w') as irrad_history_file:
             for timestep in range(len(self._parse_txt()[0])):
@@ -50,7 +62,7 @@ class IrradTimings:
             irrad_history_file.writelines("ATOMS")
 
     def run(self):
-        """ run the thing how you want
+        """ run the thing
         """
         #print(proton_flux_conversion())
         #fispact_hist_writer()

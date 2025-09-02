@@ -21,8 +21,10 @@ class ActivityCalc:
         self.json_path = json_path
         self.irradiation_end = irradiation_end
 
-        self.json_file_data = json.load(open(
-            f'{self.json_path}/{self.data_file_name}.json'))
+        # load the data
+        with open(f'{self.json_path}/{self.data_file_name}.json'
+                  ) as json_datafile:
+            self.json_file_data = json.load(json_datafile)
 
     def _decay_time(self, isotope_name):
         """ calculating the decay time
@@ -32,6 +34,7 @@ class ActivityCalc:
         ----------
         isotope_name : str
             Name of isotope being run
+
         Returns
         -------
         dec_time : float
@@ -50,6 +53,15 @@ class ActivityCalc:
         ----------
         isotope_name : str
             Name of isotope being run
+
+        Returns
+        -------
+        i : array-like
+            Array of gamma peak intensities
+        e : array-like
+            Array of associated gamma energies
+        half_life : float
+            Half life of the input isotope
         """
         SPECTYPE = "gamma"
         db = ag.Decay2012Database()
@@ -71,8 +83,15 @@ class ActivityCalc:
             Radius of detector crystal in cm
         distance : float
             Distance from detector to foil in cm
+
+        Returns
+        -------
+        solid_ang : float
+            the solid angle for point source
         """
-        return 2 * pi * (1 - distance / sqrt(distance**2 + crystal_radius**2))
+        solid_ang = 2 * pi * (1 - distance / sqrt(distance**2
+                                                  + crystal_radius**2))
+        return solid_ang
 
     def _solid_angle_disc(self, crystal_radius, distance, foil_radius):
         """ solid angle approximation for foils/discs (knoll, p121)
@@ -85,6 +104,11 @@ class ActivityCalc:
             Distance from detector to foil in cm
         foil_radius : float
             Radius of the foil in cm
+
+        Returns
+        -------
+        solid_ang_disc : float
+            the solid angle for a disc source
         """
         alpha = (foil_radius / distance)**2
         beta = (crystal_radius / distance)**2
@@ -93,12 +117,13 @@ class ActivityCalc:
         f_2 = (((35/128) * (beta/((1+beta)**(9/2))))
                - ((315/256) * ((beta**2)/((1+beta)**(11/2))))
                + ((1155/1024) * ((beta**3)/((1+beta)**(13/2)))))
-        return (2 * pi * (1 - (1/((1+beta)**(1/2)))
-                - (3/8)*((alpha*beta)/((1+beta)**(5/2)))
-                + (alpha**2)*f_1 - (alpha**3)*f_2))
+        sol_ang_disc = (2 * pi * (1 - (1/((1+beta)**(1/2)))
+                        - (3/8)*((alpha*beta)/((1+beta)**(5/2)))
+                        + (alpha**2)*f_1 - (alpha**3)*f_2))
+        return sol_ang_disc
 
     def _efficiency_abs(self, energy, n0, n1, n2, n3):
-        """ equation for the log-polynomial efficiency curves
+        """ equation for the log-polynomial efficiency curves (knoll)
 
         Parameters
         ----------
@@ -112,14 +137,20 @@ class ActivityCalc:
             1st term parameter for E^2
         n3 : float
             1st term parameter for E^3
+
+        Returns
+        -------
+        eff : float
+            the efficiency of the detector
         """
         polynomial = (n0 + n1*np.log(energy)**1
                       + n2*np.log(energy)**2 + n3*np.log(energy)**3)
-        return np.exp(polynomial)
+        eff = np.exp(polynomial)
+        return eff
 
     def _activity_livetime(self, c, i, e, foil_dist, isotope_name):
         """ use the foil measurement distance and efficiency curves
-        to calculate activity over the live time from counts
+        to calculate activity over the live time from counts (knoll)
 
         Parameters
         ----------
@@ -133,6 +164,11 @@ class ActivityCalc:
             Distance from detector to foil in cm
         isotope_name : str
             Name of isotope
+
+        Returns
+        -------
+        activity : float
+            the foil activity over detector livetime
         """
         # b03 hpge values
         if foil_dist == 1:
@@ -168,16 +204,20 @@ class ActivityCalc:
             Thickness of foil in cm
         density : float
             Density of foil material in g/cm3
+
+        Returns
+        -------
+        self_att_factor : float
+            self attenuation factor for the foil
         """
         xcom = np.fromfile(f'../../data/XCOM_new/{material}.txt', sep=" ")
         mass_coeff = np.interp(e/1000, xcom[::2], xcom[1::2])
-
         self_att_factor = ((mass_coeff * density * thickness)
                            / (1 - exp(- mass_coeff * density * thickness)))
         return self_att_factor
 
     def _activity_integrand(self, t, half_life):
-        """ integrals for activity interpolation
+        """ integral shortcut for activity interpolation
 
         Parameters
         ----------
@@ -185,12 +225,18 @@ class ActivityCalc:
             time (s)
         half_life : float
             Half-life of isotope (s)
+
+        Returns
+        -------
+        intergrand : float
+            activity integral from time and halflife
         """
-        return exp(- log(2) * (t/half_life))
+        integrand = exp(- log(2) * (t/half_life))
+        return integrand
 
     def _activity_0(self, c, i, e, measurement_distance,
                     isotope_name, halflife):
-        """ calculate initial activity (w/o corrections)
+        """ calculate initial activity after irrad (w/o corrections)
         from the measured activity over a live time
 
         Parameters
@@ -207,6 +253,11 @@ class ActivityCalc:
             Name of isotope
         halflife : float
             halflife of isotope
+
+        Returns
+        -------
+        activity : float
+            uncorrected activity at the end of irradiation
         """
         decay_time = self._decay_time(isotope_name)
         top_time_band = (decay_time
@@ -235,6 +286,11 @@ class ActivityCalc:
             Time the irradiation spanned in s
         halflife : float
             Halflife of isotope in s
+
+        Returns
+        -------
+        rr_ave : float
+            average reaction rate for the irradiation
         """
         rr_ave = a / (1 - self._activity_integrand(irradiation_time, halflife))
         return rr_ave
@@ -249,6 +305,13 @@ class ActivityCalc:
             Distance from detector to foil in cm
         isotope_name : str
             Name of isotope
+
+        Returns
+        -------
+        isotope_dictionary : dict
+            results for a single isotope -
+            "activities", "activity_uncertainties", "pathway_probabilities",
+            "reaction_rates", "reaction_rate_uncertainty"
         """
         # print and save results for individual isotope activities
         # and uncerts for top 5 gamma emissions
@@ -319,6 +382,16 @@ class ActivityCalc:
 
     def run(self, which_isotopes, efficiency_uncert_frac, irrad_time):
         """ run analysis for all isotopes requested
+        and outputs as e_results json
+
+        Parameters
+        ----------
+        which_isotopes : float
+            switch to control which isotopes from the data to run
+        efficiency_uncert_frac : float
+            Fractional uncertainty for the efficiency of the detector
+        irrad_time : float
+            Total irradiation time for reaction rate calculation
         """
         # set up for all isotopes requested
         open(f"{self.json_path}/e_results.json", 'w').close()
@@ -350,3 +423,4 @@ class ActivityCalc:
         with open(f"{self.json_path}/e_results.json", 'a') as output_file:
             json.dump(results_dictionary, output_file,
                       ensure_ascii=False, indent=4)
+        

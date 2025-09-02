@@ -31,7 +31,7 @@ class TargetAnalysis:
         self.real_target_flux = real_target_flux
 
     def _no_of_isotopes(self,activity,t_half):
-        """ calculate number of atoms
+        """ calculate number of radioactive isotopes 
 
         Parameters
         ----------
@@ -39,6 +39,11 @@ class TargetAnalysis:
             Activity of isotope
         t_half : float
             Halflife of isotope
+
+        Returns
+        -------
+        isotopes : float
+            No. of rad isotopes
         """
         activity_lambda = log(2)/t_half
         isotopes = activity/activity_lambda 
@@ -58,10 +63,16 @@ class TargetAnalysis:
             Atomic mass of the target material
         radius : float
             Radius of the target in cm
+
+        Returns
+        -------
+        target_atoms : float
+            No. of atoms in a target
         """
         avo_number = 6.02214076e23
         number_density = (avo_number*mass_density)/atom_mass
-        return number_density * thickness * pi * (radius)**2
+        target_atoms = number_density * thickness * pi * (radius)**2
+        return target_atoms
 
     def _no_of_beam_particles(self,current,irrad_time):
         """ calculate number of charged particles
@@ -70,9 +81,14 @@ class TargetAnalysis:
         Parameters
         ----------
         current : float
-            Current of charged particle in uA?
+            Current of charged particle in uA
         irrad_time : float
             Irradiation time in seconds
+
+        Returns
+        -------
+        no_particles : float
+            No. of particles in the beam
         """
         total_coulombs = current*1e-6*irrad_time
         no_particles = total_coulombs/(1.602176634e-19)
@@ -85,7 +101,7 @@ class TargetAnalysis:
         return no_particles
 
     def _cross_section(self,no_isotopes,target_atoms,beam_flux):
-        """ calculate a cross-section in millibarns
+        """ calculate a lithium 7 cross-section in millibarns
 
         Parameters
         ----------
@@ -95,12 +111,17 @@ class TargetAnalysis:
             Number of target atoms
         beam_flux : float
             Flux of the incident beam
+
+        Returns
+        -------
+        lithium7_xs : float
+            Real lithium 7 cross section 
         """
         lithium7_xs = (1e27*no_isotopes)/(target_atoms*beam_flux*0.925)
         return lithium7_xs
 
     def run(self):
-        """ run the thing for be7 in a lithium target
+        """ run the thing for be7 in a lithium target and print results
         """
         # do calculations for the fractional uncertainty 
         summed_incident_particles = sum(

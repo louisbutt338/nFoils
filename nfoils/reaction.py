@@ -31,12 +31,18 @@ class NuclearData:
         ----------
         material : float
             MAT number
+
+        Returns
+        -------
+        endf_file : sandy endf object
+            Endf file for the specified material
         """
         endf_file = sandy.get_endf6_file(self.library, "xs", material)
         return endf_file
 
     def _get_errorr_data(self, material, mt_value):
         """ get covariance, standard deviation from a material endf6 file
+        or return empty arrays
 
         Parameters
         ----------
@@ -44,6 +50,13 @@ class NuclearData:
             MAT number
         mt_value : float
             MT number
+
+        Returns
+        -------
+        cov_array : array-like
+            big array of covariances for the material and MTs
+        stdev_array : array-like
+            big array of uncertainties for the material and MTs
         """
         mt = [mt_value]
         try:
@@ -58,16 +71,20 @@ class NuclearData:
             std = covariance.get_std().reset_index().query("MT in @mt")
             std["MT"] = std["MT"].astype("category")
             std["STD"] *= 100
+            cov_array = np.array(covariance)
             stdev_array = np.array(std["STD"])
             print(f'-----> found reactions for MAT {material}: MT {mt}')
-            return covariance, stdev_array
+            return cov_array, stdev_array
+
         except (KeyError, ValueError):
+            # if doesn't work return empty arrays
             print(f'-----> reactions not found for MAT {material}'
                   f': MT {mt}')
-            return [],np.array([])
+            return np.array([]),np.array([])
 
     def _get_gendf_data(self, material, mt_value):
         """ get groupwise cross sections from a material endf6 file
+        or return empty array
 
         Parameters
         ----------
@@ -75,10 +92,15 @@ class NuclearData:
             MAT number
         mt_value : float
             MT number
+
+        Returns
+        -------
+        xs_array : array-like
+            big array of cross sections for the material and MTs
         """
         mt = [mt_value]
-        # use the get_gendf function to grab xs data
         try:
+            # use the get_gendf function to grab xs data
             endf_file = self._get_endf_file(material)
             ekws = dict(ek=self.ek, nuclide_production=True, iwt=3)
             gendf = endf_file.get_gendf(minimal_processing=True,
@@ -88,7 +110,9 @@ class NuclearData:
             xs_array = np.array([j for i in xs for j in i])
             print(f'-----> found reactions for MAT {material}: MT {mt}')
             return xs_array
+
         except ValueError:
+            # if doesn't work return empty arrays
             print(f'-----> reactions not found for MAT {material}:'
                   f' MT {mt}')
             return np.array([])
@@ -101,16 +125,18 @@ class NuclearData:
         ----------
         data_array : array
             Big array of multiple reactions
+
+        Returns
+        -------
+        data_array_split : array-like
+            split the big array into an array of arrays for each reaction
         """
         if data_array.size > 0:
             number_of_arrays = len(data_array)/(len(self.ek)-1)
             if number_of_arrays > 1:
-                # data_array_split = (np.array_split(data_array,
-                #                                    len(data_array)/(len(self.ek)-1)))
                 data_array_split = np.split(data_array, number_of_arrays)
             if number_of_arrays == 1:
                 data_array_split = [data_array]
-            # data_array_transposed = data_array.ravel()[None]
             return data_array_split
     
     def _calculate_response_function(self, cross_section, density, mass,
@@ -131,7 +157,11 @@ class NuclearData:
             atomic mass of the foil
         thickness : float
             thickness of the foil in cm
-        
+
+        Returns
+        -------
+        response_function : array-like
+            response function array for the reaction
         """
         foil_volume = mass/density
         atom_density = (abundance * density * 1e-24 * 6.022e23)/atomic_mass
@@ -152,17 +182,36 @@ class NuclearData:
             name of json data file
         labels : list
             list of reaction labels
+
+        Returns
+        -------
+        material_list : list
+            list of ENDF material numbers
+        mt_list : list
+            list of reaction (MT) numbers
+        density_list : list
+            list of densities (g/cm3) for foils
+        mass_list : list
+            list of masses (g) for foils
+        abundance_list : list
+            list of abundances for parent isotopes
+        atomic_mass_list : list
+            list of atomic masses for foils
+        thickness_list : list
+            list of foil thicknesses (cm)
         """
-        json_file_data = json.load(open(f'{datafile}.json'))
-        material_list = [x['mat_number'] for x in json_file_data.values()]
-        mt_list = [x['mt_value'] for x in json_file_data.values()]
-        density_list = [x['density_gcm3'] for x in json_file_data.values()]
-        mass_list = [x['mass_g'] for x in json_file_data.values()]
-        abundance_list = [x['isotope_abundance']
-                          for x in json_file_data.values()]
-        atomic_mass_list = [x['foil_atomic_mass']
-                            for x in json_file_data.values()]
-        thickness_list = [x['thickness_cm'] for x in json_file_data.values()]
+        with open(f'{datafile}.json') as json_file:
+            json_file_data = json.load(json_file)
+            material_list = [x['mat_number'] for x in json_file_data.values()]
+            mt_list = [x['mt_value'] for x in json_file_data.values()]
+            density_list = [x['density_gcm3'] for x in json_file_data.values()]
+            mass_list = [x['mass_g'] for x in json_file_data.values()]
+            abundance_list = [x['isotope_abundance']
+                              for x in json_file_data.values()]
+            atomic_mass_list = [x['foil_atomic_mass']
+                                for x in json_file_data.values()]
+            thickness_list = [x['thickness_cm']
+                              for x in json_file_data.values()]
         return (material_list, mt_list, density_list,
                 mass_list, abundance_list, atomic_mass_list,
                 thickness_list)
@@ -178,7 +227,7 @@ class PostprocessReactions(NuclearData):
 
     def _export_and_plot_stdev(self, material_list, mt_values_list,
                                reaction_labels):
-        """ export stdev data to one csv and plot uncertainty percentages
+        """ export stdev data to one csv and plots uncertainty percentages
 
         Parameters
         ----------
@@ -238,7 +287,7 @@ class PostprocessReactions(NuclearData):
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
                             mass_list, abundance_list, atomic_mass_list,
                             thickness_list, labels_list):
-        """ export response function data to one csv and plot
+        """ export response function data to one csv and plots RFs
 
         Parameters
         ----------
@@ -356,19 +405,14 @@ class IsotopicSpectrumUncertainty(NuclearData):
         ----------
         spectrum_file : str
             name of spectrum file
+
         Returns
         ----------
-        frac_uncert : array
+        frac_uncert : array like
             full spectrum fractional uncertainty array
         """
         spectrum_data = np.fromfile(f'{spectrum_file}.txt', sep=" ")
         frac_uncert = np.divide(spectrum_data[1::2], spectrum_data[::2])
-
-        # spectrum_json = json.load(open(f'{spectrum_file}.json'))
-        # frac_uncert = np.array(spectrum_json['unc_value'])
-
-        # frac_uncert[np.isnan(frac_uncert)] = 0
-        # frac_uncert[frac_uncert == np.inf] = 0
         return frac_uncert
 
     def _normalise_xs(self, xs):
@@ -378,6 +422,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         ----------
         xs : array
             xs array in the same group structure
+
         Returns
         ----------
         normalised_xs : array
@@ -398,12 +443,29 @@ class IsotopicSpectrumUncertainty(NuclearData):
             Uncertainty array in the same group structure
         xs : array
             Normalised xs array in the same group structure
+
+        Returns
+        ----------
+        percent_uncertainty : float
+            percentage uncertainty for a cross section
+            and a spectrum uncert array
         """
         percent_uncertainty = np.dot(uncertainties, xs)
         return percent_uncertainty
     
     def get_isotopic_uncertainties(self, spectrum_file, datafile, cutoff):
         """ Get all the uncertainties for your reactions
+        and prints the results
+
+        Parameters
+        ----------
+        spectrum_file : array
+            Name of the spectrum file
+        datafile : str
+            Name of the json datafile
+        cutoff : int
+            how many vals to cut off at the end of the group structure
+            as there is no spectrum there
         """
         data_lists = self._unpack_datafile(datafile)
         # self.ek = self.ek[:-cutoff]

@@ -28,7 +28,16 @@ class AsciiSummer:
         Parameters
         ----------
         spectrum_number : str
-            Number at the end of the .spe filename
+            number at the end of the .spe filename format as string
+
+        Returns
+        ----------
+        ascii_header : list[str]
+            text header of the ascii file
+        ascii_data : list[int]
+            data in the middle of the ascii file
+        ascii_footer : list[str]
+            text footer at bottom of the file
         """
         filename = (f"{self.folder_path}/{self.ascii_filetag}"
                     f"_{spectrum_number}.Spe")
@@ -45,10 +54,13 @@ class AsciiSummer:
     def _loop_parser(self):
         """ automate the data parsing for all the ascii files specified
 
-        Parameters
+        Returns
         ----------
-        spectrum_number : str
-            Number at the end of the .spe filename
+        ascii_histogram : list[int]
+            summed ascii data for all the files
+        ascii_number_array_strings: list[str]
+            list of the numbers at the end of ascii files
+            formatted as strings
         """
         ascii_number_array = np.arange(self.first_file_number,
                                        self.last_file_number+1)
@@ -66,8 +78,8 @@ class AsciiSummer:
 
         Parameters
         ----------
-        ascii_data : list
-            Ascii data in list format
+        ascii_data : list[int]
+            data in the middle of the ascii file
         """
         kev_array = [i*0.41653 for i in range(len(ascii_data))]
         fig, ax1 = plt.subplots(tight_layout=True)
@@ -96,6 +108,9 @@ class AsciiSummer:
                 ascii_histogram_file.write(f"{line}\n")
             for line in self._parse_ascii(self._loop_parser()[1][0])[2]:
                 ascii_histogram_file.write(line)
+
+        # plot the first ascii file in this case 
+        # change '000' otherwise
         summed_spe_data = self._parse_ascii('000')[1]
         self._plot_ascii(summed_spe_data)
 
@@ -103,16 +118,13 @@ class AsciiSummer:
 class AsciiPreprocessing(AsciiSummer):
     """ class for processing MAESTRO .spe file 
     into the format for Mark's fortran gamma spec program
+    May need some looking into if want to use again
     """
 
-    def __init__(self, which_foil, ascii_filetag, ff_number, lf_number):
-        """ initialise class
+    def __init__(self, data_folder_path, filetag, ff_number, lf_number):
+        """ Initialise class and inherit AsciiSummer
         """
-        # set the parameters
-        self.which_foil = 'fe'
-        self.ascii_filetag = 'uBB_20s_x60_20mins'
-        self.first_file_number = 0
-        self.last_file_number = 25
+        super().__init__(self, data_folder_path, filetag, ff_number, lf_number)
 
     def _spe_preprocessor(self,spec_numerator,ascii_headers,cumulative_data):
         """ copies the example input file header for gamma_process_spectra
@@ -122,15 +134,16 @@ class AsciiPreprocessing(AsciiSummer):
         ----------
         spec_numerator : int
             numerator for the spectra you are processing
-        ascii_headers : str?
+        ascii_headers : list[str]
             Headers of the ascii files
-        cumulative_data : str?
+        cumulative_data : list[int]
             Summed data for the asciis
         """
 
         example_path = os.system(
-            "cp example_asciis/uBB_20s_x60_20mins_000.spe "
-            f"new_format_spectra/{self.which_foil}_data/{spec_numerator}.spe")
+            f"cp {self.folder_path}/{self.ascii_filetag}_000.spe "
+            f"new_format_spectra/{spec_numerator}.spe")
+        
         with open(example_path,'r') as example_input_spectra:
             input_file = example_input_spectra.readlines()
             input_file[11-1] = "Real Time: "

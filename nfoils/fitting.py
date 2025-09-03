@@ -1,5 +1,6 @@
 """ 
 module for doing fitting of gamma spec efficiency curves
+yes it is horrible and the range of types used will make you cry
 """
 
 import json
@@ -40,12 +41,12 @@ class CurveFitter:
                                              interpolation_range_end,1)
 
     def _spec_function(self,energy,a0,a1,a2,a3):
-        """ define efficiency polynomial function
-        outputs eff value, but can also be used in the scipy curve_fit
+        """ define efficiency polynomial function for set params and energies
+        outputs list of fitted efficiency values
 
         Parameters
         ----------
-        energy : float list
+        energy : list[float]
             Gamma energies in keV
         a0 : float
             Zero term parameter
@@ -58,8 +59,8 @@ class CurveFitter:
 
         Returns
         -------
-        exp_poly : float
-            efficiency value from inputs
+        exp_poly : list[float]
+            efficiency values for gamma energies
         """
         polynomial = (a0 + a1*np.log(energy)**1 
                       + a2*np.log(energy)**2 
@@ -67,59 +68,59 @@ class CurveFitter:
         exp_poly = np.exp(polynomial)
         return exp_poly
 
-    def _analysis(self,x_list,params_tuple,y_list):
+    def _analysis(self,x_list,params,y_list):
         """ calculate fitted data and compare to experimental data
         to find the residuals and rChi2
 
         Parameters
         ----------
-        x_list : list
+        x_list : list[float]
             List of energy values in keV to fit
-        params_tuple : tuple
-            Tuple of the 4 a parameter values a0-->a3 to use
-        y_list : list
+        params : array[float]
+            Array of the 4 a parameter values a0-->a3 to use
+        y_list : list[float]
             List of efficiency values to fit
 
         Returns
         -------
-        residuals : list
+        residuals : list[float]
             List of residuals between fit and exp data
         reduced_chi_squared : float
             rChi2 value for the fit
         """
-        fit_data = np.array(self._spec_function(x_list, *params_tuple))
+        fit_data = np.array(self._spec_function(x_list, *params))
         residuals = y_list - fit_data 
         chi_squared = np.sum((residuals / self.errors) ** 2)
-        dof = len(y_list) - len(params_tuple) 
+        dof = len(y_list) - len(params) 
         reduced_chi_squared = chi_squared / dof
         return residuals,reduced_chi_squared
 
-    def _single_fit(self,x_list,y_list,params_tuple):
+    def _single_fit(self,x_list,y_list,params_init):
         """ fit the experimental data once and return the equation params
 
         Parameters
         ----------
-        x_list : list
-            List of energy values in keV to fit
-        y_list : list
-            List of efficiency values to fit
-        params_tuple : list
-            tuple of the 4 a parameter values a0-->a3 to use
+        x_list : list[float]
+            List of energy values in keV used for measurement
+        y_list : list[float]
+            List of experimental efficiency values to fit
+        params_init : list[float]
+            list of the initial 4 parameter values a0-->a3 to use
 
         Returns
         -------
-        params : tuple
+        params : array[float]
             tuple of parameter values from single fit
-        errs : array
+        errs : array[float]
             array of errors from single fit
-        residuals : list
+        residuals : list[float]
             List of residuals from single fit
         reduced_chi_squared : float
             rChi2 value for single fit
         """
         params, covs  = curve_fit(self._spec_function, 
                                   x_list, y_list, 
-                                  params_tuple,sigma=self.errors,
+                                  params_init,sigma=self.errors,
                                   absolute_sigma=True)
         errs = np.sqrt(np.diag(covs))
         residuals,reduced_chi_squared = self._analysis(x_list,params,y_list)
@@ -129,24 +130,15 @@ class CurveFitter:
         """ fit the data with MC method
         return the mean, stdev and residuals of the final fit
 
-        Parameters
-        ----------
-        x_list : list
-            List of energy values in keV to fit
-        y_list : list
-            List of efficiency values to fit
-        params_list : list
-            List of the 4 a parameter values a0-->a3 to use
-
         Returns
         -------
-        params_mc : tuple
+        params_mc : tuple[float]
             List of parameter values from mc fit
-        residuals : list
+        residuals : list[float]
             List of residuals from mc fit
         r_chi_squared : float
             rChi2 value for mc fit
-        mc_solutions : list
+        mc_solutions : list[float]
             List of monte carlo solutions
         """
         N = self.no_of_monte_carlo_samples
@@ -195,11 +187,11 @@ class CurveFitter:
 
         Parameters
         ----------
-        solutions : array like
+        solutions : array[float]
             Monte carlo solution
-        standard_dev : array like
+        standard_dev : array[float]
             Array of stdevs on the MC solution
-        residuals : list
+        residuals : list[float]
             List of residuals on the MC solution
         """
         # plot function with eror bar

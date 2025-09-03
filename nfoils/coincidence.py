@@ -26,6 +26,15 @@ class SimpleCorrection():
             Data for the measurements close to detector 
         far_dictionary : dict
             Data for the measurements far away from detector
+        energy : float
+            Energy value in keV for investigation
+
+        Returns
+        ----------
+        near_counts : list[float]
+            countrates at the near geometry, for given energies
+        far_counts : list[float]
+            countrates at the far geometry, for given energies
         """
         selected_near_dictionary = near_dictionary
         selected_far_dictionary = far_dictionary
@@ -39,10 +48,17 @@ class SimpleCorrection():
 
         Parameters
         ----------
-        near_dictionary : dict
-            Data for the measurements close to detector 
-        far_dictionary : dict
-            Data for the measurements far away from detector
+        source_dict_near : dict
+            Data for measurements close to detector 
+        source_dict_far : dict
+            Data for measurements far away from detector
+        energy : float
+            Energy value in keV for investigation
+
+        Returns
+        ----------
+        correction_factor : float
+            simple correction factor for the energy specified
         """
         ratio_near = self._number_counts(
             self.am241_dict_near,

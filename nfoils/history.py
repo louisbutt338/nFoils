@@ -21,9 +21,9 @@ class IrradTimings:
 
         Returns
         -------
-        time : list
+        time : list[float]
             List of times
-        countrate : list
+        countrate : list[float]
             List of counts
         """
         input_filepath = self.filename
@@ -42,7 +42,7 @@ class IrradTimings:
 
         Returns
         -------
-        target_protons_per_s : list
+        target_protons_per_s : list[float]
             List of protons per s for each time interval
         """
         cps_to_protons_per_s = 6.24151e12 * (12/190000)
@@ -62,10 +62,11 @@ class IrradTimings:
             irrad_history_file.writelines("ATOMS")
 
     def run(self):
-        """ run the thing
+        """ run stuff 
         """
-        #print(proton_flux_conversion())
+        #get the fispact format irrad history
         #fispact_hist_writer()
-        #print(len(parse_txt()[0]))
+
+        # or get the array of currents
         approx_current_array = [i*(12/190000) for i in self._parse_txt()[1]]
         print(approx_current_array)

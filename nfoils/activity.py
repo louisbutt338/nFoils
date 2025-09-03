@@ -56,9 +56,9 @@ class ActivityCalc:
 
         Returns
         -------
-        i : array-like
+        i : list[float]
             Array of gamma peak intensities
-        e : array-like
+        e : list[float]
             Array of associated gamma energies
         half_life : float
             Half life of the input isotope
@@ -308,10 +308,15 @@ class ActivityCalc:
 
         Returns
         -------
-        isotope_dictionary : dict
-            results for a single isotope -
-            "activities", "activity_uncertainties", "pathway_probabilities",
-            "reaction_rates", "reaction_rate_uncertainty"
+        isotope_dictionary : dict[ str, dict[ str, list[float] ] ]
+            results for a single isotope e.g. {
+            "isotope name" : {
+            "activities":[], 
+            "activity_uncertainties":[],
+            "pathway_probabilities":[],
+            "reaction_rates":[],
+            "reaction_rate_uncertainty":[] }
+            }
         """
         # print and save results for individual isotope activities
         # and uncerts for top 5 gamma emissions

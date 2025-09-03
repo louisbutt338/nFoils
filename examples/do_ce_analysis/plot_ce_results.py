@@ -20,23 +20,24 @@ flux_norm_mean = 1.1
 # Fractional uncertainty on the fux estimation
 flux_frac_error = 0.05
 
-#first weighted ave in list and last weighted ave in list for the WE calculations
-first_we = 5
-last_we = 20
-
 # reorder the isotopes in your results files into capture-to-threshold
 order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11] 
+
+# first weighted ave in list and last weighted ave in new reordered list
+# for the WE calculations e.g. [4,19] for isotopes 4-->19
+we_isotopes = [5,20]
+
+# which dataset would sir like to use for the weighted average calcs?
+we_library = 'ENDF/B-VIII'
 
 # how many isotopes (in the list above) are primarily thermal induced? 
 # for splitting plot
 plot_splitter = 4
 
-# set y axis size
-y_upper = 2
-y_lower = 0
+# set y axis size e.g. [0,2] for 0-->2
+y_axis = [0.1,2.3]
 
 #run 
 ce_plotter.run(calc_results_file,exp_results_file,flux_norm_mean,
-               flux_frac_error,first_we,last_we,libraries,order,
-               plot_splitter,y_upper,y_lower)
-
+               flux_frac_error,we_isotopes,libraries,order,
+               plot_splitter,y_axis, we_library)

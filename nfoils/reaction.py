@@ -36,6 +36,7 @@ class NuclearData:
         -------
         endf_file : sandy endf object
             Endf file for the specified material
+            See sandy documentation for more details
         """
         endf_file = sandy.get_endf6_file(self.library, "xs", material)
         return endf_file
@@ -46,17 +47,17 @@ class NuclearData:
 
         Parameters
         ----------
-        material : float
+        material : int
             MAT number
-        mt_value : float
+        mt_value : int
             MT number
 
         Returns
         -------
-        cov_array : array-like
-            big array of covariances for the material and MTs
-        stdev_array : array-like
-            big array of uncertainties for the material and MTs
+        cov_array : array[float]
+            big array of all covariances for the input material and MTs
+        stdev_array : array[float]
+            big array of all uncertainties for the input material and MTs
         """
         mt = [mt_value]
         try:
@@ -77,7 +78,7 @@ class NuclearData:
             return cov_array, stdev_array
 
         except (KeyError, ValueError):
-            # if doesn't work return empty arrays
+            # if this doesn't work return empty arrays so keep code running
             print(f'-----> reactions not found for MAT {material}'
                   f': MT {mt}')
             return np.array([]),np.array([])
@@ -95,7 +96,7 @@ class NuclearData:
 
         Returns
         -------
-        xs_array : array-like
+        xs_array : array[float]
             big array of cross sections for the material and MTs
         """
         mt = [mt_value]
@@ -128,7 +129,7 @@ class NuclearData:
 
         Returns
         -------
-        data_array_split : array-like
+        data_array_split : array[array[float]]
             split the big array into an array of arrays for each reaction
         """
         if data_array.size > 0:
@@ -145,7 +146,7 @@ class NuclearData:
 
         Parameters
         ----------
-        cross_section : array
+        cross_section : array[float]
             cross section data for the reaction
         density : float
             density of foil material in g/cm3
@@ -160,7 +161,7 @@ class NuclearData:
 
         Returns
         -------
-        response_function : array-like
+        response_function : array[float]
             response function array for the reaction
         """
         foil_volume = mass/density
@@ -180,24 +181,24 @@ class NuclearData:
         ----------
         datafile : str
             name of json data file
-        labels : list
+        labels : list[str]
             list of reaction labels
 
         Returns
         -------
-        material_list : list
+        material_list : list[int]
             list of ENDF material numbers
-        mt_list : list
+        mt_list : list[int]
             list of reaction (MT) numbers
-        density_list : list
+        density_list : list[float]
             list of densities (g/cm3) for foils
-        mass_list : list
+        mass_list : list[float]
             list of masses (g) for foils
-        abundance_list : list
+        abundance_list : list[float]
             list of abundances for parent isotopes
-        atomic_mass_list : list
+        atomic_mass_list : list[float]
             list of atomic masses for foils
-        thickness_list : list
+        thickness_list : list[float]
             list of foil thicknesses (cm)
         """
         with open(f'{datafile}.json') as json_file:
@@ -227,15 +228,15 @@ class PostprocessReactions(NuclearData):
 
     def _export_and_plot_stdev(self, material_list, mt_values_list,
                                reaction_labels):
-        """ export stdev data to one csv and plots uncertainty percentages
+        """ export stdev data to one csv and plot uncertainty percentages
 
         Parameters
         ----------
-        material_list : list
-            list of materials
-        mt_values_list : list
-            list of mt values
-        reaction_labels : list
+        material_list : list[int]
+            list of endf material numbers
+        mt_values_list : list[int]
+            list of endf mt values
+        reaction_labels : list[str]
             list of reaction labels for plot
         """
         # inital figure and csv setting
@@ -291,21 +292,21 @@ class PostprocessReactions(NuclearData):
 
         Parameters
         ----------
-        material_list : list
-            list of materials
-        mt_list : list
-            list of mt values
-        density_list : list
-            list of densities in g/cm3
-        mass_list : list
-            list of masses in g
-        abundance_list : list
-            list of isotope abundances in ratio form
-        atomic_mass_list : list
+        material_list : list[int]
+            list of endf material numbers
+        mt_list : list[int]
+            list of endf mt values
+        density_list : list[float]
+            list of foil densities in g/cm3
+        mass_list : list[float]
+            list of foil masses in g
+        abundance_list : list[float]
+            list of parent isotope abundances in ratio form
+        atomic_mass_list : list[float]
             list of atomic masses
-        labels_list : list
+        labels_list : list[str]
             list of reaction labels for plot
-        thickness_list : list
+        thickness_list : list[float]
             list of foil thicknesses in cm
         """
         # inital figure and csv setting
@@ -370,7 +371,7 @@ class PostprocessReactions(NuclearData):
         ----------
         datafile : str
             name of json data file
-        labels : list
+        labels : list[str]
             list of reaction labels
         """
         data_lists = self._unpack_datafile(datafile)
@@ -383,7 +384,7 @@ class PostprocessReactions(NuclearData):
         ----------
         datafile : str
             name of json data file
-        labels : list
+        labels : list[str]
             list of reaction labels
         """
         data_lists = self._unpack_datafile(datafile)
@@ -394,7 +395,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
     """ class for getting isotopic spectrum uncertainty
     """
     def __init__(self, ek, library):
-        """ Initialise class
+        """ Initialise class and inherit NuclearData
         """
         super().__init__(ek, library)
 
@@ -408,11 +409,13 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
         Returns
         ----------
-        frac_uncert : array like
+        frac_uncert : array[float]
             full spectrum fractional uncertainty array
         """
         spectrum_data = np.fromfile(f'{spectrum_file}.txt', sep=" ")
-        frac_uncert = np.divide(spectrum_data[1::2], spectrum_data[::2])
+        flux_vals = spectrum_data[::2]
+        uncert_vals = spectrum_data[1::2]
+        frac_uncert = np.divide(uncert_vals, flux_vals)
         return frac_uncert
 
     def _normalise_xs(self, xs):
@@ -420,12 +423,12 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
         Parameters
         ----------
-        xs : array
+        xs : array[float]
             xs array in the same group structure
 
         Returns
         ----------
-        normalised_xs : array
+        normalised_xs : array[float]
             normalised xs array
         """
         total_xs = sum(xs)
@@ -439,9 +442,9 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
         Parameters
         ----------
-        uncertainties : array
+        uncertainties : array[float]
             Uncertainty array in the same group structure
-        xs : array
+        xs : array[float]
             Normalised xs array in the same group structure
 
         Returns
@@ -453,25 +456,29 @@ class IsotopicSpectrumUncertainty(NuclearData):
         percent_uncertainty = np.dot(uncertainties, xs)
         return percent_uncertainty
     
-    def get_isotopic_uncertainties(self, spectrum_file, datafile, cutoff):
+    def get_isotopic_uncertainties(self, spectrum_file, datafile, cutoffs):
         """ Get all the uncertainties for your reactions
         and prints the results
 
         Parameters
         ----------
-        spectrum_file : array
-            Name of the spectrum file
+        spectrum_file : str
+            Name of the spectrum file without txt extension
         datafile : str
-            Name of the json datafile
-        cutoff : int
+            Name of the json datafile without json extension
+        cutoffs : list[int]
             how many vals to cut off at the end of the group structure
-            as there is no spectrum there
+            as there is no spectrum there i.e. [1,5] cuts off 1 from bottom
+            and 5 from top
         """
+        # unpack the data and do cutoffs from the energy grid
         data_lists = self._unpack_datafile(datafile)
-        # self.ek = self.ek[:-cutoff]
+        self.ek = self.ek[cutoffs[0]:-cutoffs[1]]
 
         # loop through specified materials and MT values
         uncertainties = []
+        materials = []
+        mts = []
         for (material, mt) in zip(data_lists[0], data_lists[1]):
             nuclear_data = self._get_gendf_data(material, mt)
             array_of_arrays = self._extract_array_data(nuclear_data)
@@ -480,13 +487,15 @@ class IsotopicSpectrumUncertainty(NuclearData):
             if array_of_arrays is not None:
                 for m in range(len(array_of_arrays)):
                     cross_section = array_of_arrays[m]
-                    norm_cross_section = (self._normalise_xs(cross_section)
-                                          [:-cutoff])
+                    norm_cross_section = (self._normalise_xs(cross_section))
                     spectrum_uncert_array = (self._read_spectrum_uncert
-                                             (spectrum_file)[:-cutoff])
+                                             (spectrum_file)
+                                             [cutoffs[0]:-cutoffs[1]])
                     uncertainty = self._isotopic_uncertainty(
                         spectrum_uncert_array,norm_cross_section)
                     uncertainties.append(uncertainty)
+                    materials.append(material)
+                    mts.append(mt)
 
-        print('List of isotopic spectrum uncertainties:',
-              np.array(uncertainties))
+        for (i,j,k) in zip(materials, mts,uncertainties):
+            print(f'mat={i},mt={j} uncertainty is {k}')

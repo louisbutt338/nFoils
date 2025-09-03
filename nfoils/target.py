@@ -1,5 +1,5 @@
 """ 
-module for doing analysis on a lithium target
+module for doing flux estimation analysis on a lithium target
 """
 
 from math import pi, sqrt, log
@@ -97,7 +97,6 @@ class TargetAnalysis:
         # if particle == 'deuteron':
         #     scaling_factor_1ua = 6.24151e13
         # particle_flux = total_flux*scaling_factor_1ua*current
-
         return no_particles
 
     def _cross_section(self,no_isotopes,target_atoms,beam_flux):

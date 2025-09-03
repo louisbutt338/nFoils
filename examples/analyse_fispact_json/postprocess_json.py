@@ -27,4 +27,3 @@ for i in isotope_dictionary.items():
         json_path,time_interval,zai,isotope_state) 
     isotope_activity = retrieve_activities.run()
     print(f'{isotope} activity : {isotope_activity}')
-

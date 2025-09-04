@@ -38,17 +38,20 @@ class JsonRetriever:
             activity of the isotope in bq
         """
         try:
-            json_file_data = json.load(open(f'{self.filepath}'))
+            with open(f'{self.filepath}') as json_path:
+                json_file_data = json.load(json_path)
+                nuclides_list = (json_file_data['inventory_data']
+                                 [self.interval]
+                                 ['nuclides'])
+                nuclides_dict = {item['zai']:item for item in nuclides_list}
+                if self.zai in nuclides_dict.keys():
+                    isotope_activity = nuclides_dict[self.zai]['activity']
+                    return isotope_activity
+                else:
+                    return 'isotope not calculated'
+        
         except FileNotFoundError:
             return 'file not found'
-        nuclides_list = (json_file_data['inventory_data'][self.interval]
-                         ['nuclides'])
-        nuclides_dict = {item['zai']:item for item in nuclides_list}
-        if self.zai in nuclides_dict.keys():
-            isotope_activity = nuclides_dict[self.zai]['activity']
-            return isotope_activity
-        else:
-            return 'isotope not calculated'
 
 
 class GammaSpectrumModel:

@@ -272,7 +272,9 @@ class CEPlotter:
     def run(self,calc_results,exp_results,flux_norm,flux_error,
             we_isotopes,libraries,new_order,plot_splitter,
             y_axis,we_library):
-        """ run the C/E analysis and plot
+        """ read the c_results data and e_results data, 
+        calculate C/E results and uncerts and plot 
+        and do weighted average analysis
 
         Parameters
         ----------
@@ -303,44 +305,50 @@ class CEPlotter:
             Name of the library to do the weighted ave analysis on 
             (must be one of 'libraries')
         """
-        #extract foil data and isotopes
-        model_results_path = f"{calc_results}.json"
-        model_results = json.load(open(model_results_path))
-        isotope_list = model_results.keys()
-        foil_weight = [model_results[i]["foil_weight"] for i in isotope_list]
-        ssf = [model_results[i]["self_shielding_factor"] for i in isotope_list]
-        isotope_list_mathmode = [model_results[i]["mathmode_name"]
-                                 for i in isotope_list]
+        with open(f"{calc_results}.json") as model_results_path:
+            model_results = json.load(model_results_path)
 
-        # calculate spectrum + flux uncertainties for each isotope
-        spectrum_frac_u = [model_results[i]["spectrum_fractional_uncertainty"]
+            # extract foil data and isotopes from c_results
+            isotope_list = model_results.keys()
+            foil_weight = [model_results[i]["foil_weight"]
                            for i in isotope_list]
-        spectrum_flux_frac_u = [np.sqrt(flux_error**2 + u**2)
-                                for u in spectrum_frac_u]
+            ssf = [model_results[i]["self_shielding_factor"]
+                   for i in isotope_list]
+            isotope_list_mathmode = [model_results[i]["mathmode_name"]
+                                     for i in isotope_list]
 
-        #extract data for experimental activities (using average activities)
-        exp_results_path =  f"{exp_results}.json" 
-        exp_results_data = json.load(open(exp_results_path))
-        exp_a = [np.mean(exp_results_data[key]["activities"])
-                 for key in isotope_list]
-        exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
-                 for key in isotope_list]
+            # get isotopic spectrum + flux uncertainties from c_results 
+            spectrum_frac_u = [model_results[i]
+                               ["spectrum_fractional_uncertainty"]
+                               for i in isotope_list]
+            spectrum_flux_frac_u = [np.sqrt(flux_error**2 + u**2)
+                                    for u in spectrum_frac_u]
 
-        #extract data for calculated activities
-        calc_a_1 = [model_results[i]["activities"][0]
-                    for i in isotope_list]
-        calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
-                    for i in isotope_list]
-        calc_a_2 = [model_results[i]["activities"][1]
-                    for i in isotope_list]
-        calc_u_2 = [model_results[i]["fractional_uncertainties"][1]
-                    for i in isotope_list]
-        calc_a_3 = [model_results[i]["activities"][2]
-                    for i in isotope_list]
-        calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
-                    for i in isotope_list]
+            # extract calculated activities from c_results 
+            calc_a_1 = [model_results[i]["activities"][0]
+                        for i in isotope_list]
+            calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
+                        for i in isotope_list]
+            calc_a_2 = [model_results[i]["activities"][1]
+                        for i in isotope_list]
+            calc_u_2 = [model_results[i]["fractional_uncertainties"][1]
+                        for i in isotope_list]
+            calc_a_3 = [model_results[i]["activities"][2]
+                        for i in isotope_list]
+            calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
+                        for i in isotope_list]
 
-        #perform C/E calculations for the foils
+        with open(f"{exp_results}.json" ) as exp_results_path:
+            exp_results_data = json.load(exp_results_path)
+
+            # extract experimental activities from e_results
+            # (using average activities of included peaks)
+            exp_a = [np.mean(exp_results_data[key]["activities"])
+                     for key in isotope_list]
+            exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
+                     for key in isotope_list]
+
+        # perform C/E calculations for the foils
         ce_results_1  = [
             (flux_norm)*
             self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)

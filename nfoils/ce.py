@@ -80,8 +80,6 @@ class CEPlotter:
                               +spectrum_flux_frac_uncerts[i]**2)
             e_error = exp_uncerts[i]/exp_activities[i]
             ce_error =  np.sqrt( c_error**2 + e_error**2)
-            #ce_error =  np.sqrt( c_error**2 + e_error**2 ) * c_over_e[i]
-            #ce_error =  ( c_error + e_error ) * c_over_e[i]
             c_over_e_uncerts.append(ce_error)
         return c_over_e_uncerts
 

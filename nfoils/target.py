@@ -1,5 +1,9 @@
 """ 
 module for doing flux estimation analysis on a lithium target
+
+G Knoll, Radiation Detection and Measurement, 2010
+M Majerle et al, Peak neutron production from the 7 Li(p,n) reaction
+    in the 20-35 MeV range, EPJ Web of Conferences 239 (20010) 2020
 """
 
 from math import pi, sqrt, log
@@ -31,7 +35,7 @@ class TargetAnalysis:
         self.real_target_flux = real_target_flux
 
     def _no_of_isotopes(self,activity,t_half):
-        """ calculate number of radioactive isotopes 
+        """ calculate number of radioactive isotopes (knoll p2)
 
         Parameters
         ----------
@@ -47,7 +51,6 @@ class TargetAnalysis:
         """
         activity_lambda = log(2)/t_half
         isotopes = activity/activity_lambda 
-        #isotopes = activity/(1-exp(-irrad_time*activity_lambda))
         return isotopes
 
     def _no_of_target_atoms(self,thickness,mass_density,atom_mass,radius):
@@ -75,8 +78,8 @@ class TargetAnalysis:
         return target_atoms
 
     def _no_of_beam_particles(self,current,irrad_time):
-        """ calculate number of charged particles
-          incident on target for given current
+        """ calculate number of charged particles incident on target
+        for given current
 
         Parameters
         ----------
@@ -92,15 +95,10 @@ class TargetAnalysis:
         """
         total_coulombs = current*1e-6*irrad_time
         no_particles = total_coulombs/(1.602176634e-19)
-        # if particle == 'proton':
-        #     scaling_factor_1ua = 6.24151e12
-        # if particle == 'deuteron':
-        #     scaling_factor_1ua = 6.24151e13
-        # particle_flux = total_flux*scaling_factor_1ua*current
         return no_particles
 
     def _cross_section(self,no_isotopes,target_atoms,beam_flux):
-        """ calculate a lithium 7 cross-section in millibarns
+        """ calculate a lithium 7 cross-section in millibarns (majerle)
 
         Parameters
         ----------

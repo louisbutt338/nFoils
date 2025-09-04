@@ -1,5 +1,8 @@
 """ 
-module for dealing with ASCII spe files
+module for dealing with and processing ASCII spe files
+
+M Gilbert, Neutron Irradiation Experiments: Automated Processing and Analysis
+    of γ-spectra, Nuclear Data Sheets 119 (401-403) 2014
 """
 
 import numpy as np 
@@ -116,9 +119,8 @@ class AsciiSummer:
 
 
 class AsciiPreprocessing(AsciiSummer):
-    """ class for processing MAESTRO .spe file 
-    into the format for Mark's fortran gamma spec program
-    May need some looking into if want to use again
+    """ class for processing MAESTRO .spe file into the format for 
+    UKAEA's gamma_process_spectra(gilbert)
     """
 
     def __init__(self, data_folder_path, filetag, ff_number, lf_number):
@@ -128,7 +130,7 @@ class AsciiPreprocessing(AsciiSummer):
 
     def _spe_preprocessor(self,spec_numerator,ascii_headers,cumulative_data):
         """ copies the example input file header for gamma_process_spectra
-         and print the desired spectrum to the new format
+        and print the desired spectrum to the new format
 
         Parameters
         ----------

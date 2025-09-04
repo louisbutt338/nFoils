@@ -1,5 +1,6 @@
 """ 
-module for doing various fispact-y things
+module for doing various fispact-y postprocessings
+
 """
 
 import json

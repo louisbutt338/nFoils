@@ -1,5 +1,8 @@
 """
 module for calculating activity for a whole ton of isotopes
+
+G Knoll, Radiation Detection and Measurement, 2010
+D Arnold et al, Fundamentals of gamma spectrometry, 2018
 """
 import json
 from datetime import datetime
@@ -123,7 +126,7 @@ class ActivityCalc:
         return sol_ang_disc
 
     def _efficiency_abs(self, energy, n0, n1, n2, n3):
-        """ equation for the log-polynomial efficiency curves (knoll)
+        """ equation for the log-polynomial efficiency curves (knoll, p458)
 
         Parameters
         ----------
@@ -144,13 +147,15 @@ class ActivityCalc:
             the efficiency of the detector
         """
         polynomial = (n0 + n1*np.log(energy)**1
-                      + n2*np.log(energy)**2 + n3*np.log(energy)**3)
+                      + n2*np.log(energy)**2
+                      + n3*np.log(energy)**3)
         eff = np.exp(polynomial)
         return eff
 
     def _activity_livetime(self, c, i, e, foil_dist, isotope_name):
         """ use the foil measurement distance and efficiency curves
-        to calculate activity over the live time from counts (knoll)
+        to calculate activity over the live time from counts 
+        (knoll, p120) (arnold, p42)
 
         Parameters
         ----------
@@ -193,6 +198,7 @@ class ActivityCalc:
 
     def _self_attenuation_correction(self, material, e, thickness, density):
         """ gamma self absorption correction factor taken from XCOM mu data
+        (arnold, p41)
 
         Parameters
         ----------
@@ -217,7 +223,7 @@ class ActivityCalc:
         return self_att_factor
 
     def _activity_integrand(self, t, half_life):
-        """ integral shortcut for activity interpolation
+        """ integral shortcut for activity interpolation (arnold, p44)
 
         Parameters
         ----------
@@ -237,7 +243,7 @@ class ActivityCalc:
     def _activity_0(self, c, i, e, measurement_distance,
                     isotope_name, halflife):
         """ calculate initial activity after irrad (w/o corrections)
-        from the measured activity over a live time
+        from the measured activity over a live time (arnold, p44)
 
         Parameters
         ----------
@@ -268,10 +274,6 @@ class ActivityCalc:
         activity = (self._activity_livetime(c, i, e, measurement_distance,
                                             isotope_name)
                     / (quad_integral))[0]
-        # activity = ( (activity_livetime(c,i,e)[0]
-        #             /json_file_data[isotope_name]['live_time'])
-        #             * exp(get_decay_database(isotope_name)[2]
-        #                 / (log(2) * decay_time(isotope_name))) )
         return activity
 
     def _reaction_rates(self, a, irradiation_time, halflife):

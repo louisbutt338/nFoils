@@ -1,6 +1,11 @@
 """ 
 module for doing fitting of gamma spec efficiency curves
-yes it is horrible and the range of types used will make you cry
+credit to Ethan Sumner (UoB) for development
+
+G Knoll, Radiation Detection and Measurement, 2010
+
+notes: making the arrays/lists used more consistent would be nice,
+also including plotting for the single fit method
 """
 
 import json
@@ -42,7 +47,7 @@ class CurveFitter:
 
     def _spec_function(self,energy,a0,a1,a2,a3):
         """ define efficiency polynomial function for set params and energies
-        outputs list of fitted efficiency values
+        outputs list of fitted efficiency values (knoll, p458)
 
         Parameters
         ----------
@@ -70,7 +75,7 @@ class CurveFitter:
 
     def _analysis(self,x_list,params,y_list):
         """ calculate fitted data and compare to experimental data
-        to find the residuals and rChi2
+        to find the residuals and reduced Chi^2
 
         Parameters
         ----------
@@ -127,8 +132,9 @@ class CurveFitter:
         return params,errs,residuals,reduced_chi_squared
 
     def _monte_carlo_fit(self):
-        """ fit the data with MC method
+        """ fit the experimental data lots of times with MC method
         return the mean, stdev and residuals of the final fit
+        May need to increase N number of runs to get stable params
 
         Returns
         -------
@@ -183,7 +189,7 @@ class CurveFitter:
         return params_mc,residuals,r_chi_squared,mc_solutions
 
     def _mc_plotter(self,solutions,standard_dev,residuals):
-        """ plot the monte carlo data
+        """ plot the monte carlo results
 
         Parameters
         ----------
@@ -223,7 +229,7 @@ class CurveFitter:
         plt.close()
 
     def run_single(self):
-        """ run the single fit and print values 
+        """ run the single fit method and print parameter values 
         """
         single_fit_results = self._single_fit()
         a0, a1,a2,a3 = single_fit_results[0]
@@ -235,7 +241,7 @@ class CurveFitter:
               f" \n rChi2 = {reduced_chi_squared}")
 
     def run_mc(self):
-        """ run the mc fit, print values and plot
+        """ run the mc fit method, print param values and do plotting
         """
         params_mc,residuals,r_chi_s,mc_solutions = self._monte_carlo_fit()
         a_mc,a1_mc,a2_mc,a3_mc = params_mc

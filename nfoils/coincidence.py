@@ -1,6 +1,9 @@
 """ 
 module for performing coincidence summing calculations and corrections
 wahey no dependencies
+
+S Kafala, Simple method for true coincidence summing correction, Journal of
+    Radioanalytical and Nuclear Chemistry Articles 191 (105-114), 1995
 """
 
 
@@ -43,8 +46,7 @@ class SimpleCorrection():
         return near_counts,far_counts
 
     def _correction_factor(self,source_dict_near,source_dict_far,energy):
-        """ find c.factor for a given energy/counts/peak 
-        taken from simple c summing paper
+        """ find c.factor for a given energy/counts/peak (kafala)
 
         Parameters
         ----------

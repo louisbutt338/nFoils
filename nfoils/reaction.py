@@ -1,6 +1,9 @@
 """
 module for using sandy/njoy for nuclear data extraction
 and various postprocessings
+
+L Fiorito, Nuclear data uncertainty propagation to integral responses
+    using SANDY, Annals of Nuclear Energy 101 (359-366) 2017
 """
 
 import csv
@@ -25,7 +28,7 @@ class NuclearData:
         self.library = library
 
     def _get_endf_file(self, material):
-        """ run the sandy get_endf routine
+        """ run the sandy get_endf routine (fiorito)
 
         Parameters
         ----------
@@ -43,7 +46,7 @@ class NuclearData:
 
     def _get_errorr_data(self, material, mt_value):
         """ get covariance, standard deviation from a material endf6 file
-        or return empty arrays
+        or return empty arrays (fiorito)
 
         Parameters
         ----------
@@ -85,7 +88,7 @@ class NuclearData:
 
     def _get_gendf_data(self, material, mt_value):
         """ get groupwise cross sections from a material endf6 file
-        or return empty array
+        or return empty array (fiorito)
 
         Parameters
         ----------
@@ -119,8 +122,8 @@ class NuclearData:
             return np.array([])
 
     def _extract_array_data(self, data_array):
-        """ extract data from the top function 
-        and return the stdev or xs array split by individual MT reactions
+        """ extract data from the top function and return the stdev
+        or xs array split by individual MT reactions
 
         Parameters
         ----------
@@ -141,7 +144,7 @@ class NuclearData:
             return data_array_split
     
     def _calculate_response_function(self, cross_section, density, mass,
-                                     abundance, atomic_mass, thickness):
+                                     abundance, atomic_mass):
         """ calculate response function from the cross section
 
         Parameters
@@ -156,8 +159,6 @@ class NuclearData:
             abundance ratio of the isotope which caused the reaction
         atomic_mass : float
             atomic mass of the foil
-        thickness : float
-            thickness of the foil in cm
 
         Returns
         -------
@@ -166,11 +167,7 @@ class NuclearData:
         """
         foil_volume = mass/density
         atom_density = (abundance * density * 1e-24 * 6.022e23)/atomic_mass
-        ss_correction_factor = 1
-        # rho_xs_t = atom_density*cross_section*thickness
-        # ss_correction_factor = ((1-np.exp(-rho_xs_t))/ rho_xs_t)
-        response_function = (atom_density * foil_volume *
-                             cross_section * ss_correction_factor)
+        response_function = (atom_density * foil_volume * cross_section)
         response_function[np.isnan(response_function)] = 0
         return response_function
 
@@ -198,8 +195,6 @@ class NuclearData:
             list of abundances for parent isotopes
         atomic_mass_list : list[float]
             list of atomic masses for foils
-        thickness_list : list[float]
-            list of foil thicknesses (cm)
         """
         with open(f'{datafile}.json') as json_file:
             json_file_data = json.load(json_file)
@@ -211,11 +206,8 @@ class NuclearData:
                               for x in json_file_data.values()]
             atomic_mass_list = [x['foil_atomic_mass']
                                 for x in json_file_data.values()]
-            thickness_list = [x['thickness_cm']
-                              for x in json_file_data.values()]
         return (material_list, mt_list, density_list,
-                mass_list, abundance_list, atomic_mass_list,
-                thickness_list)
+                mass_list, abundance_list, atomic_mass_list)
 
 
 class PostprocessReactions(NuclearData):
@@ -287,7 +279,7 @@ class PostprocessReactions(NuclearData):
 
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
                             mass_list, abundance_list, atomic_mass_list,
-                            thickness_list, labels_list):
+                            labels_list):
         """ export response function data to one csv and plots RFs
 
         Parameters
@@ -306,8 +298,6 @@ class PostprocessReactions(NuclearData):
             list of atomic masses
         labels_list : list[str]
             list of reaction labels for plot
-        thickness_list : list[float]
-            list of foil thicknesses in cm
         """
         # inital figure and csv setting
         open('response_function.csv', 'w').close()
@@ -319,10 +309,10 @@ class PostprocessReactions(NuclearData):
 
         # loop through specified materials and MT values
         for (material, mt, density, mass, abundance,
-             atomic_mass, thickness, reaction_label) in zip(
+             atomic_mass, reaction_label) in zip(
                  material_list, mt_list, density_list,
                  mass_list, abundance_list, atomic_mass_list,
-                 thickness_list, labels_list):
+                 labels_list):
             nuclear_data = self._get_gendf_data(material, mt)
             array_of_arrays = self._extract_array_data(nuclear_data)
 
@@ -334,7 +324,7 @@ class PostprocessReactions(NuclearData):
                     cross_section = array_of_arrays[m]
                     response_function = self._calculate_response_function(
                         cross_section, density, mass, abundance,
-                        atomic_mass, thickness)
+                        atomic_mass)
                     ax1.stairs(response_function, ek_mev,
                                label=f'{reaction_label}', color=c, lw=1.5)
                     ax2.stairs(response_function, ek_mev,

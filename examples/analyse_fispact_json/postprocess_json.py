@@ -1,3 +1,5 @@
+""" example for getting specific activity data from a fispact json
+"""
 from nfoils.fispact import JsonRetriever
 
 # input working directory with the json file in 

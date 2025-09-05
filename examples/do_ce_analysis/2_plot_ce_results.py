@@ -1,3 +1,6 @@
+""" example for plotting c/e results from experimental and calculated
+please run calculate_exp_activities.py first to generate e_results file
+"""
 from nfoils.ce import CEPlotter
 
 # path and name for the C/E plot to have

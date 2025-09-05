@@ -1,3 +1,5 @@
+""" example for summing ascii files together and plotting them
+"""
 from nfoils.ascii import AsciiSummer
 
 folder_path = 'example_asciis'

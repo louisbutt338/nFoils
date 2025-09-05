@@ -1,3 +1,6 @@
+""" example for  fitting hpge efficiency functions to data
+"""
+
 from nfoils.fitting import CurveFitter
 
 #select folder and dataset

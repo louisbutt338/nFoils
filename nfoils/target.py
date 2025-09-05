@@ -7,17 +7,15 @@ M Majerle et al, Peak neutron production from the 7 Li(p,n) reaction
 """
 
 from math import pi, sqrt, log
-import numpy as np
+import json
 
 
 class TargetAnalysis:
     """ class to estimate flux from be7 activity
     """
     def __init__(self, isotope_activity,isotope_halflife,
-                 current_list,timing_list,target_thickness,
-                 target_radius,target_mass_density,
-                 target_atomic_mass, real_cross_section,
-                 real_foil_flux,real_target_flux):
+                 current_list,timing_list,target_json_name,
+                 real_cross_section): 
         """ Initialise class
         """
 
@@ -26,13 +24,13 @@ class TargetAnalysis:
         self.isotope_halflife = isotope_halflife
         self.current_list =  current_list
         self.timing_list = timing_list
-        self.target_thickness = target_thickness
-        self.target_radius = target_radius
-        self.target_mass_density = target_mass_density
-        self.target_atomic_mass = target_atomic_mass
+        self.target_json_name = target_json_name
         self.real_cross_section = real_cross_section
-        self.real_foil_flux = real_foil_flux
-        self.real_target_flux = real_target_flux
+
+        # load the target data
+        with open(f'{self.target_json_name}.json'
+                  ) as target_file:
+            self.target_data = json.load(target_file)
 
     def _no_of_isotopes(self,activity,t_half):
         """ calculate number of radioactive isotopes (knoll p2)
@@ -119,8 +117,23 @@ class TargetAnalysis:
 
     def run(self):
         """ run the thing for be7 in a lithium target and print results
+
+        Returns
+        -------
+        correction_factor : float
+            correction factor to scale your Faraday cup current by
+            to get current on the lithium target
+        total_frac_uncert : float
+            fractional uncertainty on the above
         """
-        # do calculations for the fractional uncertainty 
+
+        # find target data from file 
+        target_thickness = self.target_data["thickness"]
+        target_mass_density = self.target_data["mass_density"]
+        target_atomic_mass = self.target_data["atomic_mass"]
+        target_radius = self.target_data["radius"]
+ 
+        # calculate incident particles and be7 cross section
         summed_incident_particles = sum(
             [self._no_of_beam_particles(
                 self.current_list[i],
@@ -129,31 +142,21 @@ class TargetAnalysis:
         be7_cross_section = self._cross_section(
             self._no_of_isotopes(self.isotope_activity[0],
                                  self.isotope_halflife),
-            self._no_of_target_atoms(self.target_thickness,
-                                     self.target_mass_density,
-                                     self.target_atomic_mass,
-                                     self.target_radius),
+            self._no_of_target_atoms(target_thickness,
+                                     target_mass_density,
+                                     target_atomic_mass,
+                                     target_radius),
             summed_incident_particles)
+        
+        # do calculations for the fractional uncertainty
         total_frac_uncert = sqrt(
             (self.isotope_activity[1]/self.isotope_activity[0])**2
             +(self.real_cross_section[1])**2)
-        print("flux-estimation fractional uncert "
-              "(without FC1 uncert and incident proton energy uncert)= " 
-              f"{total_frac_uncert}" )
 
         # do calculation for the correction factor
         correction_factor = be7_cross_section/self.real_cross_section[0]
         print(f"flux correction factor from simulation is {correction_factor}" 
               f"+- {correction_factor*total_frac_uncert}")
-
-        # do estimations for source strength of target and Fe foil neutron flux
-        # by benchmarking to mcnp values
-        source_p_per_s_10ua = 6.24151e+13
-        target_area = np.pi*(self.target_radius**2)
-        source_strength = (correction_factor*source_p_per_s_10ua*
-                           target_area*self.real_target_flux)
-        flux = correction_factor*source_p_per_s_10ua*self.real_foil_flux
-        print(f"rescaled source strength when FC1=10uA: {source_strength:.5e}"
-              f" +- {total_frac_uncert*source_strength:.5e} n/s")
-        print(f"rescaled flux when FC1=10uA: {flux:.5e} "
-              f"+- {total_frac_uncert*flux:.5e} n/cm2/s")
+        print("note uncertainty does not currently include uncert on" 
+              "current readings, incident proton energy, target thickness")
+        return correction_factor,total_frac_uncert

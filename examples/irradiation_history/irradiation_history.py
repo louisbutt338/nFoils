@@ -1,3 +1,6 @@
+""" example for converting time bin data into fispact irrad history
+"""
+
 from nfoils.history import IrradTimings
 
 filename = "rate.txt"

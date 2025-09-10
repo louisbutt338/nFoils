@@ -11,21 +11,19 @@ import json
 
 
 class TargetAnalysis:
-    """ class to estimate flux from be7 activity
+    """ class to estimate flux from be7 activity 
     """
-    def __init__(self, isotope_activity,isotope_halflife,
-                 current_list,timing_list,target_json_name,
-                 real_cross_section): 
+    def __init__(self,target_json_name): 
         """ Initialise class
+
+        Attributes
+        ----------
+        target_json_name : str
+            name of the target data json
         """
 
-        # set the parameters
-        self.isotope_activity = isotope_activity
-        self.isotope_halflife = isotope_halflife
-        self.current_list =  current_list
-        self.timing_list = timing_list
+        # set attributes
         self.target_json_name = target_json_name
-        self.real_cross_section = real_cross_section
 
         # load the target data
         with open(f'{self.target_json_name}.json'
@@ -115,8 +113,22 @@ class TargetAnalysis:
         lithium7_xs = (1e27*no_isotopes)/(target_atoms*beam_flux*0.925)
         return lithium7_xs
 
-    def run(self):
+    def run(self,isotope_activity,isotope_halflife,current_list,
+            timing_list,real_cross_section):
         """ run the thing for be7 in a lithium target and print results
+
+        Parameters
+        ----------
+        isotope_activity : list[float]
+            Activity and raw uncertainty of the isotope in Bq
+        isotope_halflife: float
+            Halflife of the isotope
+        current_list : list[float]
+            List of faraday cup current readings in uA
+        timing_list : list[int]
+            List of irradiation timings in s
+        real_cross_section : list[float]
+            Cross section (mb) and fractional uncertainty
 
         Returns
         -------
@@ -136,12 +148,12 @@ class TargetAnalysis:
         # calculate incident particles and be7 cross section
         summed_incident_particles = sum(
             [self._no_of_beam_particles(
-                self.current_list[i],
-                self.timing_list[i]) for i in range(
-                    len(self.current_list))])
+                current_list[i],
+                timing_list[i]) for i in range(
+                    len(current_list))])
         be7_cross_section = self._cross_section(
-            self._no_of_isotopes(self.isotope_activity[0],
-                                 self.isotope_halflife),
+            self._no_of_isotopes(isotope_activity[0],
+                                 isotope_halflife),
             self._no_of_target_atoms(target_thickness,
                                      target_mass_density,
                                      target_atomic_mass,
@@ -150,13 +162,13 @@ class TargetAnalysis:
         
         # do calculations for the fractional uncertainty
         total_frac_uncert = sqrt(
-            (self.isotope_activity[1]/self.isotope_activity[0])**2
-            +(self.real_cross_section[1])**2)
+            (isotope_activity[1]/isotope_activity[0])**2
+            +(real_cross_section[1])**2)
 
         # do calculation for the correction factor
-        correction_factor = be7_cross_section/self.real_cross_section[0]
+        correction_factor = be7_cross_section/real_cross_section[0]
         print(f"flux correction factor from simulation is {correction_factor}" 
               f"+- {correction_factor*total_frac_uncert}")
-        print("note uncertainty does not currently include uncert on" 
+        print("note uncertainty does not currently include uncert on " 
               "current readings, incident proton energy, target thickness")
         return correction_factor,total_frac_uncert

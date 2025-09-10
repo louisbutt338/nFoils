@@ -16,14 +16,14 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 class AsciiSummer:
     """ class for summing time-binned ascii files together and plotting
     """
-    def __init__(self, data_folder_path, filetag, ff_number, lf_number):
+    def __init__(self, data_folder_path, filetag, file_numbers):
         """ initialise class
         """
         # set the parameters
         self.folder_path = data_folder_path
         self.ascii_filetag = filetag
-        self.first_file_number =  ff_number
-        self.last_file_number = lf_number
+        self.first_file_number =  file_numbers[0]
+        self.last_file_number = file_numbers[1]
 
     def _parse_ascii(self, spectrum_number):
         """ parses the ascii spectrum data from the selected ascii file
@@ -84,6 +84,7 @@ class AsciiSummer:
         ascii_data : list[int]
             data in the middle of the ascii file
         """
+        print("plotting summed ASCII...")
         kev_array = [i*0.41653 for i in range(len(ascii_data))]
         fig, ax1 = plt.subplots(tight_layout=True)
         ax1.set_xlabel('Gamma energy (keV)') 
@@ -103,7 +104,7 @@ class AsciiSummer:
         using the header and footer data from the FIRST ascii analysed
         """
         print('writing summed ASCII...')
-        filename = f"{self.folder_path}/summed_{self.ascii_filetag}.Spe"
+        filename = f"{self.folder_path}/{self.ascii_filetag}_summed.Spe"
         with open(filename,'w') as ascii_histogram_file:
             for line in self._parse_ascii(self._loop_parser()[1][0])[0]:
                 ascii_histogram_file.write(line)
@@ -112,15 +113,15 @@ class AsciiSummer:
             for line in self._parse_ascii(self._loop_parser()[1][0])[2]:
                 ascii_histogram_file.write(line)
 
-        # plot the first ascii file in this case 
-        # change '000' otherwise
-        summed_spe_data = self._parse_ascii('000')[1]
+        # plot the summed ascii file in this case 
+        # change 'summed' to plot another one
+        summed_spe_data = self._parse_ascii('summed')[1]
         self._plot_ascii(summed_spe_data)
 
 
 class AsciiPreprocessing(AsciiSummer):
     """ class for processing MAESTRO .spe file into the format for 
-    UKAEA's gamma_process_spectra(gilbert)
+    UKAEA's gamma_process_spectra (gilbert)
     """
 
     def __init__(self, data_folder_path, filetag, ff_number, lf_number):

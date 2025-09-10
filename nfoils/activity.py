@@ -398,9 +398,9 @@ class ActivityCalc:
         }}
         return isotope_dictionary
 
-    def run(self, which_isotopes, irrad_time):
+    def run(self, which_isotopes, irrad_time,results_name):
         """ run analysis for all isotopes requested
-        and outputs as e_results json
+        and outputs as a nice json for C/E plotting
 
         Parameters
         ----------
@@ -408,9 +408,11 @@ class ActivityCalc:
             switch to control which isotopes from the data to run
         irrad_time : float
             Total irradiation time for reaction rate calculation
+        results_name : str
+            Name of results file
         """
         # set up for all isotopes requested
-        open(f"{self.json_path}/e_results.json", 'w').close()
+        open(f"{self.json_path}/{results_name}.json", 'w').close()
         if isinstance(which_isotopes, int):
             if which_isotopes > 0:
                 isotope_run_list = list(self.json_file_data.keys()
@@ -435,7 +437,7 @@ class ActivityCalc:
                 isotope_name, calibration_name, irrad_time))
 
         # print results as one neat json for postprocessing
-        with open(f"{self.json_path}/e_results.json", 'a') as output_file:
+        with open(f"{self.json_path}/{results_name}.json", 'a') as output_file:
             json.dump(results_dictionary, output_file,
                       ensure_ascii=False, indent=4)
         

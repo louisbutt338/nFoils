@@ -3,12 +3,25 @@
 
 from nfoils.history import IrradTimings
 
-filename = "rate.txt"
-output_filename = "irrad_history.txt"
+# path to the rate data txt file with
+# time(s) and count rate (1/s) in the two columns
+filename = "rate"
 
-# acquisition start time was 29/11/24 13:46:35
-# txt data is time(s) and count rate (1/s)
+# desired name of the txt output file
+output_filename = "irrad_history"
 
-#run 
-fispact_history = IrradTimings(filename, output_filename)
-fispact_history.run()
+# init
+history = IrradTimings(filename, output_filename)
+
+# enter conversion factor for going from rate data cps 
+# to number of charged particles per sec
+# here, example based on 12uA=190k counts
+cps_to_particles_per_s = 6.24151e12 * (12/190000)
+# then write a fispact history file
+history.fispact_hist_writer(cps_to_particles_per_s)
+
+# OR enter conversion factor for rate to current
+# again example based on 12uA=190k counts
+rate_to_current = (12/190000)
+# print an array of currents 
+history.current_printer(rate_to_current)

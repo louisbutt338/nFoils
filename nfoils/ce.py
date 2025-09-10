@@ -13,11 +13,12 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 class CEPlotter:
     """ class for doing the ce analysis
     """
-    def __init__(self, plotname):
+    def __init__(self, folder,plotname):
         """ Initialise class
         """
 
         # set params
+        self.folder = folder
         self.plotname = plotname
 
     def _c_over_e(self,calc_activities,exp_activities,
@@ -233,7 +234,7 @@ class CEPlotter:
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         fig.set_size_inches((17, 6))
-        fig.savefig(f"{self.plotname}.png",transparent=False,
+        fig.savefig(f"{self.folder}/{self.plotname}.png",transparent=False,
                     bbox_inches='tight')
 
     def _weighted_ce(self,ce_value_array,ce_error_array):
@@ -303,7 +304,7 @@ class CEPlotter:
             Name of the library to do the weighted ave analysis on 
             (must be one of 'libraries')
         """
-        with open(f"{calc_results}.json") as model_results_path:
+        with open(f"{self.folder}/{calc_results}.json") as model_results_path:
             model_results = json.load(model_results_path)
 
             # extract foil data and isotopes from c_results
@@ -336,7 +337,7 @@ class CEPlotter:
             calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
                         for i in isotope_list]
 
-        with open(f"{exp_results}.json" ) as exp_results_path:
+        with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
             exp_results_data = json.load(exp_results_path)
 
             # extract experimental activities from e_results

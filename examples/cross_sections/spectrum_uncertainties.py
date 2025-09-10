@@ -1,4 +1,5 @@
-""" example file for getting isotopic spectrum uncertainties
+""" example file for getting spectrum uncertainties
+specific to the cross section range of a reaction
 """
 import numpy as np
 from nfoils.reaction import IsotopicSpectrumUncertainty
@@ -11,10 +12,10 @@ ek=np.fromfile('../../data/energy_grids/group_structure_175.txt',sep=" ")
 # need internet to get library data 
 library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 
-# filename for input data
+# path to foil data json from working dir
 data_file_name = 'reactions/foil_data'
 
-# point to the spectrum file you are interested in
+# path to spectrum data txt from working dir
 spectrum_file = 'spectra/example'
 
 # how many values to cut off from the ends of the group structure

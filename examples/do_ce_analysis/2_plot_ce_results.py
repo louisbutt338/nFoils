@@ -1,17 +1,21 @@
 """ example for plotting c/e results from experimental and calculated
-please run calculate_exp_activities.py first to generate e_results file
+
+run after 1_calculate_exp_activities.py
 """
 from nfoils.ce import CEPlotter
 
-# path and name for the C/E plot to have
-plotname = 'example/test'
+# path to the calculated and experimental results files
+folder = 'example'
 
-# initialise
-ce_plotter = CEPlotter(plotname)
+# name to save the C/E plot under as PNG (saves in same folder)
+plotname = 'test'
 
-# name of calc and exp results files
-calc_results_file = 'example/c_results'
-exp_results_file = 'example/e_results'
+# initialise object
+ce_plotter = CEPlotter(folder,plotname)
+
+# names of calculated and experimental json results files
+calc_results = 'c_results'
+exp_results = 'e_results'
 
 #input the plot labels for the three libraries you are analysing
 # in same oder as in c_results file
@@ -40,7 +44,7 @@ plot_splitter = 4
 # set y axis size e.g. [0,2] for 0-->2
 y_axis = [0.1,2.3]
 
-#run 
-ce_plotter.run(calc_results_file,exp_results_file,flux_norm_mean,
-               flux_frac_error,we_isotopes,libraries,order,
-               plot_splitter,y_axis, we_library)
+#do c/e plot and weighted ave analysis
+ce_plotter.run(calc_results,exp_results,flux_norm_mean,
+               flux_frac_error,we_isotopes,libraries,
+               order,plot_splitter,y_axis, we_library)

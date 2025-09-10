@@ -20,30 +20,34 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 class CurveFitter:
     """ class for fitting efficiency functions 
     """
-    def __init__(self,input_data_path,input_data_filename,
-                 interpolation_range_start,interpolation_range_end,
-                 no_of_monte_carlo_samples):
+    def __init__(self,input_data,interp_range):
         """ initialise class
+
+        Attributes
+        ----------
+        input_data : str
+            path to the efficiency data json
+        interp_range : list[int]
+            [start energy, end energy] (keV) for interpolating the modelled fit
+            and finding average uncertainty in the range
         """
 
-        # set inst parameters
-        self.int_range_start = interpolation_range_start
-        self.int_range_end = interpolation_range_end
-        self.no_of_monte_carlo_samples = no_of_monte_carlo_samples
+        # set inst attributes
+        self.interp_range = interp_range
+        self.interpolation_range = np.arange(interp_range[0],
+                                             interp_range[1],1)
         
         # load the data
-        with open(f'{input_data_path}/{input_data_filename}.json'
+        with open(f'{input_data}.json'
                   ) as json_datafile:
             self.experimental_data = json.load(json_datafile)
 
-        # calc some other inst parameters
+        # get some data
         self.x_data = [float(i) for i in self.experimental_data.keys()]
         self.y_data = [self.experimental_data[i]["efficiency" ] 
                        for i in self.experimental_data.keys()]
         self.errors = [self.experimental_data[i]["uncertainty"] 
                        for i in self.experimental_data.keys()]
-        self.interpolation_range = np.arange(interpolation_range_start,
-                                             interpolation_range_end,1)
 
     def _spec_function(self,energy,a0,a1,a2,a3):
         """ define efficiency polynomial function for set params and energies
@@ -131,10 +135,15 @@ class CurveFitter:
         residuals,reduced_chi_squared = self._analysis(x_list,params,y_list)
         return params,errs,residuals,reduced_chi_squared
 
-    def _monte_carlo_fit(self):
+    def _monte_carlo_fit(self,no_of_runs):
         """ fit the experimental data lots of times with MC method
         return the mean, stdev and residuals of the final fit
-        May need to increase N number of runs to get stable params
+        May need to increase number of runs to get stable params
+
+        Parameters
+        ----------
+        no_of_runs : int
+            No. of monte carlo runs required
 
         Returns
         -------
@@ -147,14 +156,13 @@ class CurveFitter:
         mc_solutions : list[float]
             List of monte carlo solutions
         """
-        N = self.no_of_monte_carlo_samples
         a_samples = []
         a1_samples = []
         a2_samples = []
         a3_samples = []
         mc_solutions = []
 
-        for i in range(N):
+        for i in range(no_of_runs):
             y_mc = self.y_data +np.random.normal(size=len(self.y_data),
                                                  scale=self.errors )
             init_params = self._single_fit(self.x_data,
@@ -201,6 +209,7 @@ class CurveFitter:
             List of residuals on the MC solution
         """
         # plot function with eror bar
+        plt.figure(figsize=(10,6))
         plt.scatter(self.x_data, self.y_data,
                     label="Data", c='r',marker='o',lw=2)
         plt.plot(self.interpolation_range, solutions,
@@ -219,6 +228,7 @@ class CurveFitter:
         plt.close()
 
         #plot MC residuals 
+        plt.figure(figsize=(10,6))
         plt.scatter( self.x_data, residuals,c='r',marker='o',lw=2)
         plt.errorbar(self.x_data, residuals,yerr=self.errors,lw=2,
                      capsize=2,color='k',zorder=-1,fmt='none')
@@ -240,10 +250,16 @@ class CurveFitter:
               f" a3 = {a3}+/-{a3_err}"
               f" \n rChi2 = {reduced_chi_squared}")
 
-    def run_mc(self):
+    def run_mc(self,no_of_samples):
         """ run the mc fit method, print param values and do plotting
+
+        Parameters
+        ----------
+        no_of_samples : int
+            Number of monte carlo samples required 
         """
-        params_mc,residuals,r_chi_s,mc_solutions = self._monte_carlo_fit()
+        n_mc = no_of_samples
+        params_mc,residuals,r_chi_s,mc_solutions = self._monte_carlo_fit(n_mc)
         a_mc,a1_mc,a2_mc,a3_mc = params_mc
         print(f"Estimated MC Parameters: \n a0 = {a_mc}, a1 = {a1_mc} ",
               f"a2 = {a2_mc}, a3 = {a3_mc} \n rChi2 = {r_chi_s} ")
@@ -254,7 +270,7 @@ class CurveFitter:
         mc_frac_uncert = mc_solution_std_dev/mc_solutions_mean
         print('fractional uncert along interpolation range at specified E '
               f'is {np.mean(mc_frac_uncert[
-                    self.int_range_start:self.int_range_end])}')
+                    self.interp_range[0]:self.interp_range[1]])}')
         
         #plot
         self._mc_plotter(mc_solutions_mean,mc_solution_std_dev,residuals)

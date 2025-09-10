@@ -26,7 +26,7 @@ class IrradTimings:
         countrate : list[float]
             List of counts
         """
-        input_filepath = self.filename
+        input_filepath = f"{self.filename}.txt"
         with open(input_filepath,'r') as txt_data_file:
             txt_contents = txt_data_file.readlines()
             time = []
@@ -36,37 +36,52 @@ class IrradTimings:
                 countrate.append(float(line.split()[1]))
         return time,countrate
 
-    def _proton_flux_conversion(self):
-        """ return protons per second for each time interval,
-        based on 12uA=190k counts (deuteron experiment Nov2024)
+    def _flux_conversion(self,cps_to_particles_per_s):
+        """ return charged particles per second for each time interval,
+        using an input conversion
+
+        Parameters
+        ----------
+        cps_to_particles_per_s : float
+            float value for converting from cps to particles per s
 
         Returns
         -------
-        target_protons_per_s : list[float]
+        target_particles_per_s : list[float]
             List of protons per s for each time interval
         """
-        cps_to_protons_per_s = 6.24151e12 * (12/190000)
-        target_protons_per_s = [
-            i*cps_to_protons_per_s for i in self._parse_txt()[1] ]
-        return target_protons_per_s
+        target_particles_per_s = [
+            i*cps_to_particles_per_s for i in self._parse_txt()[1] ]
+        return target_particles_per_s
 
-    def fispact_hist_writer(self):
+    def fispact_hist_writer(self,cps_to_pps):
         """ write a fispact irradiation history to file
+
+        Parameters
+        ----------
+        cps_to_pps : float
+            float value for converting from rate data cps to
+            charged particles per s
         """
-        with open(self.output_filename, 'w') as irrad_history_file:
+        print('writing fispact irradiation history...')
+        output_txt_file = f"{self.output_filename}.txt"
+        with open(output_txt_file, 'w') as irrad_history_file:
             for timestep in range(len(self._parse_txt()[0])):
                 irrad_history_file.writelines(
-                    f"FLUX {self._proton_flux_conversion()[timestep]} \n")
+                    f"FLUX {self._flux_conversion(cps_to_pps)[timestep]} \n")
                 irrad_history_file.writelines(
                     "TIME 1 SECS \n")
             irrad_history_file.writelines("ATOMS")
 
-    def run(self):
-        """ run stuff 
-        """
-        #get the fispact format irrad history
-        #fispact_hist_writer()
+    def current_printer(self,rate_to_current):
+        """ print currents from the rate data 
 
-        # or get the array of currents
-        approx_current_array = [i*(12/190000) for i in self._parse_txt()[1]]
-        print(approx_current_array)
+        Parameters
+        ----------
+        rate_to_current : float
+            float value for convert from txt rate data 
+            directly to charged particle current
+        """
+        print('getting list of converted currents...')
+        current_array = [i*rate_to_current for i in self._parse_txt()[1]]
+        print(current_array)

@@ -1,31 +1,33 @@
 """ example for getting specific activity data from a fispact json
+and then simulating a gamma spectrum
 """
-from nfoils.fispact import JsonRetriever
+from nfoils.fispact import JsonRetriever,GammaSpectrumModel
 
-# input working directory with the json file in 
-upper_directory = '../analyse_fispact_json'
+# path to the fispact generated json
+json_path = 'example'
 
-# input json filename (not including extension or the material bit)
-json_name_format = 'example'
+# initialise objects
+retrieve_json = JsonRetriever(json_path) 
+gamma_spec = GammaSpectrumModel()
 
 #input time interval in the .out file where the data u want is 
-time_interval = 5
+time_interval = 8
 
-# dict of materials and the zai of the isotopes 
+# dict of zai of the isotopes and the state 'm' or ''
 # include all you want to know activity for
 isotope_dictionary = {
-    'mn56' :{'foil':'fe','isotope_zai':250560,'isotope_state':''}
+    'mn56' :{'isotope_zai':250560}
 }
 
-# loop through results - needs encapsulating
+# get all requested activities
 for i in isotope_dictionary.items():
+    zai = i[1]['isotope_zai']
+    isotope_act = retrieve_json.get_acts(time_interval,zai)
+    
+    # print activity results
     isotope = i[0]
-    material = i[1]['foil']
-    zai= i[1]['isotope_zai']
-    isotope_state = i[1]['isotope_state']
-    json_path = f'{upper_directory}/{json_name_format}.json'
-    isotope_state = i[1]['isotope_state']
-    retrieve_activities = JsonRetriever(
-        json_path,time_interval,zai,isotope_state) 
-    isotope_activity = retrieve_activities.run()
-    print(f'{isotope} activity : {isotope_activity}')
+    print(f'{isotope} activity : {isotope_act} Bq')
+
+    # plot a basic simulated gamma spectrum
+    isotope_ag_form = isotope.title()
+    gamma_spec.plot_gamma(isotope_ag_form,isotope_act)

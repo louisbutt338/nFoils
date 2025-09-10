@@ -390,12 +390,12 @@ class IsotopicSpectrumUncertainty(NuclearData):
         super().__init__(ek, library)
 
     def _read_spectrum_uncert(self, spectrum_file):
-        """ Read fractional spectrum uncertainty from txt
+        """ Read fractional spectrum uncertainty from txt file
 
         Parameters
         ----------
         spectrum_file : str
-            name of spectrum file
+            name of spectrum txt file
 
         Returns
         ----------
@@ -453,9 +453,9 @@ class IsotopicSpectrumUncertainty(NuclearData):
         Parameters
         ----------
         spectrum_file : str
-            Name of the spectrum file without txt extension
+            Name of the spectrum txt file
         datafile : str
-            Name of the json datafile without json extension
+            Name of the json datafile
         cutoffs : list[int]
             how many vals to cut off at the end of the group structure
             as there is no spectrum there i.e. [1,5] cuts off 1 from bottom
@@ -488,4 +488,4 @@ class IsotopicSpectrumUncertainty(NuclearData):
                     mts.append(mt)
 
         for (i,j,k) in zip(materials, mts,uncertainties):
-            print(f'mat={i},mt={j} uncertainty is {k}')
+            print(f'mat={i},mt={j} fractional uncertainty is {k}')

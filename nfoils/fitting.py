@@ -1,11 +1,8 @@
 """ 
-module for doing fitting of gamma spec efficiency curves
-credit to Ethan Sumner (UoB) for development
+module for doing fitting of gamma spec efficiency curves.
+thanks to Ethan Sumner (UoB) for supporting development
 
 G Knoll, Radiation Detection and Measurement, 2010
-
-notes: making the arrays/lists used more consistent would be nice,
-also including plotting for the single fit method
 """
 
 import json
@@ -19,9 +16,13 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 
 class CurveFitter:
     """ class for fitting efficiency functions 
+
+    notes: making the arrays/lists used more consistent would be nice,
+    also including plotting for the single fit method
     """
+
     def __init__(self,input_data,interp_range):
-        """ initialise class
+        """ initialise CurveFitter class
 
         Attributes
         ----------
@@ -32,17 +33,17 @@ class CurveFitter:
             and finding average uncertainty in the range
         """
 
-        # set inst attributes
+        # set attributes
         self.interp_range = interp_range
         self.interpolation_range = np.arange(interp_range[0],
                                              interp_range[1],1)
         
-        # load the data
+        # load the datafile
         with open(f'{input_data}.json'
                   ) as json_datafile:
             self.experimental_data = json.load(json_datafile)
 
-        # get some data
+        # get x,y,errors from the datafile
         self.x_data = [float(i) for i in self.experimental_data.keys()]
         self.y_data = [self.experimental_data[i]["efficiency" ] 
                        for i in self.experimental_data.keys()]

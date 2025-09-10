@@ -16,10 +16,22 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 class AsciiSummer:
     """ class for summing time-binned ascii files together and plotting
     """
+
     def __init__(self, data_folder_path, filetag, file_numbers):
-        """ initialise class
+        """ initialise AsciiSummer class
+
+        Attributes
+        ----------
+        data_folder_path : str
+            path to the folder with the asciis to be summed inside
+        filetag : str
+            name of the ascii files WITHOUT the '_XXX' number on the end
+        file_numbers : list[int]
+            numbers of the first and last asciis to be summed
+            e.g. [0,2] will sum ASCIIS from 000 to 002
         """
-        # set the parameters
+
+        # set attributes
         self.folder_path = data_folder_path
         self.ascii_filetag = filetag
         self.first_file_number =  file_numbers[0]
@@ -125,7 +137,7 @@ class AsciiPreprocessing(AsciiSummer):
     """
 
     def __init__(self, data_folder_path, filetag, ff_number, lf_number):
-        """ Initialise class and inherit AsciiSummer
+        """ Initialise class (inherits AsciiSummer)
         """
         super().__init__(self, data_folder_path, filetag, ff_number, lf_number)
 

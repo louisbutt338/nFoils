@@ -3,7 +3,7 @@ module for using sandy/njoy for nuclear data extraction
 and various postprocessings
 
 L Fiorito, Nuclear data uncertainty propagation to integral responses
-    using SANDY, Annals of Nuclear Energy 101 (359-366) 2017
+using SANDY, Annals of Nuclear Energy 101 (359-366) 2017
 """
 
 import csv
@@ -19,11 +19,20 @@ rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]},
 class NuclearData:
     """ class for extracting cross sections and uncertainties with sandy/njoy
     """
+    
     def __init__(self, ek, library):
-        """ Initialise class
+        """ Initialise NuclearData class
+
+        Attributes
+        ----------
+        ek : array[float]
+            array of the energy binning being used
+        library : str
+            name of the nuclear data library to extract data from.
+            needs to be in sandy's special format though, so check that
         """
 
-        # set parameters
+        # set attributes
         self.ek = ek
         self.library = library
 
@@ -81,7 +90,8 @@ class NuclearData:
             return cov_array, stdev_array
 
         except (KeyError, ValueError):
-            # if this doesn't work return empty arrays so keep code running
+            # if above doesn't work return empty arrays so code
+            # keeps running for other reactions
             print(f'-----> reactions not found for MAT {material}'
                   f': MT {mt}')
             return np.array([]),np.array([])
@@ -116,7 +126,7 @@ class NuclearData:
             return xs_array
 
         except ValueError:
-            # if doesn't work return empty arrays
+            # if above doesn't work return empty arrays
             print(f'-----> reactions not found for MAT {material}:'
                   f' MT {mt}')
             return np.array([])
@@ -211,10 +221,19 @@ class NuclearData:
 
 
 class PostprocessReactions(NuclearData):
-    """ class for exporting and plotting response fn and uncertainty
+    """ class for exporting and plotting response function and uncertainty 
     """
+
     def __init__(self, ek, library):
-        """ Initialise class
+        """ Initialise PostprocessReactions class (inherits from NuclearData)
+
+        Attributes
+        ----------
+        ek : array[float]
+            array of the energy binning being used
+        library : str
+            name of the nuclear data library to extract data from.
+            needs to be in sandy's special format though, so check that
         """
         super().__init__(ek, library)
 
@@ -355,27 +374,29 @@ class PostprocessReactions(NuclearData):
         fig.savefig('response_function.png')
 
     def run_rf(self, datafile, labels):
-        """ run for response functions
+        """ extract response functions, dump in csv format and plot
 
         Parameters
         ----------
         datafile : str
             name of json data file
         labels : list[str]
-            list of reaction labels
+            list of the raw string mathmode reaction labels, 
+            matching the reactions in the datafile
         """
         data_lists = self._unpack_datafile(datafile)
         self._export_and_plot_rf(*data_lists, labels)
 
     def run_stdev(self, datafile, labels):
-        """ run for stdev
+        """ extract standard deviations, dump in csv format and plot
 
         Parameters
         ----------
         datafile : str
             name of json data file
         labels : list[str]
-            list of reaction labels
+            list of the raw string mathmode reaction labels,
+            matching the reactions in the datafile
         """
         data_lists = self._unpack_datafile(datafile)
         self._export_and_plot_stdev(data_lists[0], data_lists[1], labels)
@@ -384,8 +405,18 @@ class PostprocessReactions(NuclearData):
 class IsotopicSpectrumUncertainty(NuclearData):
     """ class for getting isotopic spectrum uncertainty
     """
+
     def __init__(self, ek, library):
-        """ Initialise class and inherit NuclearData
+        """ Initialise IsotopicSpectrumUncertainty class
+        (inherits from NuclearData)
+
+        Attributes
+        ----------
+        ek : array[float]
+            array of the energy binning being used
+        library : str
+            name of the nuclear data library to extract data from.
+            needs to be in sandy's special format though, so check that
         """
         super().__init__(ek, library)
 

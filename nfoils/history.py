@@ -1,5 +1,5 @@
 """
-module for analysis of irradiation histories
+module for analysis/postpro of irradiation histories
 look no dependencies hooray
 """
 
@@ -8,11 +8,19 @@ class IrradTimings:
     """ class for processing timings into fispact irradiation history
     and list of currents
     """
+
     def __init__(self, input_file,output_file):
-        """ Initialise class
+        """ Initialise IrradTimings class
+
+        Attributes
+        ----------
+        input_file : str
+            path to the txt data file with time and countrate as two columns
+        output_file : str
+            output filename to dump a fispact irradiation history into
         """
 
-        #set parameters
+        #set attributes
         self.filename = input_file
         self.output_filename = output_file
 

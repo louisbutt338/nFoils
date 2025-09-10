@@ -2,8 +2,9 @@
 module for doing flux estimation analysis on a lithium target
 
 G Knoll, Radiation Detection and Measurement, 2010
-M Majerle et al, Peak neutron production from the 7 Li(p,n) reaction
-    in the 20-35 MeV range, EPJ Web of Conferences 239 (20010) 2020
+
+M Majerle et al, Peak neutron production from the 7 Li(p,n) reaction 
+in the 20-35 MeV range, EPJ Web of Conferences 239 (20010) 2020
 """
 
 from math import pi, sqrt, log
@@ -11,10 +12,11 @@ import json
 
 
 class TargetAnalysis:
-    """ class to estimate flux from be7 activity 
+    """ class to estimate flux from be7 activity in a lithium target
     """
+
     def __init__(self,target_json_name): 
-        """ Initialise class
+        """ Initialise TargetAnalysis class
 
         Attributes
         ----------

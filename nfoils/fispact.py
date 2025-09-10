@@ -1,6 +1,5 @@
 """ 
 module for doing various fispact-y postprocessings
-
 """
 
 import json
@@ -13,14 +12,21 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 
 
 class JsonRetriever:
-    """ retrieve activities at a specified time interval from fispact json
-    useful although JSON doesn't get uncertainties so check all results
-    --> expansion to include metastable would be useful
+    """ retrieve activities at a specified time interval from fispact json. 
+    Useful although JSON doesn't get uncertainties so check all results
+    
+    notes: expansion to include metastable isotopes would be useful
     """
+
     def __init__(self,filepath):
-        """ Initialise class
+        """ Initialise JsonRetriever class
+
+        Attributes
+        ----------
+        filepath : str
+            path to the fispact json file to be analysed
         """
-        # set the parameters
+        # set attributes
         self.filepath = filepath
 
     def get_acts(self,time_interval,zai):
@@ -57,11 +63,10 @@ class JsonRetriever:
 
 class GammaSpectrumModel:
     """ simple gamma spectrum modeller with actigamma
-    write own example to change the instance parameters for your own
-    special isotope and activity
     """
+
     def __init__(self):
-        """ initialise class
+        """ initialise GammaSpectrumModel class
         """
 
     def plot_gamma(self,isotope_name,activity):

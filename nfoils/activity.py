@@ -1,8 +1,9 @@
 """
-module for calculating activity for a whole ton of isotopes
-credit to Tony Turner (UKAEA) for supporting development
+module for calculating activity for a whole ton of isotopes. 
+thanks to Tony Turner (UKAEA) for supporting development
 
 G Knoll, Radiation Detection and Measurement, 2010
+
 D Arnold et al, Fundamentals of gamma spectrometry, 2018
 """
 import json
@@ -14,23 +15,38 @@ from scipy.integrate import quad
 
 
 class ActivityCalc:
-    """ class that calculates activities for isotope data written in a json
+    """ class that calculates activities for gamma spec data. 
+    this gamma spec data should be written in a provided example json
     """
+
     def __init__(self, data_file_name, json_path, irradiation_end,
                  cal_file_name):
-        """ Initialise class
+        """ Initialise ActivityCalc class
+
+        Attributes
+        ----------
+        data_file_name : str
+            name of the foil data json file
+        json_path : str
+            path to the directory with the json data in it
+        irradiation_end : datetime object
+            datetime object for the exact end of the irradiation
+        cal_file_name : str
+            name of the calibration data json file
         """
 
-        # set the parameters
+        # set attributes
         self.data_file_name = data_file_name
         self.json_path = json_path
         self.irradiation_end = irradiation_end
         self.cal_file_name = cal_file_name
 
-        # load the foil and calibration data
+        # load the foil data
         with open(f'{self.json_path}/{self.data_file_name}.json'
                   ) as json_datafile:
             self.json_file_data = json.load(json_datafile)
+
+        # load the calibration data
         with open(f'{self.json_path}/{self.cal_file_name}.json'
                   ) as cal_file:
             self.cal_file_data = json.load(cal_file)

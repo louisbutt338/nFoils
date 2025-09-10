@@ -1,5 +1,7 @@
 """ 
-module for performing ce analysis for some isotopes
+module for performing c/e analysis on up to three sets of activation foil
+results calculated with fispact (using three diff nuclear data libraries)
+and one set of experimental results calculated from gamma spec
 """
 
 import json
@@ -11,13 +13,23 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 
 
 class CEPlotter:
-    """ class for doing the ce analysis
+    """ class for doing c/e analysis and plotting and weighted average 
+    analysis also
     """
+
     def __init__(self, folder,plotname):
-        """ Initialise class
+        """ Initialise CEPlotter class
+
+        Attributes
+        ----------
+        folder : str
+            name of the folder with c and e results in it.
+            c/e plot will also be dumped here
+        plotname : str
+            input name for the final c/e plot in PNG format
         """
 
-        # set params
+        # set attributes
         self.folder = folder
         self.plotname = plotname
 

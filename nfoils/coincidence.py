@@ -8,10 +8,20 @@ S Kafala, Simple method for true coincidence summing correction, Journal of
 import json
 
 
-class SimpleCorrection():
+class SimpleCorrection:
+    """ class for simple sum correction for a multi peak source e.g. Eu152
+    using a single peak source e.g. Am241
+    """
+    
     def __init__(self,cps_json_path):
-        """ class for simple sum correction 
-        with an single peak source and a multi-peak source
+        """ initialise SimpleCorrection class
+
+        Attributes
+        ----------
+        cps_json_path : str
+            path to the json data file with gamma energy (keV) and cps data
+            for the multi-peak source and single-peak source at close geometry
+            and at far geometry
         """
 
         # set attributes
@@ -22,7 +32,7 @@ class SimpleCorrection():
                   ) as cps_data_file:
             self.cps_data = json.load(cps_data_file)
 
-        # set dicts
+        # set dicts for the rest of the code
         self.multi_dict_near = self.cps_data["multi_source_near"]
         self.multi_dict_far  =  self.cps_data["multi_source_far"]
         self.single_dict_near = self.cps_data["single_source_near"]

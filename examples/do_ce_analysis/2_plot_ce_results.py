@@ -47,4 +47,4 @@ y_axis = [0.1,2.3]
 #do c/e plot and weighted ave analysis
 ce_plotter.run(calc_results,exp_results,flux_norm_mean,
                flux_frac_error,we_isotopes,libraries,
-               order,plot_splitter,y_axis, we_library)
+               order,plot_splitter,y_axis,we_library)

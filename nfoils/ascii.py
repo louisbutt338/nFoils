@@ -1,5 +1,8 @@
 """ 
-module for dealing with ASCII spe files
+module for dealing with and processing ASCII spe files
+
+M Gilbert, Neutron Irradiation Experiments: Automated Processing and Analysis
+    of γ-spectra, Nuclear Data Sheets 119 (401-403) 2014
 """
 
 import numpy as np 
@@ -13,14 +16,26 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 class AsciiSummer:
     """ class for summing time-binned ascii files together and plotting
     """
-    def __init__(self, data_folder_path, filetag, ff_number, lf_number):
-        """ initialise class
+
+    def __init__(self, data_folder_path, filetag, file_numbers):
+        """ initialise AsciiSummer class
+
+        Attributes
+        ----------
+        data_folder_path : str
+            path to the folder with the asciis to be summed inside
+        filetag : str
+            name of the ascii files WITHOUT the '_XXX' number on the end
+        file_numbers : list[int]
+            numbers of the first and last asciis to be summed
+            e.g. [0,2] will sum ASCIIS from 000 to 002
         """
-        # set the parameters
+
+        # set attributes
         self.folder_path = data_folder_path
         self.ascii_filetag = filetag
-        self.first_file_number =  ff_number
-        self.last_file_number = lf_number
+        self.first_file_number =  file_numbers[0]
+        self.last_file_number = file_numbers[1]
 
     def _parse_ascii(self, spectrum_number):
         """ parses the ascii spectrum data from the selected ascii file
@@ -28,7 +43,16 @@ class AsciiSummer:
         Parameters
         ----------
         spectrum_number : str
-            Number at the end of the .spe filename
+            number at the end of the .spe filename format as string
+
+        Returns
+        ----------
+        ascii_header : list[str]
+            text header of the ascii file
+        ascii_data : list[int]
+            data in the middle of the ascii file
+        ascii_footer : list[str]
+            text footer at bottom of the file
         """
         filename = (f"{self.folder_path}/{self.ascii_filetag}"
                     f"_{spectrum_number}.Spe")
@@ -45,10 +69,13 @@ class AsciiSummer:
     def _loop_parser(self):
         """ automate the data parsing for all the ascii files specified
 
-        Parameters
+        Returns
         ----------
-        spectrum_number : str
-            Number at the end of the .spe filename
+        ascii_histogram : list[int]
+            summed ascii data for all the files
+        ascii_number_array_strings: list[str]
+            list of the numbers at the end of ascii files
+            formatted as strings
         """
         ascii_number_array = np.arange(self.first_file_number,
                                        self.last_file_number+1)
@@ -66,9 +93,10 @@ class AsciiSummer:
 
         Parameters
         ----------
-        ascii_data : list
-            Ascii data in list format
+        ascii_data : list[int]
+            data in the middle of the ascii file
         """
+        print("plotting summed ASCII...")
         kev_array = [i*0.41653 for i in range(len(ascii_data))]
         fig, ax1 = plt.subplots(tight_layout=True)
         ax1.set_xlabel('Gamma energy (keV)') 
@@ -88,7 +116,7 @@ class AsciiSummer:
         using the header and footer data from the FIRST ascii analysed
         """
         print('writing summed ASCII...')
-        filename = f"{self.folder_path}/summed_{self.ascii_filetag}.Spe"
+        filename = f"{self.folder_path}/{self.ascii_filetag}_summed.Spe"
         with open(filename,'w') as ascii_histogram_file:
             for line in self._parse_ascii(self._loop_parser()[1][0])[0]:
                 ascii_histogram_file.write(line)
@@ -96,41 +124,41 @@ class AsciiSummer:
                 ascii_histogram_file.write(f"{line}\n")
             for line in self._parse_ascii(self._loop_parser()[1][0])[2]:
                 ascii_histogram_file.write(line)
-        summed_spe_data = self._parse_ascii('000')[1]
+
+        # plot the summed ascii file in this case 
+        # change 'summed' to plot another one
+        summed_spe_data = self._parse_ascii('summed')[1]
         self._plot_ascii(summed_spe_data)
 
 
 class AsciiPreprocessing(AsciiSummer):
-    """ class for processing MAESTRO .spe file 
-    into the format for Mark's fortran gamma spec program
+    """ class for processing MAESTRO .spe file into the format for 
+    UKAEA's gamma_process_spectra (gilbert)
     """
 
-    def __init__(self, which_foil, ascii_filetag, ff_number, lf_number):
-        """ initialise class
+    def __init__(self, data_folder_path, filetag, ff_number, lf_number):
+        """ Initialise class (inherits AsciiSummer)
         """
-        # set the parameters
-        self.which_foil = 'fe'
-        self.ascii_filetag = 'uBB_20s_x60_20mins'
-        self.first_file_number = 0
-        self.last_file_number = 25
+        super().__init__(self, data_folder_path, filetag, ff_number, lf_number)
 
     def _spe_preprocessor(self,spec_numerator,ascii_headers,cumulative_data):
         """ copies the example input file header for gamma_process_spectra
-         and print the desired spectrum to the new format
+        and print the desired spectrum to the new format
 
         Parameters
         ----------
         spec_numerator : int
             numerator for the spectra you are processing
-        ascii_headers : str?
+        ascii_headers : list[str]
             Headers of the ascii files
-        cumulative_data : str?
+        cumulative_data : list[int]
             Summed data for the asciis
         """
 
         example_path = os.system(
-            "cp example_asciis/uBB_20s_x60_20mins_000.spe "
-            f"new_format_spectra/{self.which_foil}_data/{spec_numerator}.spe")
+            f"cp {self.folder_path}/{self.ascii_filetag}_000.spe "
+            f"new_format_spectra/{spec_numerator}.spe")
+        
         with open(example_path,'r') as example_input_spectra:
             input_file = example_input_spectra.readlines()
             input_file[11-1] = "Real Time: "

@@ -1,5 +1,10 @@
 """
-module for calculating activity for a whole ton of isotopes
+module for calculating activity for a whole ton of isotopes. 
+thanks to Tony Turner (UKAEA) for supporting development
+
+G Knoll, Radiation Detection and Measurement, 2010
+
+D Arnold et al, Fundamentals of gamma spectrometry, 2018
 """
 import json
 from datetime import datetime
@@ -10,21 +15,41 @@ from scipy.integrate import quad
 
 
 class ActivityCalc:
-    """ class that calculates activities for isotope data written in a json
+    """ class that calculates activities for gamma spec data. 
+    this gamma spec data should be written in a provided example json
     """
-    def __init__(self, data_file_name, json_path, irradiation_end):
-        """ Initialise class
+
+    def __init__(self, data_file_name, json_path, irradiation_end,
+                 cal_file_name):
+        """ Initialise ActivityCalc class
+
+        Attributes
+        ----------
+        data_file_name : str
+            name of the foil data json file
+        json_path : str
+            path to the directory with the json data in it
+        irradiation_end : datetime object
+            datetime object for the exact end of the irradiation
+        cal_file_name : str
+            name of the calibration data json file
         """
 
-        # set the parameters
+        # set attributes
         self.data_file_name = data_file_name
         self.json_path = json_path
         self.irradiation_end = irradiation_end
+        self.cal_file_name = cal_file_name
 
-        # load the data
+        # load the foil data
         with open(f'{self.json_path}/{self.data_file_name}.json'
                   ) as json_datafile:
             self.json_file_data = json.load(json_datafile)
+
+        # load the calibration data
+        with open(f'{self.json_path}/{self.cal_file_name}.json'
+                  ) as cal_file:
+            self.cal_file_data = json.load(cal_file)
 
     def _decay_time(self, isotope_name):
         """ calculating the decay time
@@ -56,9 +81,9 @@ class ActivityCalc:
 
         Returns
         -------
-        i : array-like
+        i : list[float]
             Array of gamma peak intensities
-        e : array-like
+        e : list[float]
             Array of associated gamma energies
         half_life : float
             Half life of the input isotope
@@ -123,7 +148,7 @@ class ActivityCalc:
         return sol_ang_disc
 
     def _efficiency_abs(self, energy, n0, n1, n2, n3):
-        """ equation for the log-polynomial efficiency curves (knoll)
+        """ equation for the log-polynomial efficiency curves (knoll, p458)
 
         Parameters
         ----------
@@ -144,13 +169,15 @@ class ActivityCalc:
             the efficiency of the detector
         """
         polynomial = (n0 + n1*np.log(energy)**1
-                      + n2*np.log(energy)**2 + n3*np.log(energy)**3)
+                      + n2*np.log(energy)**2
+                      + n3*np.log(energy)**3)
         eff = np.exp(polynomial)
         return eff
 
-    def _activity_livetime(self, c, i, e, foil_dist, isotope_name):
+    def _activity_livetime(self, c, i, e, calibration_name, isotope_name):
         """ use the foil measurement distance and efficiency curves
-        to calculate activity over the live time from counts (knoll)
+        to calculate activity over the live time from counts 
+        (knoll, p120) (arnold, p42)
 
         Parameters
         ----------
@@ -160,8 +187,9 @@ class ActivityCalc:
             Intensity of gamma peak
         e : float
             Energy in keV of gamma peak
-        foil_dist : float
-            Distance from detector to foil in cm
+        calibration_name : str
+            Name of calibration in calibration_data file 
+            i.e. "B03_hpge_endcap"
         isotope_name : str
             Name of isotope
 
@@ -170,19 +198,16 @@ class ActivityCalc:
         activity : float
             the foil activity over detector livetime
         """
-        # b03 hpge values
-        if foil_dist == 1:
-            detector_radius = 3.25
-            eff_values = [-23.385, 11.3457, -1.9302, 0.10197]
-        # g11 bege values
-        if foil_dist == 0.4:
-            detector_radius = 3.75
-            eff_values = [-25.7209, 13.8415, -2.48, 0.1352]
-        # b03 hpge values
-        if foil_dist == 38:
-            detector_radius = 3.25
-            eff_values = [-27.773, 11.13964, -1.8975, 0.10025]
+        # figure out the data specfic to the calibration and foil
+        foil_dist = (self.cal_file_data[calibration_name]
+                     ["foil_distance_cm"])
+        detector_radius = (self.cal_file_data[calibration_name]
+                           ["detector_radius_cm"])
+        eff_values = (self.cal_file_data[calibration_name]
+                      ["efficiency_equation_parameters"])
         foil_rad = self.json_file_data[isotope_name]['foil_radius_cm']
+
+        # do the activity calculation
         solid_angle_ratio = (self._solid_angle_disc(detector_radius,
                                                     foil_dist, foil_rad)
                              / self._solid_angle(detector_radius, foil_dist))
@@ -193,6 +218,7 @@ class ActivityCalc:
 
     def _self_attenuation_correction(self, material, e, thickness, density):
         """ gamma self absorption correction factor taken from XCOM mu data
+        (arnold, p41)
 
         Parameters
         ----------
@@ -217,7 +243,7 @@ class ActivityCalc:
         return self_att_factor
 
     def _activity_integrand(self, t, half_life):
-        """ integral shortcut for activity interpolation
+        """ integral shortcut for activity interpolation (arnold, p44)
 
         Parameters
         ----------
@@ -234,10 +260,10 @@ class ActivityCalc:
         integrand = exp(- log(2) * (t/half_life))
         return integrand
 
-    def _activity_0(self, c, i, e, measurement_distance,
+    def _activity_0(self, c, i, e, calibration_name,
                     isotope_name, halflife):
         """ calculate initial activity after irrad (w/o corrections)
-        from the measured activity over a live time
+        from the measured activity over a live time (arnold, p44)
 
         Parameters
         ----------
@@ -247,8 +273,9 @@ class ActivityCalc:
             Intensity of gamma peak
         e : float
             Energy in keV of gamma peak
-        measurement_distance : float
-            Distance from detector to foil in cm
+        calibration_name : str
+            Name of calibration in calibration_data file 
+            i.e. "B03_hpge_endcap"
         isotope_name : str
             Name of isotope
         halflife : float
@@ -265,13 +292,9 @@ class ActivityCalc:
         quad_integral = quad(self._activity_integrand,
                              decay_time, top_time_band,
                              args=halflife)
-        activity = (self._activity_livetime(c, i, e, measurement_distance,
+        activity = (self._activity_livetime(c, i, e, calibration_name,
                                             isotope_name)
                     / (quad_integral))[0]
-        # activity = ( (activity_livetime(c,i,e)[0]
-        #             /json_file_data[isotope_name]['live_time'])
-        #             * exp(get_decay_database(isotope_name)[2]
-        #                 / (log(2) * decay_time(isotope_name))) )
         return activity
 
     def _reaction_rates(self, a, irradiation_time, halflife):
@@ -295,24 +318,35 @@ class ActivityCalc:
         rr_ave = a / (1 - self._activity_integrand(irradiation_time, halflife))
         return rr_ave
 
-    def _run_one_isotope(self, isotope_name, measurement_distance,
-                         eff_uncert, irrad_time):
+    def _run_one_isotope(self, isotope_name, calibration_name, irrad_time):
         """ run analysis for one isotope
 
         Parameters
         ----------
-        measurement_distance : float
-            Distance from detector to foil in cm
         isotope_name : str
             Name of isotope
+        calibration_name : str
+            Name of calibration in calibration_data file 
+            i.e. "B03_hpge_endcap"
+        irrad_time : int
+            Irradiation time in seconds
 
         Returns
         -------
-        isotope_dictionary : dict
-            results for a single isotope -
-            "activities", "activity_uncertainties", "pathway_probabilities",
-            "reaction_rates", "reaction_rate_uncertainty"
+        isotope_dictionary : dict[ str, dict[ str, list[float] ] ]
+            results for a single isotope e.g. {
+            "isotope name" : {
+            "activities":[], 
+            "activity_uncertainties":[],
+            "pathway_probabilities":[],
+            "reaction_rates":[],
+            "reaction_rate_uncertainty":[] }
+            }
         """
+        # get the efficiency uncertainty for specified calibration
+        eff_uncert = (self.cal_file_data[calibration_name]
+                      ["efficiency_curve_fractional_uncertainty"])
+
         # print and save results for individual isotope activities
         # and uncerts for top 5 gamma emissions
         final_activity_list = []
@@ -326,16 +360,16 @@ class ActivityCalc:
                     energy[n],
                     self.json_file_data[isotope_name]['thickness_cm'],
                     self.json_file_data[isotope_name]['density_gcm3'])
-                coincidence_factor = (
+                inv_coincidence_factor = (
                     1/(self.json_file_data[isotope_name]
-                       ['inv_coincidence_factor'][n]))
+                       ['coincidence_factor'][n]))
                 uncorrected_activity = self._activity_0(
                     self.json_file_data[isotope_name]['counts'][n],
                     intensity[n],
                     energy[n],
-                    measurement_distance, isotope_name, halflife)
+                    calibration_name, isotope_name, halflife)
                 final_activity = (
-                    coincidence_factor * self_attenuation_factor
+                    inv_coincidence_factor * self_attenuation_factor
                     * uncorrected_activity)
                 counts_frac_uncert = (
                     self.json_file_data[isotope_name]['uncertainty'][n]
@@ -380,21 +414,21 @@ class ActivityCalc:
         }}
         return isotope_dictionary
 
-    def run(self, which_isotopes, efficiency_uncert_frac, irrad_time):
+    def run(self, which_isotopes, irrad_time,results_name):
         """ run analysis for all isotopes requested
-        and outputs as e_results json
+        and outputs as a nice json for C/E plotting
 
         Parameters
         ----------
         which_isotopes : float
             switch to control which isotopes from the data to run
-        efficiency_uncert_frac : float
-            Fractional uncertainty for the efficiency of the detector
         irrad_time : float
             Total irradiation time for reaction rate calculation
+        results_name : str
+            Name of results file
         """
         # set up for all isotopes requested
-        open(f"{self.json_path}/e_results.json", 'w').close()
+        open(f"{self.json_path}/{results_name}.json", 'w').close()
         if isinstance(which_isotopes, int):
             if which_isotopes > 0:
                 isotope_run_list = list(self.json_file_data.keys()
@@ -409,18 +443,17 @@ class ActivityCalc:
             else:
                 isotope_run_list = list(which_isotopes.split(" "))
 
-        # run for all isotopes
+        # get specific calibration dataset for each isotope and run
         results_dictionary = {}
         for isotope_name in isotope_run_list:
             print(f"************ activities for {isotope_name} ************")
-            measurement_distance = (self.json_file_data[isotope_name]
-                                    ['detector_distance_cm'])
-            eff_uncert = efficiency_uncert_frac
+            calibration_name = (self.json_file_data[isotope_name]
+                                ["calibration"])
             results_dictionary.update(self._run_one_isotope(
-                isotope_name, measurement_distance, eff_uncert, irrad_time))
+                isotope_name, calibration_name, irrad_time))
 
         # print results as one neat json for postprocessing
-        with open(f"{self.json_path}/e_results.json", 'a') as output_file:
+        with open(f"{self.json_path}/{results_name}.json", 'a') as output_file:
             json.dump(results_dictionary, output_file,
                       ensure_ascii=False, indent=4)
         

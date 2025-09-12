@@ -1,19 +1,20 @@
+""" example for fitting hpge efficiency functions to data
+"""
+
 from nfoils.fitting import CurveFitter
 
-#select folder and dataset
-input_data_path = "../gamma_spec"
-input_data_filename = "endcap_data"
+# path to efficiency data json file
+input_data = "efficiency_data"
 
-# energy range in keV for fitting the data in montecarlo 
-# and finding the average uncertainty
-interpolation_range_start = 100
-interpolation_range_end = 1800
+# interpolation energy range in keV [start,end]
+# for interpolating the model fit on and finding the average uncertainty
+interp_range = [100,1800]
+
+# initialise class
+curve_fitter = CurveFitter(input_data,interp_range)
 
 # number of MC samples you want to try
 no_of_monte_carlo_samples = 100
 
-# run
-curve_fitter = CurveFitter(input_data_path,input_data_filename,
-                           interpolation_range_start,interpolation_range_end,
-                           no_of_monte_carlo_samples)
-curve_fitter.run_mc()
+# run the monte carlo fit 
+curve_fitter.run_mc(no_of_monte_carlo_samples)

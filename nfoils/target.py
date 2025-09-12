@@ -1,37 +1,39 @@
 """ 
-module for doing analysis on a lithium target
+module for doing flux estimation analysis on a lithium target
+
+G Knoll, Radiation Detection and Measurement, 2010
+
+M Majerle et al, Peak neutron production from the 7 Li(p,n) reaction 
+in the 20-35 MeV range, EPJ Web of Conferences 239 (20010) 2020
 """
 
 from math import pi, sqrt, log
-import numpy as np
+import json
 
 
 class TargetAnalysis:
-    """ class to estimate flux from be7 activity
+    """ class to estimate flux from be7 activity in a lithium target
     """
-    def __init__(self, isotope_activity,isotope_halflife,
-                 current_list,timing_list,target_thickness,
-                 target_radius,target_mass_density,
-                 target_atomic_mass, real_cross_section,
-                 real_foil_flux,real_target_flux):
-        """ Initialise class
+
+    def __init__(self,target_json_name): 
+        """ Initialise TargetAnalysis class
+
+        Attributes
+        ----------
+        target_json_name : str
+            name of the target data json
         """
 
-        # set the parameters
-        self.isotope_activity = isotope_activity
-        self.isotope_halflife = isotope_halflife
-        self.current_list =  current_list
-        self.timing_list = timing_list
-        self.target_thickness = target_thickness
-        self.target_radius = target_radius
-        self.target_mass_density = target_mass_density
-        self.target_atomic_mass = target_atomic_mass
-        self.real_cross_section = real_cross_section
-        self.real_foil_flux = real_foil_flux
-        self.real_target_flux = real_target_flux
+        # set attributes
+        self.target_json_name = target_json_name
+
+        # load the target data
+        with open(f'{self.target_json_name}.json'
+                  ) as target_file:
+            self.target_data = json.load(target_file)
 
     def _no_of_isotopes(self,activity,t_half):
-        """ calculate number of radioactive isotopes 
+        """ calculate number of radioactive isotopes (knoll p2)
 
         Parameters
         ----------
@@ -47,7 +49,6 @@ class TargetAnalysis:
         """
         activity_lambda = log(2)/t_half
         isotopes = activity/activity_lambda 
-        #isotopes = activity/(1-exp(-irrad_time*activity_lambda))
         return isotopes
 
     def _no_of_target_atoms(self,thickness,mass_density,atom_mass,radius):
@@ -75,8 +76,8 @@ class TargetAnalysis:
         return target_atoms
 
     def _no_of_beam_particles(self,current,irrad_time):
-        """ calculate number of charged particles
-          incident on target for given current
+        """ calculate number of charged particles incident on target
+        for given current
 
         Parameters
         ----------
@@ -92,16 +93,10 @@ class TargetAnalysis:
         """
         total_coulombs = current*1e-6*irrad_time
         no_particles = total_coulombs/(1.602176634e-19)
-        # if particle == 'proton':
-        #     scaling_factor_1ua = 6.24151e12
-        # if particle == 'deuteron':
-        #     scaling_factor_1ua = 6.24151e13
-        # particle_flux = total_flux*scaling_factor_1ua*current
-
         return no_particles
 
     def _cross_section(self,no_isotopes,target_atoms,beam_flux):
-        """ calculate a lithium 7 cross-section in millibarns
+        """ calculate a lithium 7 cross-section in millibarns (majerle)
 
         Parameters
         ----------
@@ -120,43 +115,62 @@ class TargetAnalysis:
         lithium7_xs = (1e27*no_isotopes)/(target_atoms*beam_flux*0.925)
         return lithium7_xs
 
-    def run(self):
+    def run(self,isotope_activity,isotope_halflife,current_list,
+            timing_list,real_cross_section):
         """ run the thing for be7 in a lithium target and print results
+
+        Parameters
+        ----------
+        isotope_activity : list[float]
+            Activity and raw uncertainty of the isotope in Bq
+        isotope_halflife: float
+            Halflife of the isotope
+        current_list : list[float]
+            List of faraday cup current readings in uA
+        timing_list : list[int]
+            List of irradiation timings in s
+        real_cross_section : list[float]
+            Cross section (mb) and fractional uncertainty
+
+        Returns
+        -------
+        correction_factor : float
+            correction factor to scale your Faraday cup current by
+            to get current on the lithium target
+        total_frac_uncert : float
+            fractional uncertainty on the above
         """
-        # do calculations for the fractional uncertainty 
+
+        # find target data from file 
+        target_thickness = self.target_data["thickness"]
+        target_mass_density = self.target_data["mass_density"]
+        target_atomic_mass = self.target_data["atomic_mass"]
+        target_radius = self.target_data["radius"]
+ 
+        # calculate incident particles and be7 cross section
         summed_incident_particles = sum(
             [self._no_of_beam_particles(
-                self.current_list[i],
-                self.timing_list[i]) for i in range(
-                    len(self.current_list))])
+                current_list[i],
+                timing_list[i]) for i in range(
+                    len(current_list))])
         be7_cross_section = self._cross_section(
-            self._no_of_isotopes(self.isotope_activity[0],
-                                 self.isotope_halflife),
-            self._no_of_target_atoms(self.target_thickness,
-                                     self.target_mass_density,
-                                     self.target_atomic_mass,
-                                     self.target_radius),
+            self._no_of_isotopes(isotope_activity[0],
+                                 isotope_halflife),
+            self._no_of_target_atoms(target_thickness,
+                                     target_mass_density,
+                                     target_atomic_mass,
+                                     target_radius),
             summed_incident_particles)
+        
+        # do calculations for the fractional uncertainty
         total_frac_uncert = sqrt(
-            (self.isotope_activity[1]/self.isotope_activity[0])**2
-            +(self.real_cross_section[1])**2)
-        print("flux-estimation fractional uncert "
-              "(without FC1 uncert and incident proton energy uncert)= " 
-              f"{total_frac_uncert}" )
+            (isotope_activity[1]/isotope_activity[0])**2
+            +(real_cross_section[1])**2)
 
         # do calculation for the correction factor
-        correction_factor = be7_cross_section/self.real_cross_section[0]
+        correction_factor = be7_cross_section/real_cross_section[0]
         print(f"flux correction factor from simulation is {correction_factor}" 
               f"+- {correction_factor*total_frac_uncert}")
-
-        # do estimations for source strength of target and Fe foil neutron flux
-        # by benchmarking to mcnp values
-        source_p_per_s_10ua = 6.24151e+13
-        target_area = np.pi*(self.target_radius**2)
-        source_strength = (correction_factor*source_p_per_s_10ua*
-                           target_area*self.real_target_flux)
-        flux = correction_factor*source_p_per_s_10ua*self.real_foil_flux
-        print(f"rescaled source strength when FC1=10uA: {source_strength:.5e}"
-              f" +- {total_frac_uncert*source_strength:.5e} n/s")
-        print(f"rescaled flux when FC1=10uA: {flux:.5e} "
-              f"+- {total_frac_uncert*flux:.5e} n/cm2/s")
+        print("note uncertainty does not currently include uncert on " 
+              "current readings, incident proton energy, target thickness")
+        return correction_factor,total_frac_uncert

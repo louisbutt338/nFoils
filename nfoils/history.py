@@ -1,5 +1,5 @@
 """
-module for analysis of irradiation histories
+module for analysis/postpro of irradiation histories
 look no dependencies hooray
 """
 
@@ -8,11 +8,19 @@ class IrradTimings:
     """ class for processing timings into fispact irradiation history
     and list of currents
     """
+
     def __init__(self, input_file,output_file):
-        """ Initialise class
+        """ Initialise IrradTimings class
+
+        Attributes
+        ----------
+        input_file : str
+            path to the txt data file with time and countrate as two columns
+        output_file : str
+            output filename to dump a fispact irradiation history into
         """
 
-        #set parameters
+        #set attributes
         self.filename = input_file
         self.output_filename = output_file
 
@@ -21,12 +29,12 @@ class IrradTimings:
 
         Returns
         -------
-        time : list
+        time : list[float]
             List of times
-        countrate : list
+        countrate : list[float]
             List of counts
         """
-        input_filepath = self.filename
+        input_filepath = f"{self.filename}.txt"
         with open(input_filepath,'r') as txt_data_file:
             txt_contents = txt_data_file.readlines()
             time = []
@@ -36,36 +44,52 @@ class IrradTimings:
                 countrate.append(float(line.split()[1]))
         return time,countrate
 
-    def _proton_flux_conversion(self):
-        """ return protons per second for each time interval,
-        based on 12uA=190k counts (deuteron experiment Nov2024)
+    def _flux_conversion(self,cps_to_particles_per_s):
+        """ return charged particles per second for each time interval,
+        using an input conversion
+
+        Parameters
+        ----------
+        cps_to_particles_per_s : float
+            float value for converting from cps to particles per s
 
         Returns
         -------
-        target_protons_per_s : list
+        target_particles_per_s : list[float]
             List of protons per s for each time interval
         """
-        cps_to_protons_per_s = 6.24151e12 * (12/190000)
-        target_protons_per_s = [
-            i*cps_to_protons_per_s for i in self._parse_txt()[1] ]
-        return target_protons_per_s
+        target_particles_per_s = [
+            i*cps_to_particles_per_s for i in self._parse_txt()[1] ]
+        return target_particles_per_s
 
-    def fispact_hist_writer(self):
+    def fispact_hist_writer(self,cps_to_pps):
         """ write a fispact irradiation history to file
+
+        Parameters
+        ----------
+        cps_to_pps : float
+            float value for converting from rate data cps to
+            charged particles per s
         """
-        with open(self.output_filename, 'w') as irrad_history_file:
+        print('writing fispact irradiation history...')
+        output_txt_file = f"{self.output_filename}.txt"
+        with open(output_txt_file, 'w') as irrad_history_file:
             for timestep in range(len(self._parse_txt()[0])):
                 irrad_history_file.writelines(
-                    f"FLUX {self._proton_flux_conversion()[timestep]} \n")
+                    f"FLUX {self._flux_conversion(cps_to_pps)[timestep]} \n")
                 irrad_history_file.writelines(
                     "TIME 1 SECS \n")
             irrad_history_file.writelines("ATOMS")
 
-    def run(self):
-        """ run the thing
+    def current_printer(self,rate_to_current):
+        """ print currents from the rate data 
+
+        Parameters
+        ----------
+        rate_to_current : float
+            float value for convert from txt rate data 
+            directly to charged particle current
         """
-        #print(proton_flux_conversion())
-        #fispact_hist_writer()
-        #print(len(parse_txt()[0]))
-        approx_current_array = [i*(12/190000) for i in self._parse_txt()[1]]
-        print(approx_current_array)
+        print('getting list of converted currents...')
+        current_array = [i*rate_to_current for i in self._parse_txt()[1]]
+        print(current_array)

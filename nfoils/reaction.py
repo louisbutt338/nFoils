@@ -3,7 +3,7 @@ module for using sandy/njoy for nuclear data extraction
 and various postprocessings
 
 L Fiorito, Nuclear data uncertainty propagation to integral responses
-using SANDY, Annals of Nuclear Energy 101 (359-366) 2017
+using SANDY, Annals of Nuclear Energy 101 (359-366) 2017 
 """
 
 import csv
@@ -379,7 +379,7 @@ class PostprocessReactions(NuclearData):
         Parameters
         ----------
         datafile : str
-            name of json data file
+            name of json reaction data file
         labels : list[str]
             list of the raw string mathmode reaction labels, 
             matching the reactions in the datafile
@@ -393,7 +393,7 @@ class PostprocessReactions(NuclearData):
         Parameters
         ----------
         datafile : str
-            name of json data file
+            name of json reaction data file
         labels : list[str]
             list of the raw string mathmode reaction labels,
             matching the reactions in the datafile

@@ -1,4 +1,4 @@
-""" example for calculating foil activities
+""" example for calculating foil activities - 
 generates an e_results file to plot against some example c_results
 
 run before 2_plot_ce_results.py
@@ -34,7 +34,7 @@ get_activities = ActivityCalc(data_file_name,experiment_dir,
 # 'all' or specific isotope i.e. 'Mn56'
 which_isotopes = 'all'
 
-# input the total irradiation time in s(for the reaction rate calculation) 
+# input the total irradiation time in s (for reaction rate calculation) 
 irrad_time = 600
 
 # request name of json results file

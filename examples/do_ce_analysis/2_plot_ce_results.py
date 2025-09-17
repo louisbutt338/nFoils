@@ -31,7 +31,7 @@ flux_frac_error = 0.05
 order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11] 
 
 # first weighted ave in list and last weighted ave in new reordered list
-# for the WE calculations e.g. [4,19] for isotopes 4-->19
+# for the WE calculations e.g. [5,20] for isotopes 5-->20
 we_isotopes = [5,20]
 
 # which dataset would sir like to use for the weighted average calcs?
@@ -47,4 +47,4 @@ y_axis = [0.1,2.3]
 #do c/e plot and weighted ave analysis
 ce_plotter.run(calc_results,exp_results,flux_norm_mean,
                flux_frac_error,we_isotopes,libraries,
-               order,plot_splitter,y_axis, we_library)
+               order,plot_splitter,y_axis,we_library)

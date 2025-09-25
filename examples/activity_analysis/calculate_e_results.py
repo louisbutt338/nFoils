@@ -1,7 +1,6 @@
-""" example for calculating foil activities - 
-generates an e_results file to plot against some example c_results
-
-run before 2_plot_ce_results.py
+""" example for calculating experimental foil activities - 
+generates an e_results file to be analysed against some example c_results
+using do_ce_analysis.py
 """
 
 from nfoils.activity import ActivityCalc

@@ -1,4 +1,4 @@
-""" example file for getting response functions and uncertainties out
+""" example file for getting foil response functions and uncertainties out
 of nuclear data libraries
 """
 import numpy as np

@@ -1,5 +1,5 @@
 """ example for doing simple coincidence summing correction for 
-multi peak calibration data
+multi peak calibration source
 """
 from nfoils.coincidence import SimpleCorrection
 

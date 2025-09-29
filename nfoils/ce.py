@@ -100,7 +100,7 @@ class CEPlotter:
                  ce_errors_1,ce_results_2,ce_errors_2,
                  ce_results_3,ce_errors_3,
                  spectrum_flux_frac_uncerts,library_labels,
-                 plot_split_integer,y_axis):
+                 plot_splitting,y_axis):
         """ plot c/e diagram with flux+spectrum uncertainty as the error bar
         can do three nuclear data libraries
 
@@ -126,126 +126,64 @@ class CEPlotter:
             List of the total spectrum+flux uncerts for each isotope
         library_labels : list[str]
             List of labels of the libraries for the plot
-        plot_split_integer : int
-            int to split the plot into thermal/threshold
+        plot_splitting : list[float]
+            List of points to add vertical lines on plot
         y_axis : list[float]
             [lower y value, upper y value] for plot
         """
         #initial plotting settings
-        fig, (ax1,ax4) = plt.subplots(
-            1,2,figsize=(12,6),
-            gridspec_kw={'width_ratios':[len(new_order[:plot_split_integer])
-                                         ,len(new_order[plot_split_integer:]
-                                              )]})
+        fig, ax1 = plt.subplots(figsize=(len(new_order),6))
         fig.supxlabel('Neutron-transmuted isotopes',x=0.5,y=-0.14) 
         fig.supylabel('C/E',x=0.06,y=0.5)
-        plt.subplots_adjust(wspace=0.05)
 
         # plotting the first half of plot (significant capture reactions)
         ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,
                         top=True)
-        ax1.set_xticks(np.arange(len(new_order[:plot_split_integer]))
-                       ,labels=new_isotope_list[:plot_split_integer],
+        ax1.set_xticks(np.arange(len(new_order)),labels=new_isotope_list,
                        rotation=45)
         ax1.set_ylim(y_axis[0],y_axis[1])
-        ax1.scatter (new_isotope_list[:plot_split_integer]
-                     ,ce_results_1[:plot_split_integer]
-                     ,s=40 , c='b', linewidth=2,label=library_labels[0])
-        ax1.errorbar(new_isotope_list[:plot_split_integer]
-                     ,ce_results_1[:plot_split_integer]
-                     ,ce_errors_1[:plot_split_integer]
+        ax1.scatter (new_isotope_list,ce_results_1,s=40 , c='b',
+                     linewidth=2,label=library_labels[0])
+        ax1.errorbar(new_isotope_list,ce_results_1,ce_errors_1
                      ,fmt='none',lw=2,capsize=2,color='Black',zorder=-1)
-        ax1.set_xlim(-0.4,len(new_order[:plot_split_integer])-0.6)
+        ax1.set_xlim(-0.4,len(new_order)-0.6)
         ax2 = ax1.twiny()
-        ax2.scatter (new_isotope_list[:plot_split_integer]
-                     ,ce_results_2[:plot_split_integer]
-                     ,s=40 , c='magenta', linewidth=2,label=library_labels[1])
-        ax2.errorbar(new_isotope_list[:plot_split_integer]
-                     ,ce_results_2[:plot_split_integer]
-                     ,ce_errors_2[:plot_split_integer]
+        ax2.scatter (new_isotope_list,ce_results_2,s=40 , c='magenta',
+                     linewidth=2,label=library_labels[1])
+        ax2.errorbar(new_isotope_list,ce_results_2,ce_errors_2
                      ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
         ax2.tick_params(top=False, labeltop=False, bottom=False,
                         labelbottom=False)
-        ax2.set_xlim(-0.2,len(new_order[:plot_split_integer])-0.4)
+        ax2.set_xlim(-0.2,len(new_order)-0.4)
         ax3 = ax1.twiny()
-        ax3.scatter (new_isotope_list[:plot_split_integer]
-                     ,ce_results_3[:plot_split_integer]
-                     ,s=40 , c='green', linewidth=2,label=library_labels[2])
-        ax3.errorbar(new_isotope_list[:plot_split_integer]
-                     ,ce_results_3[:plot_split_integer]
-                     ,ce_errors_3[:plot_split_integer]
+        ax3.scatter (new_isotope_list,ce_results_3,s=40 , c='green',
+                     linewidth=2,label=library_labels[2])
+        ax3.errorbar(new_isotope_list,ce_results_3,ce_errors_3
                      ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
         ax3.tick_params(top=False, labeltop=False, bottom=False,
                         labelbottom=False)
-        ax3.set_xlim(-0.6,len(new_order[:plot_split_integer])-0.8)
+        ax3.set_xlim(-0.6,len(new_order)-0.8)
         ax1.plot([-1,len(new_order)], np.ones(2), 'Black', ls='--',
                  linewidth=1.5)
-        ax1.fill_between(range(len(new_order[:plot_split_integer]))
-                         ,[1-x for x in spectrum_flux_frac_uncerts
-                           [:plot_split_integer]]
-                         ,[1+x for x in spectrum_flux_frac_uncerts
-                           [:plot_split_integer]]
+        ax1.fill_between(range(len(new_order))
+                         ,[1-x for x in spectrum_flux_frac_uncerts]
+                         ,[1+x for x in spectrum_flux_frac_uncerts]
                          ,facecolor='lightcoral',alpha=0.3,step='mid')
 
-        # plotting the second half of plot (significant threshold reactions)
-        ax4.tick_params(axis='y',right=False,labelright=False
-                        ,left=False,labelleft=False,bottom=False)
-        ax4.set_xticks(np.arange(len(new_order[plot_split_integer:]))
-                       ,labels=new_isotope_list[plot_split_integer:],
-                       rotation=45)
-        ax4.set_ylim(y_axis[0],y_axis[1])
-        ax4.scatter (new_isotope_list[plot_split_integer:]
-                     ,ce_results_1[plot_split_integer:]
-                     , s=40 , c='b', linewidth=2,label=library_labels[0])
-        ax4.errorbar(new_isotope_list[plot_split_integer:]
-                     ,ce_results_1[plot_split_integer:]
-                     ,ce_errors_1[plot_split_integer:]
-                     ,fmt='none',lw=2,capsize=2,color='Black',zorder=-1)
-        ax4.set_xlim(-0.4,len(new_order[plot_split_integer:])-0.6)
-        ax4.set_xticklabels(new_isotope_list[plot_split_integer:],rotation=45)
-        ax5 = ax4.twiny()
-        ax5.scatter (new_isotope_list[plot_split_integer:]
-                     ,ce_results_2[plot_split_integer:]
-                     , s=40 , c='magenta', linewidth=2,label=library_labels[1])
-        ax5.errorbar(new_isotope_list[plot_split_integer:]
-                     ,ce_results_2[plot_split_integer:]
-                     ,ce_errors_2[plot_split_integer:]
-                     ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax5.tick_params(top=False, labeltop=False, bottom=False,
-                        labelbottom=False)
-        ax5.set_xlim(-0.2,len(new_order[plot_split_integer:])-0.4)
-        ax6 = ax4.twiny()
-        ax6.scatter (new_isotope_list[plot_split_integer:]
-                     ,ce_results_3[plot_split_integer:]
-                     , s=40 , c='green', linewidth=2,label=library_labels[2])
-        ax6.errorbar(new_isotope_list[plot_split_integer:]
-                     ,ce_results_3[plot_split_integer:]
-                     ,ce_errors_3[plot_split_integer:]
-                     ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax6.tick_params(top=False, labeltop=False, bottom=False,
-                        labelbottom=False)
-        ax6.set_xlim(-0.6,len(new_order[plot_split_integer:])-0.8)
-        ax4.plot([-1,len(new_order[plot_split_integer:])]
-                 , np.ones(2), 'Black', ls='--',linewidth=1.5)
-        ax4.fill_between(range(len(new_order[plot_split_integer:]))
-                         ,[1-x for x in spectrum_flux_frac_uncerts
-                           [plot_split_integer:]]
-                         ,[1+x for x in spectrum_flux_frac_uncerts
-                           [plot_split_integer:]]
-                         ,facecolor='lightcoral',alpha=0.3,step='mid')
+        # add vertical lines to split the plot up
+        ax1.vlines(x=plot_splitting,color='k',linewidth=1,linestyle='-',
+                   ymin=y_axis[0],ymax=y_axis[1])
 
         # legend and saving figure
-        ax4.set_zorder(-1)
-        ax1.legend(loc="upper left", bbox_to_anchor=(1.15, 0.90)
+        ax1.legend(loc="upper left", bbox_to_anchor=(0.02, 0.90)
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        ax2.legend(loc="upper left", bbox_to_anchor=(1.15, 0.98)
+        ax2.legend(loc="upper left", bbox_to_anchor=(0.02, 0.98)
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        ax3.legend(loc="upper left", bbox_to_anchor=(1.15, 0.82)
+        ax3.legend(loc="upper left", bbox_to_anchor=(0.02, 0.82)
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        fig.set_size_inches((17, 6))
         fig.savefig(f"{self.folder}/{self.plotname}.png",transparent=False,
                     bbox_inches='tight')
 
@@ -281,7 +219,7 @@ class CEPlotter:
         return weighted_ce_result,weighted_ce_error
     
     def run(self,calc_results,exp_results,flux_norm,flux_error,
-            we_isotopes,libraries,new_order,plot_splitter,
+            we_isotopes,libraries,new_order,plot_splitting,
             y_axis,we_library):
         """ read the c_results data and e_results data, 
         calculate C/E results and uncerts and plot 
@@ -307,9 +245,9 @@ class CEPlotter:
         new_order : list[int]
             New order of the original isotopes to plot in 
             i.e. [4,3,2,1,0] will reverse an original list of 5 isotopes
-        plot_splitter : int
-            How many isotopes in the new_order list would you like to be
-            split on the LHS of the plot
+        plot_splitting : list[float]
+            list of floats to add vertical lines on plot 
+            i.e. [3.5,4.5] adds lines in between 3rd,4th,5th isotopes
         y_axis : list[float]
             set y axis limits i.e. [0,2] for C/E = 0-->2
         we_library : str
@@ -405,9 +343,8 @@ class CEPlotter:
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_1,
                       ce_errors_1,ce_results_2,ce_errors_2,
-                      ce_results_3,ce_errors_3,
-                      spectrum_flux_frac_u,libraries,plot_splitter,
-                      y_axis)
+                      ce_results_3,ce_errors_3,spectrum_flux_frac_u,
+                      libraries,plot_splitting,y_axis)
         
         # find out which library is being used for WE calculations
         we_library_index = libraries.index(we_library)

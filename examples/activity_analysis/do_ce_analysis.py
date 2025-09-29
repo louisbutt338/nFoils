@@ -38,9 +38,9 @@ we_isotopes = [5,20]
 # which dataset would sir like to use for the weighted average calcs?
 we_library = 'ENDF/B-VIII'
 
-# how many isotopes (in the list above) are primarily thermal induced? 
-# for splitting plot
-plot_splitter = 4
+# would you like to introduce vertical lines to split the plot up? 
+# i.e. [4.5] splits the first 4 and last 4 isotopes from the rest
+plot_split_list = [4.5,13.5]
 
 # set y axis size e.g. [0,2] for 0-->2
 y_axis = [0.1,2.3]
@@ -48,4 +48,4 @@ y_axis = [0.1,2.3]
 #do c/e plot and weighted ave analysis
 ce_plotter.run(calc_results,exp_results,flux_norm_mean,
                flux_frac_error,we_isotopes,libraries,
-               order,plot_splitter,y_axis,we_library)
+               order,plot_split_list,y_axis,we_library)

@@ -1,5 +1,6 @@
 """ 
 module for performing simple coincidence summing calculations and corrections
+for a multi peak source
 
 S Kafala, Simple method for true coincidence summing correction, Journal of
     Radioanalytical and Nuclear Chemistry Articles 191 (105-114), 1995

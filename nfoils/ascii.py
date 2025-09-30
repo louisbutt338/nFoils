@@ -108,8 +108,8 @@ class AsciiSummer:
         ax1.plot(kev_array, ascii_data , 'b-' )
         ax1.grid(which='major')
         fig.set_size_inches((12, 6))
-        fig.savefig('gamma_spectrum.png', transparent=False,
-                    bbox_inches='tight')
+        fig.savefig(f'{self.folder_path}/gamma_spectrum.png',
+                    transparent=False, bbox_inches='tight')
 
     def run(self):
         """ writes the summed output file 

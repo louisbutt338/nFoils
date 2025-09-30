@@ -45,7 +45,11 @@ plot_split_list = [4.5,13.5]
 # set y axis size e.g. [0,2] for 0-->2
 y_axis = [0.1,2.3]
 
+# set how far along the x axis to place the start of the legend
+legend_x_coord = 0.8
+
 #do c/e plot and weighted ave analysis
 ce_plotter.run(calc_results,exp_results,flux_norm_mean,
                flux_frac_error,we_isotopes,libraries,
-               order,plot_split_list,y_axis,we_library)
+               order,plot_split_list,y_axis,we_library,
+               legend_x_coord)

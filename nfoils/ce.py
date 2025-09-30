@@ -173,7 +173,8 @@ class CEPlotter:
                          ,facecolor='lightcoral',alpha=0.3,step='mid')
 
         # add vertical lines to split the plot up
-        ax1.vlines(x=plot_splitting,color='k',linewidth=1,linestyle='-',
+        corrected_splitting = [i-1 for i in plot_splitting]
+        ax1.vlines(x=corrected_splitting,color='k',linewidth=1,linestyle='-',
                    ymin=y_axis[0],ymax=y_axis[1])
 
         # legend and saving figure

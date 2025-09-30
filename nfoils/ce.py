@@ -100,7 +100,7 @@ class CEPlotter:
                  ce_errors_1,ce_results_2,ce_errors_2,
                  ce_results_3,ce_errors_3,
                  spectrum_flux_frac_uncerts,library_labels,
-                 plot_splitting,y_axis):
+                 plot_splitting,y_axis,legend_x_coord):
         """ plot c/e diagram with flux+spectrum uncertainty as the error bar
         can do three nuclear data libraries
 
@@ -130,9 +130,11 @@ class CEPlotter:
             List of points to add vertical lines on plot
         y_axis : list[float]
             [lower y value, upper y value] for plot
+        legend_x_coord : float
+            X co ordinate to place the start of the legend on the plot
         """
         #initial plotting settings
-        fig, ax1 = plt.subplots(figsize=(len(new_order),6))
+        fig, ax1 = plt.subplots(figsize=(16,6))
         fig.supxlabel('Neutron-transmuted isotopes',x=0.5,y=-0.14) 
         fig.supylabel('C/E',x=0.06,y=0.5)
 
@@ -175,13 +177,13 @@ class CEPlotter:
                    ymin=y_axis[0],ymax=y_axis[1])
 
         # legend and saving figure
-        ax1.legend(loc="upper left", bbox_to_anchor=(0.02, 0.90)
+        ax1.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.88)
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        ax2.legend(loc="upper left", bbox_to_anchor=(0.02, 0.98)
+        ax2.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.96)
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        ax3.legend(loc="upper left", bbox_to_anchor=(0.02, 0.82)
+        ax3.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.80)
                    ,handlelength=0,borderaxespad=0, frameon=False
                    ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
         fig.savefig(f"{self.folder}/{self.plotname}.png",transparent=False,
@@ -220,7 +222,7 @@ class CEPlotter:
     
     def run(self,calc_results,exp_results,flux_norm,flux_error,
             we_isotopes,libraries,new_order,plot_splitting,
-            y_axis,we_library):
+            y_axis,we_library,legend_x_coord):
         """ read the c_results data and e_results data, 
         calculate C/E results and uncerts and plot 
         and do weighted average analysis
@@ -253,6 +255,8 @@ class CEPlotter:
         we_library : str
             Name of the library to do the weighted ave analysis on 
             (must be one of 'libraries')
+        legend_x_coord : float
+            X co ordinate to place the start of the legend on the plot
         """
         with open(f"{self.folder}/{calc_results}.json") as model_results_path:
             model_results = json.load(model_results_path)
@@ -286,6 +290,22 @@ class CEPlotter:
                         for i in isotope_list]
             calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
                         for i in isotope_list]
+            #SPECIAL P-LI VERSION 29/9/25:
+#            calc_a_1 = [model_results[i]["activities"][0]
+#                        for i in isotope_list]
+#            calc_u_1 = [np.divide(model_results[i]["uncertainties"][0],
+#                        model_results[i]["activities"][0])
+#                        for i in isotope_list]
+#            calc_a_2 = [model_results[i]["activities"][1]
+#                        for i in isotope_list]
+#            calc_u_2 = [np.divide(model_results[i]["uncertainties"][1],
+#                        model_results[i]["activities"][1])
+#                        for i in isotope_list]
+#            calc_a_3 = [model_results[i]["activities"][2]
+#                        for i in isotope_list]
+#            calc_u_3 = [np.divide(model_results[i]["uncertainties"][2],
+#                        model_results[i]["activities"][2])
+#                        for i in isotope_list]
 
         with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
             exp_results_data = json.load(exp_results_path)
@@ -296,6 +316,11 @@ class CEPlotter:
                      for key in isotope_list]
             exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
                      for key in isotope_list]
+            #SPECIAL P-LI VERSION 29/9/25:
+#            exp_a = [exp_results_data[key]["activities"][0]
+#                     for key in isotope_list]
+#            exp_u = [exp_results_data[key]["activity_uncertainties"][0]
+#                     for key in isotope_list]
 
         # perform C/E calculations for the foils
         ce_results_1  = [
@@ -344,7 +369,7 @@ class CEPlotter:
         self._plotter(new_order,new_isotope_list,ce_results_1,
                       ce_errors_1,ce_results_2,ce_errors_2,
                       ce_results_3,ce_errors_3,spectrum_flux_frac_u,
-                      libraries,plot_splitting,y_axis)
+                      libraries,plot_splitting,y_axis,legend_x_coord)
         
         # find out which library is being used for WE calculations
         we_library_index = libraries.index(we_library)

@@ -372,7 +372,7 @@ class ActivityCalc:
                     inv_coincidence_factor * self_attenuation_factor
                     * uncorrected_activity)
                 counts_frac_uncert = (
-                    self.json_file_data[isotope_name]['uncertainty'][n]
+                    self.json_file_data[isotope_name]['counts_uncertainty'][n]
                     / self.json_file_data[isotope_name]['counts'][n])
                 final_uncertainty = (
                     final_activity

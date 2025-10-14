@@ -291,37 +291,17 @@ class CEPlotter:
                         for i in isotope_list]
             calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
                         for i in isotope_list]
-            #SPECIAL P-LI VERSION 29/9/25:
-#            calc_a_1 = [model_results[i]["activities"][0]
-#                        for i in isotope_list]
-#            calc_u_1 = [np.divide(model_results[i]["uncertainties"][0],
-#                        model_results[i]["activities"][0])
-#                        for i in isotope_list]
-#            calc_a_2 = [model_results[i]["activities"][1]
-#                        for i in isotope_list]
-#            calc_u_2 = [np.divide(model_results[i]["uncertainties"][1],
-#                        model_results[i]["activities"][1])
-#                        for i in isotope_list]
-#            calc_a_3 = [model_results[i]["activities"][2]
-#                        for i in isotope_list]
-#            calc_u_3 = [np.divide(model_results[i]["uncertainties"][2],
-#                        model_results[i]["activities"][2])
-#                        for i in isotope_list]
 
         with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
             exp_results_data = json.load(exp_results_path)
 
             # extract experimental activities from e_results
-            # (using average activities of included peaks)
+            # using average activities of included peaks
+            # (used only first isotopes for bham p-li march 2024 experiment)
             exp_a = [np.mean(exp_results_data[key]["activities"])
                      for key in isotope_list]
             exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
                      for key in isotope_list]
-            #SPECIAL P-LI VERSION 29/9/25:
-#            exp_a = [exp_results_data[key]["activities"][0]
-#                     for key in isotope_list]
-#            exp_u = [exp_results_data[key]["activity_uncertainties"][0]
-#                     for key in isotope_list]
 
         # perform C/E calculations for the foils
         ce_results_1  = [

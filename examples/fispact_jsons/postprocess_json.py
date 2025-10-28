@@ -13,7 +13,7 @@ gamma_spec = GammaSpectrumModel()
 #input time interval in the .out file where the data u want is 
 time_interval = 8
 
-# dict of zai of the isotopes and the state 'm' or ''
+# dict of zai of the isotopes
 # include all you want to know activity for
 isotope_dictionary = {
     'mn56' :{'isotope_zai':250560}

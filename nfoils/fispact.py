@@ -13,9 +13,7 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 
 class JsonRetriever:
     """ retrieve activities at a specified time interval from fispact json. 
-    Useful although JSON doesn't get uncertainties so check all results
-    
-    notes: expansion to include metastable isotopes would be useful
+    notes: expand to include metastable isotopes would be useful
     """
 
     def __init__(self,filepath):

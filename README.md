@@ -29,6 +29,6 @@ export NJOY=/path/to/njoy
 ```
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
-Fusion Environment Impact on Materials, part-funded by the EPSRC Energy Programme [grant number EP/W006839/1]. It was also supported 
-by a contract (Contract Number 14455) awarded by UKAEA to Develop a small solid lithium ceramic breeder with in-line tritium detection 
+Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 
+by a contract (contract number 14455) awarded by UKAEA to Develop a small solid lithium ceramic breeder with in-line tritium detection 
 capability for calibrated neutron sources. LB is grateful for a PhD scholarship awarded by the University of Birmingham and UKAEA.*

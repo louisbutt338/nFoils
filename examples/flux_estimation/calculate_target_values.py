@@ -1,8 +1,11 @@
 """ example for doing flux estimation with lithium target.
-Compares your current readings to expected cross section value
+Compares your faraday cup current readings to expected cross section value
 and outputs a correction factor to give you current on the target
 """
 from nfoils.target import TargetAnalysis
+from nfoils.history import IrradTimeline
+
+# calculate the correction factor and uncertainty
 
 # path to json file with target data inside:
 # target thickness (cm), radius (cm), material density (g/cm3),
@@ -35,9 +38,28 @@ c_factor,rel_uncert = analyse_target.run(isotope_activity,isotope_halflife,
                                          cross_section,current_rel_uncert,
                                          energy_rel_uncert)
 
-# model neutron flux (n/cm2/src p) you want to rescale
+
+# rescale an input value by the correction
+
+# model neutron flux (n/cm2/src p) you want to rescale 
 foil_flux = 1e-05 
 
+# input MCNP value for number of charged particles per s per uA
+source_p_per_s_per_ua = 6.24151e+12
+
 # calculate the rescaled flux
-rescaled_flux = foil_flux*c_factor
-print(f"rescaled flux is {rescaled_flux} n/cm2/src p +- {rel_uncert*100}%")
+rescaled_flux = foil_flux*c_factor*source_p_per_s_per_ua
+print(f"rescaled flux is {rescaled_flux} n/cm2/s/uA +- {rel_uncert*100}%")
+
+
+# write a fispact history in units of particles/s on the target
+
+# calculate target currents
+target_current_list = [i*c_factor for i in current_list]
+
+# set fispact irrad hist filename
+output_filename = "fispact_history_target"
+
+#initialise and run
+history = IrradTimeline(target_current_list,timing_list)
+history.fispact_hist_writer(source_p_per_s_per_ua,output_filename)

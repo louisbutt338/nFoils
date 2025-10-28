@@ -236,7 +236,7 @@ class CurveFitter:
         plt.errorbar(self.x_data, residuals,yerr=self.errors,lw=2,
                      capsize=2,color='k',zorder=-1,fmt='none')
         plt.title("Plot of the residual of the fit")
-        plt.xlabel("Time (s)")
+        plt.xlabel("Gamma energy (keV)")
         plt.ylabel("Residual")
         plt.savefig("mc_residuals.png")
         plt.close()

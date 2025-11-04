@@ -1,8 +1,8 @@
-""" example for summing ascii files together and plotting the result
+""" sum ascii files together and plot the resulting summed spectrum
 """
 from nfoils.ascii import AsciiSummer
 
-# path to dir with asciis in
+# path to dir with multiple ascii spectra inside
 folder_path = 'example_asciis'
 
 # name of files without the 'xxx' numbers at the end 

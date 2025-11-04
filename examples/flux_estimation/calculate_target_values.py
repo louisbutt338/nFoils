@@ -1,12 +1,12 @@
-""" do flux estimation for lithium target neutron source.
+""" do a flux estimation for lithium target neutron source.
 Compares your faraday cup current readings to expected cross section value
 and outputs a correction factor to give you current on the target.
-Then prints fispact irradiation history for the target
+Then prints a fispact irradiation history for the target
 """
 from nfoils.target import TargetAnalysis
 from nfoils.history import IrradTimeline
 
-# calculate the correction factor and uncertainty
+# calculate the correction factor and uncertainty:
 
 # path to json file with target data inside:
 # target thickness (cm), radius (cm), material density (g/cm3),
@@ -40,7 +40,7 @@ c_factor,rel_uncert = analyse_target.run(isotope_activity,isotope_halflife,
                                          energy_rel_uncert)
 
 
-# rescale an input value by the correction
+# rescale an input value by the correction:
 
 # model neutron flux (n/cm2/src p) you want to rescale 
 foil_flux = 1e-05 
@@ -53,7 +53,7 @@ rescaled_flux = foil_flux*c_factor*source_p_per_s_per_ua
 print(f"rescaled flux is {rescaled_flux} n/cm2/s/uA +- {rel_uncert*100}%")
 
 
-# write a fispact history in units of particles/s on the target
+# write a fispact history in units of particles/s on the target:
 
 # calculate target currents
 target_current_list = [i*c_factor for i in current_list]

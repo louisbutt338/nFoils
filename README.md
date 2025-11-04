@@ -10,23 +10,33 @@ Please reference this repo appropriately in your work - accompanying paper to be
 
 ## installing nFoils
 
-ensure you are set up in your chosen environment with python/pip/setuptools/git 
+first, set up a virtual environment for the package with installation dependencies:
 
-to install an editable version of the package (recommend):
+for conda,
+```
+conda create --name nfoils_env python pip setuptools openblas
+```
+
+second, install the package:
+
+for non-editable version,
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -r requirements.txt -e .
+pip install -r requirements.txt .
 ```
+(use ```pip install -r requirements.txt -e .``` to install an editable version)
 
-to use reaction.py for nuclear data extraction, NJOY2016 must also be installed
+third, install NJOY2016 to use the reaction.py module for nuclear data extraction:
 
 clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html)
 
-then set the path to the NJOY2016 executable:
+then set the path to the NJOY2016 executable,
 ```
 export NJOY=/path/to/njoy
 ```
+
+\*tested for python>=3.11.0 pip>=25.0.0 setuptools>=64.0.0 git>=2.39.5 openblas>=0.3.30
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
 Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 

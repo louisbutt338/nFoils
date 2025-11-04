@@ -8,7 +8,6 @@ setuptools.setup(
     author="Louis Butt",
     author_email="LJB841@bham.ac.uk",
     description="nFoils suite for foil neutron measurements",
-    long_description=("README.md").read_text(),
     url="https://github.com/louisbutt338/nFoils",
     packages=setuptools.find_packages(),
     python_requires='>3.11',

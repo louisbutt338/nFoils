@@ -339,12 +339,15 @@ class CEPlotter:
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         for i in range(len(new_isotope_list)):
             print(f'********* {new_isotope_list[i]} C/E results')
-            print(f"{libraries[0]} value is "
-                  f"{ce_results_1[i]} +- {ce_errors_1[i] }")
-            print(f"{libraries[1]} value is "
-                  f"{ce_results_2[i]} +- {ce_errors_2[i] }")
-            print(f"{libraries[2]} value is "
-                  f"{ce_results_3[i]} +- {ce_errors_3[i] }")
+            print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
+                  f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
+                  f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")
+            #print(f"{libraries[0]} value is "
+            #      f"{ce_results_1[i]:.3f} +- {ce_errors_1[i]:.3f}")
+            #print(f"{libraries[1]} value is "
+            #      f"{ce_results_2[i]:.3f} +- {ce_errors_2[i]:.3f}")
+            #print(f"{libraries[2]} value is "
+            #      f"{ce_results_3[i]:.3f} +- {ce_errors_3[i]:.3f}")
         
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_1,

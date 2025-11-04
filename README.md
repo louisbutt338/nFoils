@@ -10,28 +10,21 @@ Please reference this repo appropriately in your work - accompanying paper to be
 
 ## installing nFoils
 
-first, set up a virtual environment for the package with installation dependencies:
-
-for conda,
+first set up a virtual environment for the package with installation dependencies \* i.e. with conda:
 ```
 conda create --name nfoils_env python pip setuptools openblas
 ```
 
-second, install the package:
-
-for non-editable version,
+then install the package i.e. for a non-editable version:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
 pip install -r requirements.txt .
 ```
-(use ```pip install -r requirements.txt -e .``` to install an editable version)
 
-third, install NJOY2016 to use the reaction.py module for nuclear data extraction:
+to use the reaction.py module, install NJOY2016 by following the installation instructions on the [NJOY website](https://docs.njoy21.io/install.html)
 
-clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html)
-
-then set the path to the NJOY2016 executable,
+then setting the path to the NJOY2016 executable:
 ```
 export NJOY=/path/to/njoy
 ```

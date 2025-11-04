@@ -1,5 +1,5 @@
-""" example for converting time bin rate data into another unit
-using conversion facto
+""" convert time bin rate (/s) data into a unit of your choice
+using a conversion factor. then dump into json
 """
 
 import json

@@ -1,11 +1,12 @@
-""" example file for getting foil response functions and uncertainties out
-of nuclear data libraries
+""" use NJOY exe to get reaction response functions and uncertainties out
+of a specified nuclear data library. note libraries may be missing reactions 
+and/or covariances
 """
 import numpy as np
 from nfoils.reaction import PostprocessReactions
 
-# set energy grids with sandy (need sandy import)
-# or make your own (need numpy import)
+# set energy grids with sandy (requires sandy import)
+# or import your own like "group_structure_175"
 #ek=sandy.energy_grids.SCALE238
 ek=np.fromfile('../../data/energy_grids/group_structure_175.txt',sep=" ")
 

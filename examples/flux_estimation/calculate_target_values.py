@@ -1,6 +1,7 @@
-""" example for doing flux estimation with lithium target.
+""" do flux estimation for lithium target neutron source.
 Compares your faraday cup current readings to expected cross section value
-and outputs a correction factor to give you current on the target
+and outputs a correction factor to give you current on the target.
+Then prints fispact irradiation history for the target
 """
 from nfoils.target import TargetAnalysis
 from nfoils.history import IrradTimeline

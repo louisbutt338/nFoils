@@ -1,5 +1,5 @@
-""" example for getting specific activity data from a fispact json
-and then simulating a gamma spectrum
+""" get specific activity data for specified isotopes from a fispact json
+ at a specified time interval. simulate a gamma spectrum for each isotope
 """
 from nfoils.fispact import JsonRetriever,GammaSpectrumModel
 

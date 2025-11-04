@@ -43,7 +43,7 @@ we_library = 'ENDF/B-VIII'
 plot_split_list = [4.5,13.5]
 
 # set y axis size e.g. [0,2] for 0-->2
-y_axis = [0.1,2.3]
+y_axis = [0.01,2.3]
 
 # set how far along the x axis to place the start of the legend
 legend_x_coord = 0.8

@@ -1,5 +1,5 @@
-""" example file for getting spectrum uncertainties
-specific to the cross section range of a reaction
+""" get the average uncertainty from an input neutron spectrum over
+a specified cross section range of a reaction
 """
 import numpy as np
 from nfoils.reaction import IsotopicSpectrumUncertainty

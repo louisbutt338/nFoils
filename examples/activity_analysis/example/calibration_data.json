@@ -11,7 +11,7 @@
             "efficiency_equation_parameters": [-25.7209, 13.8415, -2.48, 0.1352],
             "efficiency_curve_fractional_uncertainty": 0.05
         },
-    "B03_hpge_38cm": {
+    "B03_hpge_shelf": {
             "foil_distance_cm": 38,
             "detector_radius_cm": 3.25,
             "efficiency_equation_parameters": [-27.773, 11.13964, -1.8975, 0.10025],

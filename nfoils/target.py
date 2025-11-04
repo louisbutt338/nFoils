@@ -116,13 +116,14 @@ class TargetAnalysis:
         return lithium7_xs
 
     def run(self,isotope_activity,isotope_halflife,current_list,
-            timing_list,real_cross_section):
+            timing_list,real_cross_section,current_rel_uncert,
+            energy_rel_uncert):
         """ run the thing for be7 in a lithium target and print results
 
         Parameters
         ----------
         isotope_activity : list[float]
-            Activity and raw uncertainty of the isotope in Bq
+            Activity and relative uncertainty of the isotope in Bq
         isotope_halflife: float
             Halflife of the isotope
         current_list : list[float]
@@ -130,15 +131,20 @@ class TargetAnalysis:
         timing_list : list[int]
             List of irradiation timings in s
         real_cross_section : list[float]
-            Cross section (mb) and fractional uncertainty
+            Cross section (mb) and relative uncertainty
+        current_frac_uncert : float
+            Relative uncertainty on the current readings
+        energy_frac_uncert : float
+            Relative uncertainty on the energy of the incident
+            particle
 
         Returns
         -------
         correction_factor : float
             correction factor to scale your Faraday cup current by
             to get current on the lithium target
-        total_frac_uncert : float
-            fractional uncertainty on the above
+        total_rel_uncert : float
+            relative uncertainty on the above
         """
 
         # find target data from file 
@@ -146,6 +152,7 @@ class TargetAnalysis:
         target_mass_density = self.target_data["mass_density"]
         target_atomic_mass = self.target_data["atomic_mass"]
         target_radius = self.target_data["radius"]
+        target_rel_uncert = self.target_data["relative_uncertainty"]
  
         # calculate incident particles and be7 cross section
         summed_incident_particles = sum(
@@ -162,15 +169,17 @@ class TargetAnalysis:
                                      target_radius),
             summed_incident_particles)
         
-        # do calculations for the fractional uncertainty
-        total_frac_uncert = sqrt(
-            (isotope_activity[1]/isotope_activity[0])**2
-            +(real_cross_section[1])**2)
+        # do calculations for the total relative uncertainty
+        total_rel_uncert = sqrt(
+            isotope_activity[1]**2
+            +(real_cross_section[1])**2
+            +target_rel_uncert**2
+            +current_rel_uncert**2
+            +energy_rel_uncert**2)
 
         # do calculation for the correction factor
         correction_factor = be7_cross_section/real_cross_section[0]
-        print(f"flux correction factor from simulation is {correction_factor}" 
-              f"+- {correction_factor*total_frac_uncert}")
-        print("note uncertainty does not currently include uncert on " 
-              "current readings, incident proton energy, target thickness")
-        return correction_factor,total_frac_uncert
+        print(f"flux correction factor from simulation is "
+              f"{correction_factor} " 
+              f"+- {100*total_rel_uncert} %")
+        return correction_factor,total_rel_uncert

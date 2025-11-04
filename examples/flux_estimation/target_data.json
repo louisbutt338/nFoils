@@ -2,5 +2,6 @@
     "thickness": 0.1,
     "radius": 0.1,
     "mass_density": 0.1,
-    "atomic_mass": 5
+    "atomic_mass": 5,
+    "relative_uncertainty": 0.1
 }

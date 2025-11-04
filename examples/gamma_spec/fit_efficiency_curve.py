@@ -1,9 +1,10 @@
-""" example for fitting hpge efficiency functions to data
+""" fit hpge efficiency functions to calibration measurements
 """
 
 from nfoils.fitting import CurveFitter
 
-# path to efficiency data json file
+# path to efficiency data json file with 
+#  energy (keV) : {efficiency, uncertainty, coincidence summing correction}
 input_data = "efficiency_data"
 
 # interpolation energy range in keV [start,end]

@@ -45,9 +45,11 @@ class CurveFitter:
 
         # get x,y,errors from the datafile
         self.x_data = [float(i) for i in self.experimental_data.keys()]
-        self.y_data = [self.experimental_data[i]["efficiency" ] 
+        self.y_data = [self.experimental_data[i]["efficiency"]
+                       * self.experimental_data[i]["correction_factor"]
                        for i in self.experimental_data.keys()]
-        self.errors = [self.experimental_data[i]["uncertainty"] 
+        self.errors = [self.experimental_data[i]["uncertainty"]
+                       * self.experimental_data[i]["correction_factor"]
                        for i in self.experimental_data.keys()]
 
     def _spec_function(self,energy,a0,a1,a2,a3):
@@ -222,7 +224,7 @@ class CurveFitter:
                      lw=2,capsize=2,color='k',zorder=-1,fmt='none')
         plt.legend()
         plt.xlim(0,2000)
-        plt.ylim(-0.05,0.3)
+        #plt.ylim(-0.05,0.3)
         plt.xlabel("Gamma energy (keV)")
         plt.ylabel("Efficiency")
         plt.savefig("mc_function.png")
@@ -234,7 +236,7 @@ class CurveFitter:
         plt.errorbar(self.x_data, residuals,yerr=self.errors,lw=2,
                      capsize=2,color='k',zorder=-1,fmt='none')
         plt.title("Plot of the residual of the fit")
-        plt.xlabel("Time (s)")
+        plt.xlabel("Gamma energy (keV)")
         plt.ylabel("Residual")
         plt.savefig("mc_residuals.png")
         plt.close()

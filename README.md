@@ -10,25 +10,28 @@ Please reference this repo appropriately in your work - accompanying paper to be
 
 ## installing nFoils
 
-ensure you are set up in your chosen environment with python/pip/setuptools/git 
+first set up a virtual environment for the package with installation dependencies \* i.e. with conda:
+```
+conda create --name nfoils_env python pip setuptools openblas
+```
 
-to install an editable version of the package (recommend):
+then install the package i.e. for a non-editable version:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -r requirements.txt -e .
+pip install -r requirements.txt .
 ```
 
-to use reaction.py for nuclear data extraction, NJOY2016 must also be installed
+to use the reaction.py module, install NJOY2016 by following the installation instructions on the [NJOY website](https://docs.njoy21.io/install.html)
 
-clone NJOY2016 with git and follow the installation instructions provided on the [NJOY website](https://docs.njoy21.io/install.html)
-
-then set the path to the NJOY2016 executable:
+then setting the path to the NJOY2016 executable:
 ```
 export NJOY=/path/to/njoy
 ```
 
+\*tested for python>=3.11.0 pip>=25.0.0 setuptools>=64.0.0 git>=2.39.5 openblas>=0.3.30
+
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
-Fusion Environment Impact on Materials, part-funded by the EPSRC Energy Programme [grant number EP/W006839/1]. It was also supported 
-by a contract (Contract Number 14455) awarded by UKAEA to Develop a small solid lithium ceramic breeder with in-line tritium detection 
+Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 
+by a contract (contract number 14455) awarded by UKAEA to Develop a small solid lithium ceramic breeder with in-line tritium detection 
 capability for calibrated neutron sources. LB is grateful for a PhD scholarship awarded by the University of Birmingham and UKAEA.*

@@ -15,10 +15,19 @@ plotname = 'test'
 # initialise object
 ce_plotter = CEPlotter(folder,plotname)
 
-# names of calculated and experimental json results files
-# see the files themselves for the formats required
-calc_results = 'c_results'
+# names of experimental json results file, generated with calculate_e_results
 exp_results = 'e_results'
+# name of the calculated json results file
+# see the file for the specific format required
+# must list the same isotopes as the experimental results file
+# for each isotope, includes:
+#  foil_weight in grams
+#  mathmode name for the isotope i.e. "$^{56}Mn$"
+#  activities in Bq for the three libraries used in fispact sims
+#  fractional uncertainties for the above activities from fispact sims
+#  isotopic fractional uncertainty for the spectrum used
+#  self shielding factor for the fispact calculation
+calc_results = 'c_results'
 
 # input the plot labels for the three libraries you are analysing
 # put these in the same oder as they are in the c_results file
@@ -55,7 +64,13 @@ y_axis = [0.01,2.3]
 # set how far along the x axis to place the legend
 legend_x_coord = 0.8
 
-#do c/e plot and weighted ave analysis
+# produce c/e plot with red uncertainty band representing combined 
+# uncertainty from isotopic neutron spectrum and flux estimation. 
+# C/E error bar uncertainties values are from C and E uncertainties:
+# C value errors include (a) FISPACT uncertainties 
+# (b) isotopic neutron spectrum uncertainty, (c) flux estimation uncertainty
+# E value errors include (a) peak fitting (b) efficiency calibration
+# also do weighted ave analysis for specified isotopes
 ce_plotter.run(calc_results,exp_results,flux_norm_mean,
                flux_frac_error,we_isotopes,libraries,
                order,plot_split_list,y_axis,we_library,

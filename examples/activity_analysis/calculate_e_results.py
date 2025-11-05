@@ -52,4 +52,6 @@ irrad_time = 600
 results_name = 'e_results'
 
 # run the code
+# produces experimental results json with activities and reaction rates
+# uncertainties stem from peak fitting and efficiency uncertainty
 get_activities.run(which_isotopes,irrad_time,results_name)

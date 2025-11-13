@@ -12,6 +12,8 @@ from math import pi, sqrt, log, exp
 import numpy as np
 import actigamma as ag
 from scipy.integrate import quad
+import os
+import csv
 
 
 class ActivityCalc:
@@ -456,4 +458,70 @@ class ActivityCalc:
         with open(f"{self.json_path}/{results_name}.json", 'a') as output_file:
             json.dump(results_dictionary, output_file,
                       ensure_ascii=False, indent=4)
-        
+
+
+class ReactionRateRetrieval:
+    """ class to retrieve reaction rates for spectra-uf unfolding 
+    """
+
+    def __init__(self, results_file_name, exp_folder):
+        """ Initialise RRR class
+
+        Attributes
+        ----------
+        results_file_name : str
+            name of the experimental results file output by ActivityCalc
+        exp_folder : str
+            path to the experiment directory with the results file in it
+        """
+
+        # set attributes
+        self.results_file_name = results_file_name
+        self.exp_folder = exp_folder
+
+        # load the results file 
+        with open(f'{self.exp_folder}/{self.results_file_name}.json' 
+                  ) as results_file:
+            self.results_file_data = json.load(results_file)
+
+    def _retrieve_rr_data(self):
+        """ get istopes, reaction rates and uncerts for non-interfering reactions
+        """
+        isotope_list = []
+        rr_list = []
+        rr_u_list = []
+        for i in self.results_file_data.keys():
+            if len(self.results_file_data[i]["pathway_probabilities"]) == 1:
+                isotope_list.append(
+                    [i])
+                rr_list.append(
+                    self.results_file_data[i]["reaction_rates"])
+                rr_u_list.append(
+                    self.results_file_data[i]["reaction_rate_uncertainty"])
+        return isotope_list, rr_list, rr_u_list
+    
+    def _make_new_folder(self):
+        """ make new directory inside experimental directory to put reaction rate
+        files inside 
+        """
+        rr_folder = os.path.join(self.exp_folder, "reaction_rates")
+        os.makedirs(rr_folder,exist_ok=True)
+        return rr_folder
+
+    def _dump_results(self,rr_folder,isotope_list,rr_list,rr_u_list):
+        """ dump results in three files for spectra-uf to read
+        """
+        filename_list = ['isotopes','reaction_rates','reaction_rate_uncerts']
+        results_list_of_lists = [isotope_list,rr_list,rr_u_list]
+        for i,j in zip(filename_list,results_list_of_lists):
+            open(f'{rr_folder}/{i}.csv', 'w').close()
+            with open(f'{rr_folder}/{i}.csv', 'a', newline='') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(j)
+    
+    def run(self):
+        """ get the reaction rate data out and dump it
+        """
+        isotope_list,rr_list,rr_u_list = self._retrieve_rr_data()
+        rr_folder = self._make_new_folder()
+        self._dump_results(rr_folder,isotope_list,rr_list,rr_u_list)

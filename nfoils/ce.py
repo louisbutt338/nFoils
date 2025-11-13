@@ -1,5 +1,5 @@
 """ 
-module for performing c/e analysis on up to three sets of activation foil
+module for performing c/e analysis on three sets of activation foil
 results calculated with fispact (using three diff nuclear data libraries)
 and one set of experimental results calculated from gamma spec
 """

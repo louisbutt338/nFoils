@@ -1,7 +1,9 @@
 """ do calculated/experimental analysis for activation foil results. 
-calculated results should have three datasets for three nuclear data libs, 
-and experimental should have one dataset from one experiment.
-Use after calculate_e_results.py (this generates the 'e_results' file)
+the calculated results file can have up to three datasets for analysing 
+up to three nuclear data libraries, 
+the experimental results file should have one dataset from one experiment.
+
+Use after calculate_e_results.py, which generates the 'e_results' file
 """
 
 from nfoils.ce import CEPlotter
@@ -30,20 +32,21 @@ exp_results = 'e_results'
 #  self shielding factor for the fispact calculation
 calc_results = 'c_results'
 
-# input the plot labels for the three libraries you are analysing
-# put these in the same oder as they are in the c_results file
+# input the plot labels for the libraries you want to use for analysis
+# (up to three permitted)
+# put these in the same order as the results in the c_results file
 libraries = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
 
-# Flux normalisation to scale C results by, if needed
+# Flux normalisation to rescale calculated results by, if needed
 flux_norm_mean = 1.1
 
 # Fractional uncertainty on the flux estimation, to incorporate into the 
 # C/E uncertainty analysis
 flux_frac_error = 0.05
 
-# reorder the isotopes in your results files 
-# e.g. reoder them into capture-to-threshold. 0 will be the first isotope in 
-# c_results and e_results
+# reorder the isotopes in your results files e.g. into capture-to-threshold
+# 0 will be the first isotope listed in c_results and e_results
+# [2,1,0] would reverse the order of a three-isotope list in the final plot
 order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11] 
 
 # out of the new list, which isotopes do you want a C/E weighted average for?
@@ -51,8 +54,8 @@ order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11]
 # in the new list
 we_isotopes = [5,20]
 
-# which library dataset would you like to use for the weighted average calcs?
-we_library = 'ENDF/B-VIII'
+# which library dataset to use for the weighted average analysis?
+we_library = 'IRDFF-II'
 
 # would you like to add black vertical lines to split the plot up? 
 # i.e. [4.5,13.5] puts lines between isotopes 4 and 5, and isotopes 13 and 14

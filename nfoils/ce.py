@@ -321,7 +321,7 @@ class CEPlotter:
             exit()
 
         # extract experimental activities from e_results
-        # using average activities of included peaks
+        # using average activities of measured peaks
         # (used only first isotopes for bham p-li march 2024 experiment)
         exp_a = [np.mean(exp_results_data[key]["activities"])
                  for key in isotope_list]

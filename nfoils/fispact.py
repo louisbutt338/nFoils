@@ -96,7 +96,7 @@ class GammaSpectrumModel:
         # bin the lines appropriately using single type aggregator
         lc = ag.LineAggregator(db, grid)
         inv = ag.UnstablesInventory(data=[
-            (db.getzai(isotope_name), activity),])
+            (db.getzai(isotope_name), activity)])
 
         hist, bin_edges = lc(inv, spectype=SPECTYPE)
         plt.figure(figsize=(12,6))

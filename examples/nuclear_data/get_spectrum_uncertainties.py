@@ -1,5 +1,5 @@
-""" get the average uncertainty from an input neutron spectrum over
-a specified cross section range of a reaction
+""" get the average uncertainty from an input neutron spectrum uncertainty 
+array, over a specific cross section range of a reaction
 """
 import numpy as np
 from nfoils.reaction import IsotopicSpectrumUncertainty
@@ -16,8 +16,8 @@ ek=np.fromfile('../../data/energy_grids/group_structure_175.txt',sep=" ")
 # make sure you have internet to get library data 
 library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 
-# set path from the working dir to the json with all the foil reactions
-# in it with the following info:
+# set path to a json with foil reaction data
+# should include dictionaries for each reaction including:
 #  MAT ENDF6 material number of parent isotope e.g. 491150
 #  MT ENDF6 reaction number e.g. 102
 #  density of the foil in g/cm3
@@ -26,16 +26,18 @@ library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 #  abundance of the parent isotope in the foil
 data_file_name = 'reactions/foil_data'
 
-# set path from working dir to the spectrum data txt file, 
-# which should include:
-#  the neutron spectrum in column 1
-#  and associated raw uncertainty in column 2
+# set path to a spectrum data txt file, 
+# should include two columns:
+#  column 1: the neutron spectrum in arbitrary units
+#  column 2: associated raw uncertainty in the same units
 spectrum_file = 'spectra/example'
 
-# input no. of values to cut off from the ends of the group structure
-# i.e. if there are no spectrum values at the fast end of the group structure 
+# input no. of values to remove from the ends of the group structure
+# during the calculation
+# i.e. if there are no spectrum values at the fast neutron end, 
+# use [0,10] to cut off the last 10 values
 cutoff = [15,35]
 
-# get some reaction-dependent spectrum uncertainties 
+# get the reaction-specific spectrum uncertainties 
 uncertainties = IsotopicSpectrumUncertainty(ek,library)
 uncertainties.get_isotopic_uncertainties(spectrum_file,data_file_name,cutoff)

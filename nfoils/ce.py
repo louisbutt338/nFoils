@@ -1,7 +1,8 @@
 """ 
-module for performing c/e analysis on up to three sets of activation foil
-results calculated with fispact (using three diff nuclear data libraries)
-and one set of experimental results calculated from gamma spec
+module for performing c/e analysis: comparing one set of experimental results 
+calculated from gamma spec three sets of activation foil, with up to three
+sets of calculated activation results (to compare up to three different 
+nuclear data libraries)
 """
 
 import json
@@ -138,7 +139,7 @@ class CEPlotter:
         fig.supxlabel('Neutron-transmuted isotopes',x=0.5,y=-0.14) 
         fig.supylabel('C/E',x=0.06,y=0.5)
 
-        # plotting the first half of plot (significant capture reactions)
+        # plot the results and legend for library 1 on axis 1
         ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,
                         top=True)
         ax1.set_xticks(np.arange(len(new_order)),labels=new_isotope_list,
@@ -149,22 +150,39 @@ class CEPlotter:
         ax1.errorbar(new_isotope_list,ce_results_1,ce_errors_1
                      ,fmt='none',lw=2,capsize=2,color='Black',zorder=-1)
         ax1.set_xlim(-0.4,len(new_order)-0.6)
-        ax2 = ax1.twiny()
-        ax2.scatter (new_isotope_list,ce_results_2,s=40 , c='magenta',
-                     linewidth=2,label=library_labels[1])
-        ax2.errorbar(new_isotope_list,ce_results_2,ce_errors_2
-                     ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax2.tick_params(top=False, labeltop=False, bottom=False,
-                        labelbottom=False)
-        ax2.set_xlim(-0.2,len(new_order)-0.4)
-        ax3 = ax1.twiny()
-        ax3.scatter (new_isotope_list,ce_results_3,s=40 , c='green',
-                     linewidth=2,label=library_labels[2])
-        ax3.errorbar(new_isotope_list,ce_results_3,ce_errors_3
-                     ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
-        ax3.tick_params(top=False, labeltop=False, bottom=False,
-                        labelbottom=False)
-        ax3.set_xlim(-0.6,len(new_order)-0.8)
+        ax1.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.96)
+                   ,handlelength=0,borderaxespad=0, frameon=False
+                   ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
+
+        # plot the results and legend for library 2 on axis 2
+        if len(library_labels) in (2,3):
+            ax2 = ax1.twiny()
+            ax2.scatter (new_isotope_list,ce_results_2,s=40 , c='magenta',
+                         linewidth=2,label=library_labels[1])
+            ax2.errorbar(new_isotope_list,ce_results_2,ce_errors_2
+                         ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
+            ax2.tick_params(top=False, labeltop=False, bottom=False,
+                            labelbottom=False)
+            ax2.set_xlim(-0.2,len(new_order)-0.4)
+            ax2.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.88)
+                       ,handlelength=0,borderaxespad=0, frameon=False
+                       ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
+
+        # plot the results and legend for library 3 on axis 3
+        if len(library_labels) == 3:
+            ax3 = ax1.twiny()
+            ax3.scatter (new_isotope_list,ce_results_3,s=40 , c='green',
+                         linewidth=2,label=library_labels[2])
+            ax3.errorbar(new_isotope_list,ce_results_3,ce_errors_3
+                         ,fmt='none',lw=2,capsize=2,color='black',zorder=-1)
+            ax3.tick_params(top=False, labeltop=False, bottom=False,
+                            labelbottom=False)
+            ax3.set_xlim(-0.6,len(new_order)-0.8)
+            ax3.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.80)
+                       ,handlelength=0,borderaxespad=0, frameon=False
+                       ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
+        
+        # plot shaded region in the middle 
         ax1.plot([-1,len(new_order)], np.ones(2), 'Black', ls='--',
                  linewidth=1.5)
         ax1.fill_between(range(len(new_order))
@@ -177,16 +195,7 @@ class CEPlotter:
         ax1.vlines(x=corrected_splitting,color='k',linewidth=1,linestyle='-',
                    ymin=y_axis[0],ymax=y_axis[1])
 
-        # legend and saving figure
-        ax1.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.88)
-                   ,handlelength=0,borderaxespad=0, frameon=False
-                   ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        ax2.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.96)
-                   ,handlelength=0,borderaxespad=0, frameon=False
-                   ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
-        ax3.legend(loc="upper left", bbox_to_anchor=(legend_x_coord, 0.80)
-                   ,handlelength=0,borderaxespad=0, frameon=False
-                   ,fontsize=18, fancybox=False,facecolor='white',framealpha=1)
+        # save figure
         fig.savefig(f"{self.folder}/{self.plotname}.png",transparent=False,
                     bbox_inches='tight')
 
@@ -262,72 +271,88 @@ class CEPlotter:
         with open(f"{self.folder}/{calc_results}.json") as model_results_path:
             model_results = json.load(model_results_path)
 
-            # extract foil data and isotopes from c_results
-            isotope_list = model_results.keys()
-            foil_weight = [model_results[i]["foil_weight"]
+        # extract foil data and isotopes from c_results
+        isotope_list = model_results.keys()
+        foil_weight = [model_results[i]["foil_weight"]
+                       for i in isotope_list]
+        ssf = [model_results[i]["self_shielding_factor"]
+               for i in isotope_list]
+        isotope_list_mathmode = [model_results[i]["mathmode_name"]
+                                 for i in isotope_list]
+
+        # get isotopic spectrum + flux uncertainties from c_results 
+        spectrum_frac_u = [model_results[i]
+                           ["spectrum_fractional_uncertainty"]
                            for i in isotope_list]
-            ssf = [model_results[i]["self_shielding_factor"]
-                   for i in isotope_list]
-            isotope_list_mathmode = [model_results[i]["mathmode_name"]
-                                     for i in isotope_list]
+        spectrum_flux_frac_u = [np.sqrt(flux_error**2 + u**2)
+                                for u in spectrum_frac_u]
 
-            # get isotopic spectrum + flux uncertainties from c_results 
-            spectrum_frac_u = [model_results[i]
-                               ["spectrum_fractional_uncertainty"]
-                               for i in isotope_list]
-            spectrum_flux_frac_u = [np.sqrt(flux_error**2 + u**2)
-                                    for u in spectrum_frac_u]
-
-            # extract calculated activities from c_results 
-            calc_a_1 = [model_results[i]["activities"][0]
-                        for i in isotope_list]
-            calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
-                        for i in isotope_list]
+        # extract calculated activities from c_results 
+        calc_a_1 = [model_results[i]["activities"][0]
+                    for i in isotope_list]
+        calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
+                    for i in isotope_list]
+        
+        if len(libraries) in (2,3):
             calc_a_2 = [model_results[i]["activities"][1]
                         for i in isotope_list]
             calc_u_2 = [model_results[i]["fractional_uncertainties"][1]
                         for i in isotope_list]
+        else:
+            calc_a_2 = np.zeros(len(isotope_list))
+            calc_u_2 = np.zeros(len(isotope_list))
+
+        if len(libraries) == 3:
             calc_a_3 = [model_results[i]["activities"][2]
                         for i in isotope_list]
             calc_u_3 = [model_results[i]["fractional_uncertainties"][2]
                         for i in isotope_list]
+        else:
+            calc_a_3 = np.zeros(len(isotope_list))
+            calc_u_3 = np.zeros(len(isotope_list))
 
-        with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
-            exp_results_data = json.load(exp_results_path)
+        # check for experimental results and get data
+        try:
+            with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
+                exp_results_data = json.load(exp_results_path)
+        except FileNotFoundError:
+            print('please run calculate_e_results.py first ' \
+                  'to generate e_results file')
+            exit()
 
-            # extract experimental activities from e_results
-            # using average activities of included peaks
-            # (used only first isotopes for bham p-li march 2024 experiment)
-            exp_a = [np.mean(exp_results_data[key]["activities"])
-                     for key in isotope_list]
-            exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
-                     for key in isotope_list]
+        # extract experimental activities from e_results
+        # using average activities of included peaks
+        # (used only first isotopes for bham p-li march 2024 experiment)
+        exp_a = [np.mean(exp_results_data[key]["activities"])
+                 for key in isotope_list]
+        exp_u = [np.mean(exp_results_data[key]["activity_uncertainties"])
+                 for key in isotope_list]
 
-        # perform C/E calculations for the foils
+        # perform C/E calculations for the foils and extract spectrum uncert
         ce_results_1  = [
             (flux_norm)*
             self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)
             [i] for i in new_order]
-        ce_results_2  = [
-            (flux_norm)*
-            self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)
-            [i]  for i in new_order]
-        ce_results_3 = [
-            (flux_norm)*
-            self._c_over_e(calc_a_3 ,exp_a,isotope_list,foil_weight,ssf)
-            [i]  for i in new_order]
         ce_errors_1 =   [
             (flux_norm)*
             self._c_over_e(calc_a_1,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_1,exp_a,exp_u,isotope_list,
                                     spectrum_flux_frac_u
                                     )[i] for i in new_order]
+        ce_results_2  = [
+            (flux_norm)*
+            self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)
+            [i]  for i in new_order]
         ce_errors_2 =   [
             (flux_norm)*
             self._c_over_e(calc_a_2,exp_a,isotope_list,foil_weight,ssf)[i]
             *self._c_over_e_uncerts(calc_u_2,exp_a,exp_u,isotope_list,
                                     spectrum_flux_frac_u
                                     )[i] for i in new_order]
+        ce_results_3 = [
+            (flux_norm)*
+            self._c_over_e(calc_a_3 ,exp_a,isotope_list,foil_weight,ssf)
+            [i]  for i in new_order]
         ce_errors_3 =  [
             (flux_norm)*
             self._c_over_e(calc_a_3,exp_a,isotope_list,foil_weight,ssf)[i]
@@ -339,15 +364,17 @@ class CEPlotter:
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         for i in range(len(new_isotope_list)):
             print(f'********* {new_isotope_list[i]} C/E results')
-            print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
-                  f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
-                  f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")
-            #print(f"{libraries[0]} value is "
-            #      f"{ce_results_1[i]:.3f} +- {ce_errors_1[i]:.3f}")
-            #print(f"{libraries[1]} value is "
-            #      f"{ce_results_2[i]:.3f} +- {ce_errors_2[i]:.3f}")
-            #print(f"{libraries[2]} value is "
-            #      f"{ce_results_3[i]:.3f} +- {ce_errors_3[i]:.3f}")
+            #print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
+            #      f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
+            #      f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")
+            print(f"{libraries[0]} value is "
+                  f"{ce_results_1[i]:.3f} +- {ce_errors_1[i]:.3f}")
+            if len(libraries) in (2,3):
+                print(f"{libraries[1]} value is "
+                      f"{ce_results_2[i]:.3f} +- {ce_errors_2[i]:.3f}")
+            if len(libraries) == 3:
+                print(f"{libraries[2]} value is "
+                      f"{ce_results_3[i]:.3f} +- {ce_errors_3[i]:.3f}")
         
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_1,

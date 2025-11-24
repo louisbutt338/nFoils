@@ -108,7 +108,7 @@ class AsciiSummer:
         ax1.plot(kev_array, ascii_data , 'b-' )
         ax1.grid(which='major')
         fig.set_size_inches((12, 6))
-        fig.savefig(f'{self.folder_path}/gamma_spectrum.png',
+        fig.savefig(f'gamma_spectrum.png',
                     transparent=False, bbox_inches='tight')
 
     def run(self):
@@ -116,7 +116,7 @@ class AsciiSummer:
         using the header and footer data from the FIRST ascii analysed
         """
         print('writing summed ASCII...')
-        filename = f"{self.folder_path}/{self.ascii_filetag}_summed.Spe"
+        filename = f"{self.ascii_filetag}_summed.Spe"
         with open(filename,'w') as ascii_histogram_file:
             for line in self._parse_ascii(self._loop_parser()[1][0])[0]:
                 ascii_histogram_file.write(line)

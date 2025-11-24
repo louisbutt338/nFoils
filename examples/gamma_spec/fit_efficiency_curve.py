@@ -1,7 +1,6 @@
 """ fit hpge efficiency functions to calibration measurements 
  with a simple monte carlo simulation
 """
-
 from nfoils.fitting import CurveFitter
 
 # set path to efficiency data json file

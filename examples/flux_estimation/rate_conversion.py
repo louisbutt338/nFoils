@@ -1,7 +1,6 @@
 """ convert time binned rate data into a unit of your choice
 using a conversion factor, then dump into a json
 """
-
 import json
 from nfoils.history import RateConversion
 

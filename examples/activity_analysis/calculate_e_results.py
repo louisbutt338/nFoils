@@ -3,13 +3,12 @@ from a json of foil measurements and a json of calibration curves.
 an e_results file is generated, which can be analysed against the example
 c_results json file with do_ce_analysis.py
 """
-
 from nfoils.activity import ActivityCalc
 from datetime import datetime
 
 # path to the directory containing the input data jsons
 # the results file will also be saved here
-experiment_dir = "example"
+experiment_dir = '.'
 
 # filename for the gamma spec measurements json
 # should include dictionaries for each measured isotope including:

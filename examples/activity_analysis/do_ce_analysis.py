@@ -5,12 +5,11 @@ the experimental results file should have one dataset from one experiment.
 
 Use after calculate_e_results.py, which generates the 'e_results' file
 """
-
 from nfoils.ce import CEPlotter
 
 # path to the calculated and experimental results files to analyse
 # the final C/E plot will also be saved here
-folder = 'example'
+folder = '.'
 
 # name to save the C/E plot under as a PNG
 plotname = 'test'

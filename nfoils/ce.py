@@ -311,8 +311,14 @@ class CEPlotter:
             calc_a_3 = np.zeros(len(isotope_list))
             calc_u_3 = np.zeros(len(isotope_list))
 
-        with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
-            exp_results_data = json.load(exp_results_path)
+        # check for experimental results and get data
+        try:
+            with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
+                exp_results_data = json.load(exp_results_path)
+        except FileNotFoundError:
+            print('please run calculate_e_results.py first ' \
+                  'to generate e_results file')
+            exit()
 
         # extract experimental activities from e_results
         # using average activities of included peaks

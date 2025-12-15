@@ -1,12 +1,14 @@
 # nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
-Python toolkit for the characterisation of neutron spectra and validation of nuclear data with activation foils. In development - contact 
-LJB841@bham.ac.uk for further information or if anything is misbehaving
+Python toolkit for the measurement of neutron spectra with activation foils. Contact 
+LJB841@bham.ac.uk for further information or if anything is misbehaving. Contributors welcome!
 
-Dependent on [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016) for nuclear data extraction, 
-and [actigamma](https://github.com/fispact/actigamma) for radioactive isotope data. All worth checking out if you have got this far
+Dependent on [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016) 
+for nuclear data extraction, [actigamma](https://github.com/fispact/actigamma) for radioactive isotope data, 
+and [emcee](https://emcee.readthedocs.io/en/stable/) for unfolding. 
+All worth checking out if you have got this far
 
-Please reference this repo appropriately in your work - accompanying paper to be provided late 2025
+Please reference this repo appropriately in your work - accompanying paper to be provided 2026
 
 ## installing nFoils
 
@@ -22,7 +24,8 @@ cd nFoils
 pip install -r requirements.txt .
 ```
 
-to use the reaction.py module, install NJOY2016 by following the installation instructions on the [NJOY website](https://docs.njoy21.io/install.html)
+to use the reaction.py module, install NJOY2016 by following the installation instructions on the 
+[NJOY website](https://docs.njoy21.io/install.html)
 
 then setting the path to the NJOY2016 executable:
 ```

@@ -461,7 +461,7 @@ class ActivityCalc:
 
 
 class ReactionRateRetrieval:
-    """ class to retrieve reaction rates for spectra-uf unfolding 
+    """ class to retrieve reaction rates for unfolding 
     """
 
     def __init__(self):
@@ -528,7 +528,7 @@ class ReactionRateRetrieval:
         return rr_folder
 
     def _dump_results(self,rr_folder,isotope_list,rr_list,rr_u_list):
-        """ dump results in three files for spectra-uf to read
+        """ dump results in three files for unfolding module to read
 
         Parameters
         ----------

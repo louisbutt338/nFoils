@@ -5,10 +5,10 @@ LJB841@bham.ac.uk for further information or if anything is misbehaving. Contrib
 
 Dependent on [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016) 
 for nuclear data extraction, [actigamma](https://github.com/fispact/actigamma) for radioactive isotope data, 
-and [emcee](https://emcee.readthedocs.io/en/stable/) for unfolding. 
+and [emcee](https://github.com/dfm/emcee) and [corner](https://github.com/dfm/corner.py) for unfolding. 
 All worth checking out if you have got this far
 
-Please reference this repo appropriately in your work - accompanying paper to be provided 2026
+Please reference this repo appropriately in your work - accompanying papers to be provided 2026
 
 ## installing nFoils
 

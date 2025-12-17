@@ -4,3 +4,4 @@ matplotlib==3.10.5
 sandy==1.1
 actigamma==0.1.5
 emcee==3.1.6
+corner==2.2.3

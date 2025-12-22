@@ -1,0 +1,8 @@
+{
+	"reaction_rates" : "data/reaction_rates.txt",
+	"reaction_rate_uncerts" :"data/reaction_rate_uncertainties.txt",
+	"reaction_rate_labels" : "data/reaction_rate_labels.txt",
+	"response_matrix" : "data/response_matrix.txt",
+	"response_matrix_uncerts" : "data/response_matrix_uncertainties.txt",
+	"group_structure" : "data/group_structure.txt"
+}

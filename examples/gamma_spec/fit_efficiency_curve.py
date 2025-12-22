@@ -8,7 +8,7 @@ from nfoils.fitting import CurveFitter
 #  efficiency
 #  raw uncertainty on the efficiency
 #  fractional coincidence summing correction
-input_data = "efficiency_data"
+input_data = "data/efficiencies"
 
 # interpolation energy range in keV, as [start,end].
 # for interpolating the model fit on 

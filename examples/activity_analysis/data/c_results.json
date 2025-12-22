@@ -1,0 +1,26 @@
+{
+    "Au196": {
+        "foil_weight":0.1498,
+        "mathmode_name":"$^{196}Au$",
+        "activities":[4.817E+01,5.065E+01,4.968E+01],
+        "fractional_uncertainties":[0.04422, 0, 0],
+        "spectrum_fractional_uncertainty": 0.20155,
+        "self_shielding_factor":1
+    },
+    "Nb92m": {
+        "foil_weight":0.7317,
+        "mathmode_name":"$^{92m}Nb$",
+        "activities":[1.295E+01 ,0,0],
+        "fractional_uncertainties":[0.0596,0,0],
+        "spectrum_fractional_uncertainty": 0.2019645,
+        "self_shielding_factor":1
+    },
+    "Ni57": {
+        "foil_weight":1.5845,
+        "mathmode_name":"$^{57}Ni$",
+        "activities":[2.305E+00,2.283E+00,2.366E+00],
+        "fractional_uncertainties":[0.15141 ,0, 0.042688],
+        "spectrum_fractional_uncertainty": 0.20763,
+        "self_shielding_factor":1
+    }
+}

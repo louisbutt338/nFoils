@@ -38,18 +38,21 @@ class BayesianUnfolding:
                   ) as files_json:
             files_paths = json.load(files_json)
 
-        # set energy grid attribute and convert to MeV
-        energy_grid_path = files_paths["group_structure"]
-        self.energy_grid = (np.fromfile(energy_grid_path, sep=" "))
-        self.energy_grid = self.energy_grid[:-1] * 1e-6
+        # set group structure attribute and convert to MeV
+        # and remove first value so RF/flux values line up
+        group_structure_path = files_paths["group_structure"]
+        self.group_structure = (np.fromfile(group_structure_path, sep=","))
+        self.group_structure = self.group_structure[1:] * 1e-6
 
         # set reaction rate attributes
         with open(files_paths["reaction_rates"]) as file:
             reaction_rate_csv = csv.reader(file,delimiter=',')
-            self.reaction_rates = np.array(list(reaction_rate_csv),dtype=float)
+            self.reaction_rates = np.array(list(reaction_rate_csv),
+                                           dtype=float)
         with open(files_paths["reaction_rate_uncerts"]) as file:
             reaction_uncerts_csv = csv.reader(file,delimiter=',')
-            self.reaction_rate_uncerts = np.array(list(reaction_uncerts_csv),dtype=float)
+            self.reaction_rate_uncerts = np.array(list(reaction_uncerts_csv),
+                                                  dtype=float)
         with open(files_paths["reaction_rate_labels"]) as file:
             reaction_labels_csv = csv.reader(file,delimiter=',')
             self.reaction_rate_labels = np.array(list(reaction_labels_csv))
@@ -57,33 +60,36 @@ class BayesianUnfolding:
         # set response matrix attributes
         with open(files_paths["response_matrix"]) as file:
             response_matrix_csv = csv.reader(file,delimiter=',')
-            self.response_matrix = np.array(list(response_matrix_csv),dtype=float)
+            self.response_matrix = np.array(list(response_matrix_csv),
+                                            dtype=float)
         with open(files_paths["response_matrix_uncerts"]) as file:
             response_uncerts_csv = csv.reader(file,delimiter=',')
-            self.response_matrix_uncerts = np.array(list(response_uncerts_csv),dtype=float)
+            self.response_matrix_uncerts = np.array(list(response_uncerts_csv),
+                                                    dtype=float)
 
         # TESTING:
         # adjust to unfold just specific parts of the p-li spectrum
         # use [162:] gs values and [6:] rr/rf for just 14 MeV peak
         # use [140:] gs values and [3:] rr/rf for 14 and 8 MeV peak
-        self.energy_grid = self.energy_grid[140:]
-        self.reaction_rates = self.reaction_rates[3:]
-        self.reaction_rate_uncerts = self.reaction_rate_uncerts[3:]
-        self.response_matrix = [i[140:] for i in self.response_matrix[3:]]
-        self.response_matrix_uncerts = [i[140:] for i in self.response_matrix_uncerts[3:]]
+        # use [70:] gs vals and [2:] rr/rf for 0.1MeV+
+        self.group_structure = self.group_structure[70:]
+        self.reaction_rates = self.reaction_rates[2:]
+        self.reaction_rate_uncerts = self.reaction_rate_uncerts[2:]
+        self.response_matrix = [i[70:] for i in self.response_matrix[2:]]
+        self.response_matrix_uncerts = [i[70:] for i in 
+                                        self.response_matrix_uncerts[2:]]
 
-
-    def gaussian(self,mean,peak,sigma,energy):
+    def gaussian(self,mean,sigma,peak,energy):
         """ gaussian distribution for defining the model in MeV
         
         Parameters
         ----------
         mean : float
             mean of the distribution
-        peak : float
-            peak of the distribution
         sigma : float
             width of the distribution
+        peak : float
+            peak of the distribution
         energy : float
             neutron energy
 
@@ -93,21 +99,23 @@ class BayesianUnfolding:
             neutron flux for the given energy
         """
         diff = np.sum(energy - mean)
-        flux = (( peak / np.sqrt(2 * np.pi * sigma ** 2))
+        non_scaled_peak = ( 1 / np.sqrt(2 * np.pi * sigma ** 2))
+        scale = 1e-2 * peak / non_scaled_peak
+        flux = ((scale / np.sqrt(2 * np.pi * sigma ** 2))
                 * np.exp( - 0.5 * diff ** 2 / sigma ** 2))
         return flux
 
-    def lognormal(self,mean,peak,sigma,energy):
+    def lognormal(self,mean,sigma,peak,energy):
         """ lognormal distribution for defining the model in MeV
         
         Parameters
         ----------
         mean : float
             mean of the distribution
-        peak : float
-            peak of the distribution
         sigma : float
             width of the distribution
+        peak : float
+            peak of the distribution
         energy : float
             neutron energy
 
@@ -117,7 +125,10 @@ class BayesianUnfolding:
             neutron flux for the given energy
         """
         lndiff = np.sum(np.log(energy) - mean)
-        flux = (( peak / energy * np.sqrt(2 * np.pi * sigma ** 2))
+        front_term = np.sum(np.dot(energy, np.sqrt(2 * np.pi * sigma ** 2)))
+        non_scaled_peak = ( 1 / front_term)
+        scale = 1e-2 * peak / non_scaled_peak
+        flux = ((scale / front_term)
                 * np.exp( - 0.5 * lndiff ** 2 / sigma ** 2))
         return flux
 
@@ -181,8 +192,9 @@ class BayesianUnfolding:
         log_likelihood : float
             log likelihood for reaction rate measurements
         """
-        flux_model_arr = [self.model(theta,i) for i in self.energy_grid]
-        rr_model_arr = np.array([np.inner(flux_model_arr, i) for i in response])
+        flux_model_arr = [self.model(theta,i) for i in self.group_structure]
+        rr_model_arr = np.array([np.inner(flux_model_arr, i) 
+                                 for i in response])
         rr_arr = np.concatenate(rr)
         sigma_rr_arr = np.concatenate(sigma_rr)
         likelihood = -0.5 * np.sum(np.log(2 * np.pi * sigma_rr_arr ** 2)
@@ -191,16 +203,19 @@ class BayesianUnfolding:
 
     # try and get this to work to avoid doing expensive MC 
     # over the MCMC process to incorporate response function uncertainty
-    # def log_likelihood_response_function(self,theta, response, sigma_response, rr):
+    # def log_likelihood_response_function(self,theta, response, 
+    #                                      sigma_response, rr):
     #     """ input reaction-wise and energy-wise array of RRs/responses
     #     calculate reaction-wise sum
     #     """
-    #     spectrum_model_arr = [self.spectrum_model(theta,i) for i in self.energy_grid]
+    #     spectrum_model_arr = [self.spectrum_model(theta,i) 
+    #                           for i in self.grop_structure]
     #     response_model_arr = np.array([i/spectrum_model_arr for i in rr])
     #     response_arr = np.concatenate(response)
     #     sigma_response_arr = np.concatenate(sigma_response)
-    #     return -0.5 * np.sum(np.log(2 * np.pi * sigma_response_arr ** 2)
-    #                          +(response_arr - response_model_arr) ** 2 / sigma_response_arr ** 2)
+    #     return (-0.5 * np.sum(np.log(2 * np.pi * sigma_response_arr ** 2)
+    #             +(response_arr - response_model_arr) ** 2
+    #             / sigma_response_arr ** 2))
 
     def _log_posterior(self,theta,rr,sigma_rr,response):
         """ combined distribution for the measurements (likelihoods)
@@ -237,7 +252,7 @@ class BayesianUnfolding:
         """ run ensemble mcmc for given random samples taken from the 
         response matrix distributions (so, MCMCMC). 
         produces corner plot for the parameters - use this to analyse 
-        the quality of your model/prior/limits/starting-guesses, and 
+        the quality of your model/prior/starting-guesses, and 
         then try again with different inputs. 
         should be an iterative process
 
@@ -257,8 +272,8 @@ class BayesianUnfolding:
         nsteps : int
             total number of MCMC steps to take (including nburn)
             no. of trace results =  nwalkers * (nsteps-nburn)
-        guesses : list[tuples]
-            set initial guesses for upper bound/lower bound of each parameter
+        guesses : list[int]
+            set initial guesses for each parameter
             sets starting walker positions
         """
         # filter warnings and random number generator
@@ -282,8 +297,10 @@ class BayesianUnfolding:
         # starting positions for each walker 
         new_guesses = []
         for i in range(nparam):
-            new_guesses.append(np.random.randint(low=guesses[i][0]*1e2,
-                                                 high=guesses[i][1]*1e2,
+            low_guess = guesses[i] - 0.1*guesses[i]
+            high_guess = guesses[i] + 0.1*guesses[i]
+            new_guesses.append(np.random.randint(low=low_guess*1e2,
+                                                 high=high_guess*1e2,
                                                  size=nwalkers)/1e2)
         new_guesses = np.stack(new_guesses,axis=1)
 
@@ -292,7 +309,8 @@ class BayesianUnfolding:
         # the reaction rate distribution is the likelihood
         for i in range(rm_samples):
             print(f'running sampler for response matrices sample {i+1}')
-            sampler = emcee.EnsembleSampler(nwalkers, nparam, self._log_posterior,
+            sampler = emcee.EnsembleSampler(nwalkers, nparam,
+                                            self._log_posterior,
                                             args=[rr,rr_u,rm_dist[i]])
 
             # run the sampler for nsteps

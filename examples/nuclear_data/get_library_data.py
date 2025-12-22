@@ -1,6 +1,8 @@
 """ use NJOY and sandy to get response functions and uncertainties for 
 specified reactions in a specified nuclear data library. 
-note some libraries may be missing reactions and/or covariances
+note some libraries may be missing reactions and/or covariances.
+will also output the used energy group structure - together these
+can be used for the bayesian unfolding
 """
 import numpy as np
 from nfoils.reaction import PostprocessReactions
@@ -11,7 +13,7 @@ from nfoils.reaction import PostprocessReactions
 #ek=sandy.energy_grids.SCALE238
 
 # or define your own group structure elsewhere and import it in
-ek=np.fromfile('../../data/energy_grids/group_structure_175.txt',sep=" ")
+ek=np.fromfile('data/group_structure.txt',sep=" ")
 
 # specify nuclear data library (check the list available in sandy)
 # e.g. endfb_71 endfb_80 jendl_40u jeff_33 tendl_21
@@ -26,13 +28,13 @@ library = 'jeff_33'
 #  mass of the foil in g
 #  atomic mass of the foil in amu
 #  abundance of the parent isotope in the foil
-data_file_name = 'reactions/foil_data'
+data_file_name = 'data/reactions'
 
 # input list of reaction labels for plotting, as r-strings/f-strings 
 # these must match the order of the reactions listed in the foil data json
-reaction_labels = [r"${}^{115}$In(n,n')", 
-                   r"${}^{65}$Cu(n,p)",
-                   r"${}^{56}$Fe(n,p)"]
+reaction_labels = ["${}^{197}$Au(n,2n)", 
+                   "${}^{93}$Nb(n,2n)",
+                   "${}^{58}$Ni(n,2n)"]
 
 # get response functions and/or nuclear data uncertainties
 reactions = PostprocessReactions(ek,library)

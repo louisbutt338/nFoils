@@ -22,7 +22,7 @@ experiment_dir = '.'
 #  thickness of the foil in cm
 #  density of the foil in gcm3
 #  element of the foil i.e. "fe"
-data_file_name = 'interspec_data'
+data_file_name = 'data/measurements'
 
 # filename for the detector calibration curves json
 # should include dictionaries for each calibration including:
@@ -31,10 +31,10 @@ data_file_name = 'interspec_data'
 #  parameters for the efficiency equation = 
 #    exp(a0 + a1log(E) + a2log(E)^2+ a3log(E)^3)
 #  average fractional uncertainty on the efficiency curve fit
-calibration_file_name = 'calibration_data'
+calibration_file_name = 'data/calibrations'
 
 # input datetime for the end of the irradiation
-irradiation_end = datetime(2024,11,29, 14,00,00)
+irradiation_end = datetime(2024,3,28, 18,17,00)
 
 # initialise class
 get_activities = ActivityCalc(data_file_name,experiment_dir,
@@ -45,7 +45,7 @@ get_activities = ActivityCalc(data_file_name,experiment_dir,
 which_isotopes = 'all'
 
 # input the total irradiation time in seconds (for reaction rate calculation) 
-irrad_time = 600
+irrad_time = 3600*2
 
 # input the desired name of the json activity results file
 results_name = 'e_results'

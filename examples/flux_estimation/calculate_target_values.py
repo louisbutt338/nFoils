@@ -16,7 +16,7 @@ from nfoils.history import IrradTimeline
 #  material density (g/cm3)
 #  atomic mass (g/mol)
 #  total relative uncertainty on all the above
-target_json = 'target_data'
+target_json = 'data/target'
 analyse_target = TargetAnalysis(target_json)
 
 # be7 activity (Bq) at end of irradiation and relative uncertainty

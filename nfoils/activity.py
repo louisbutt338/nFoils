@@ -527,8 +527,8 @@ class ReactionRateRetrieval:
         os.makedirs(rr_folder,exist_ok=True)
         return rr_folder
 
-    def _dump_results(self,rr_folder,isotope_list,rr_list,rr_u_list):
-        """ dump results in three files for unfolding module to read
+    def _dump_results_txt(self,rr_folder,isotope_list,rr_list,rr_u_list):
+        """ dump results in three txt files for spectra-uf to read
 
         Parameters
         ----------
@@ -545,12 +545,42 @@ class ReactionRateRetrieval:
         filename_list = ['isotopes','reaction_rates','reaction_rate_uncerts']
         results_list_of_lists = [isotope_list,rr_list,rr_u_list]
 
-        # loop through the datasets and dump the data in a file for each
+        # loop through the datasets and dump the data in a txt for each
         for i,j in zip(filename_list,results_list_of_lists):
-            open(f'{rr_folder}/{i}.csv', 'w').close()
-            with open(f'{rr_folder}/{i}.csv', 'a', newline='') as f:
+            open(f'{rr_folder}/{i}.txt', 'w').close()
+            with open(f'{rr_folder}/{i}.txt', 'a', newline='') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(j)
+
+    def _dump_results_json(self,rr_folder,isotope_list,rr_list,rr_u_list):
+        """ dump results in three json files for unfolding
+
+        Parameters
+        ----------
+        rr_folder : str
+            Path to the new folder to dump the reaction rate data into
+        isotope_list : list[str]
+            list of isotopes with non-interfering reaction rates
+        rr_list : list[flt]
+            list of the non-interfering experimental reaction rates
+        rr_u_list : list[flt]
+            list of the uncertainties on the non-interfering reaction rates
+        """
+        # list the three datasets and their names
+        dataset_names_list = ['isotopes','reaction_rates','reaction_rate_uncerts']
+        dataset_list_of_lists = [isotope_list,rr_list,rr_u_list]
+
+        # setup dictionary of results
+        rr_data_dict = {}
+        for i,j in zip(dataset_names_list,dataset_list_of_lists):
+            concatenated_data = sum(j,[])
+            rr_data_dict.update({i:concatenated_data})
+
+        # print results as one neat json for postprocessing
+        open(f"{rr_folder}/reaction_rates.json", 'w').close()
+        with open(f"{rr_folder}/reaction_rates.json", 'a') as output_file:
+            json.dump(rr_data_dict, output_file,
+                      ensure_ascii=False, indent=4)
     
     def run(self,exp_folder,results_file_name):
         """ get the reaction rate data out and dump it
@@ -577,4 +607,4 @@ class ReactionRateRetrieval:
         isotope_list,rr_list,rr_u_list = self._retrieve_rr_data(
             results_file_data)
         rr_folder = self._make_new_folder(exp_folder)
-        self._dump_results(rr_folder,isotope_list,rr_list,rr_u_list)
+        self._dump_results_txt(rr_folder,isotope_list,rr_list,rr_u_list)

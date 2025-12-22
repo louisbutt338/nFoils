@@ -8,7 +8,7 @@ from nfoils.coincidence import SimpleCorrection
 # "single_source_near", "single_source_far"
 # each dictionary should include:
 #  "(peak energy in keV)": (peak counts per second)
-json_path = "coincidence_data"
+json_path = "data/peak_measurements"
 
 # get correction factors for each of the peak energies
 correct_eu152_results = SimpleCorrection(json_path)

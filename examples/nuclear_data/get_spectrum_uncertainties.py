@@ -10,7 +10,7 @@ from nfoils.reaction import IsotopicSpectrumUncertainty
 #ek=sandy.energy_grids.SCALE238
 
 # or define your own group structure and import in e.g.
-ek=np.fromfile('../../data/energy_grids/group_structure_175.txt',sep=" ")
+ek=np.fromfile('data/group_structure.txt',sep=" ")
 
 # specify nuclear data library (check the list available in sandy)
 # make sure you have internet to get library data 
@@ -24,13 +24,13 @@ library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 #  mass of the foil in g
 #  atomic mass of the foil in amu
 #  abundance of the parent isotope in the foil
-data_file_name = 'reactions/foil_data'
+data_file_name = 'data/reactions'
 
 # set path to a spectrum data txt file, 
 # should include two columns:
 #  column 1: the neutron spectrum in arbitrary units
 #  column 2: associated raw uncertainty in the same units
-spectrum_file = 'spectra/example'
+spectrum_file = 'data/spectrum'
 
 # input no. of values to remove from the ends of the group structure
 # during the calculation

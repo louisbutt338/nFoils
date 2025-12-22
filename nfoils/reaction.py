@@ -239,7 +239,7 @@ class PostprocessReactions(NuclearData):
 
     def _export_and_plot_stdev(self, material_list, mt_values_list,
                                reaction_labels):
-        """ export stdev data to one csv and plot uncertainty percentages
+        """ export stdev data to one txt and plot uncertainty percentages
 
         Parameters
         ----------
@@ -250,8 +250,8 @@ class PostprocessReactions(NuclearData):
         reaction_labels : list[str]
             list of reaction labels for plot
         """
-        # inital figure and csv setting
-        open('uncertainty.csv', 'w').close()
+        # inital figure and txt list settings
+        big_response_function_uncert_list = []
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
@@ -266,19 +266,27 @@ class PostprocessReactions(NuclearData):
             # plot uncertainty data
             if array_of_arrays is not None:
                 ek_mev = [(i/1e6) for i in self.ek]
-                for mt_iterator in range(len(array_of_arrays)):
+                for m in range(len(array_of_arrays)):
                     c = next(color)
-                    ax1.stairs(array_of_arrays[mt_iterator], ek_mev,
+                    standard_dev = array_of_arrays[m]
+                    ax1.stairs(standard_dev, ek_mev,
                                label=f'{reaction}', color=c, lw=1.5)
-                    ax2.stairs(array_of_arrays[mt_iterator], ek_mev,
+                    ax2.stairs(standard_dev, ek_mev,
                                label=f'{reaction}', color=c, lw=1.5)
-                # export data to one csv file
-                for xs_stdev in array_of_arrays:
-                    with open('uncertainty.csv', 'a', newline='') as f:
-                        writer = csv.writer(f, delimiter=',')
-                        writer.writerow(xs_stdev*(1/100))
+                    
+                    # export data to one csv file
+                    #with open('response_function_uncertainty.csv', 'a', newline='') as f:
+                    #    writer = csv.writer(f, delimiter=',')
+                    #    writer.writerow(standard_dev*(1/100))
+                    # add data to txt file list
+                    big_response_function_uncert_list.append(standard_dev)
             else:
                 continue
+
+        # export data to txt file
+        np.savetxt("reponse_matrix_uncertainties.txt",
+                   big_response_function_uncert_list,
+                   delimiter=',')
 
         # final plotting params
         ax1.set_xlim(1e-8, 1e0)
@@ -299,7 +307,7 @@ class PostprocessReactions(NuclearData):
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
                             mass_list, abundance_list, atomic_mass_list,
                             labels_list):
-        """ export response function data to one csv and plots RFs
+        """ export response function data to one txt and plots RFs
 
         Parameters
         ----------
@@ -318,9 +326,9 @@ class PostprocessReactions(NuclearData):
         labels_list : list[str]
             list of reaction labels for plot
         """
-        # inital figure and csv setting
-        open('response_function.csv', 'w').close()
-        np.savetxt("group_structure.csv", self.ek.ravel()[None], delimiter=',')
+        # inital figure and txt list setting
+        big_response_functions_list = []
+        np.savetxt("group_structure.txt",self.ek.ravel()[None],delimiter=',')
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
@@ -349,13 +357,20 @@ class PostprocessReactions(NuclearData):
                     ax2.stairs(response_function, ek_mev,
                                label=f'{reaction_label}', color=c, lw=1.5)
 
-                # export data to one csv file
-                with open('response_function.csv', 'a', newline='') as f:
-                    writer = csv.writer(f, delimiter=',')
-                    writer.writerow(response_function)
+                ## export data to one csv file
+                #with open('response_function.csv', 'a', newline='') as f:
+                #    writer = csv.writer(f, delimiter=',')
+                #    writer.writerow(response_function)
+                # add data to txt file list
+                big_response_functions_list.append(response_function)
             else:
                 continue
-        
+
+        # export data to txt file
+        np.savetxt("reponse_matrix.txt",
+                   big_response_functions_list,
+                   delimiter=',')
+
         # final plotting params
         ax1.set_xlim(1e-8, 1e0)
         ax1.set_ylim(1e-11, 1e3)
@@ -374,7 +389,8 @@ class PostprocessReactions(NuclearData):
         fig.savefig('response_function.png')
 
     def run_rf(self, datafile, labels):
-        """ extract response functions, dump in csv format and plot
+        """ extract response functions, dump in txt format for unfolding
+          and plot
 
         Parameters
         ----------
@@ -388,7 +404,8 @@ class PostprocessReactions(NuclearData):
         self._export_and_plot_rf(*data_lists, labels)
 
     def run_stdev(self, datafile, labels):
-        """ extract standard deviations, dump in csv format and plot
+        """ extract standard deviations, dump in txt format for unfolding
+          and plot
 
         Parameters
         ----------

@@ -30,7 +30,7 @@ exp_results = 'e_results'
 #  fractional uncertainties for the above activities from fispact sims
 #  isotopic fractional uncertainty for the spectrum used
 #  self shielding factor for the fispact calculation
-calc_results = 'c_results'
+calc_results = 'data/c_results'
 
 # input the plot labels for the libraries you want to use for analysis
 # (up to three permitted)
@@ -38,7 +38,7 @@ calc_results = 'c_results'
 libraries = ['TENDL-2021','IRDFF-II','ENDF/B-VIII']
 
 # Flux normalisation to rescale calculated results by, if needed
-flux_norm_mean = 1.1
+flux_norm_mean = 1
 
 # Fractional uncertainty on the flux estimation, to incorporate into the 
 # C/E uncertainty analysis
@@ -47,12 +47,12 @@ flux_frac_error = 0.05
 # reorder the isotopes in your results files e.g. into capture-to-threshold
 # 0 will be the first isotope listed in c_results and e_results
 # [2,1,0] would reverse the order of a three-isotope list in the final plot
-order = [10,2,15,16, 6,19,7,9,12,13,4,5,0,3,1,14,11] 
+order = [2,1,0] 
 
 # out of the new list, which isotopes do you want a C/E weighted average for?
 # e.g. [5,20] will calculate a weighted average for isotopes 5-->20 
 # in the new list
-we_isotopes = [5,20]
+we_isotopes = [0,3]
 
 # which library dataset to use for the weighted average analysis?
 we_library = 'IRDFF-II'
@@ -63,10 +63,10 @@ we_library = 'IRDFF-II'
 plot_split_list = [4.5,13.5]
 
 # set y axis size for C/E plot e.g. [0,2] for 0-->2
-y_axis = [0.01,2.3]
+y_axis = [0.1,2.3]
 
 # set how far along the x axis to place the legend
-legend_x_coord = 0.8
+legend_x_coord = 0.05
 
 # get c/e plot with red uncertainty band representing combined 
 # uncertainty from isotopic neutron spectrum and flux estimation. 

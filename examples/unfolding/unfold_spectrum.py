@@ -25,7 +25,7 @@ def model(self,theta,energy):
     mean,sigma,peak = theta
 
     # create the model
-    flux = unfold.gaussian(mean,peak,sigma,energy)
+    flux = unfold.gaussian(mean,sigma,peak,energy)
     return flux
 
 # create neutron spectrum prior, given parameters theta
@@ -35,7 +35,7 @@ def prior(self,theta):
     # unpack the tuple of parameters
     mean,sigma,peak = theta
 
-    # set the hard limits for the parameters
+    # set hard limits for the parameters
     if (12 < mean < 15 and 0.1 < sigma < 2 and 1e3 < peak < 1e9):
 
         # return model for the entire group structure if inside limits, 
@@ -52,7 +52,7 @@ unfold.prior = prior.__get__(unfold,BayesianUnfolding)
 rm_samples = 1
 
 # number of MCMC walkers/chains
-nwalkers = 50 
+nwalkers = 20
 
 # "burn-in" period to let chains stabilize
 nburn = 500
@@ -64,7 +64,8 @@ nsteps = 5000
 # set initial guesses for each parameter
 guesses = [13.5, 1.5, 1e7]
 
-# run using the above params, etc
-unfold.run_ensemble_mcmc(nparam,param_names,rm_samples,
-                         nwalkers,nburn,nsteps,guesses)
+# run using the above inputs and plot
+params,stds = unfold.run_ensemble_mcmc(nparam,param_names,rm_samples,
+                                       nwalkers,nburn,nsteps,guesses)
+unfold.plot_spectrum(guesses,params,stds)
 

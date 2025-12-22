@@ -72,12 +72,12 @@ class BayesianUnfolding:
         # use [162:] gs values and [6:] rr/rf for just 14 MeV peak
         # use [140:] gs values and [3:] rr/rf for 14 and 8 MeV peak
         # use [70:] gs vals and [2:] rr/rf for 0.1MeV+
-        self.group_structure = self.group_structure[70:]
-        self.reaction_rates = self.reaction_rates[2:]
-        self.reaction_rate_uncerts = self.reaction_rate_uncerts[2:]
-        self.response_matrix = [i[70:] for i in self.response_matrix[2:]]
-        self.response_matrix_uncerts = [i[70:] for i in 
-                                        self.response_matrix_uncerts[2:]]
+        #self.group_structure = self.group_structure[70:]
+        #self.reaction_rates = self.reaction_rates[2:]
+        #self.reaction_rate_uncerts = self.reaction_rate_uncerts[2:]
+        #self.response_matrix = [i[70:] for i in self.response_matrix[2:]]
+        #self.response_matrix_uncerts = [i[70:] for i in 
+        #                                self.response_matrix_uncerts[2:]]
 
     def gaussian(self,mean,sigma,peak,energy):
         """ gaussian distribution for defining the model in MeV
@@ -275,6 +275,13 @@ class BayesianUnfolding:
         guesses : list[int]
             set initial guesses for each parameter
             sets starting walker positions
+
+        Returns
+        -------
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
         """
         # filter warnings and random number generator
         warnings.filterwarnings("ignore")
@@ -318,9 +325,13 @@ class BayesianUnfolding:
 
         # get parameter results, removing nburn steps 
         samples = sampler.get_chain(flat=True,discard=nburn)
+        param_aves = []
+        param_stds = []
         for i in range(nparam):
             param_ave = (float(np.mean(samples[:,i])))
+            param_aves.append(param_ave)
             param_std = (float(np.std(samples[:,i])))
+            param_stds.append(param_std)
             print(f'{param_names[i]} = {param_ave:.3f} +- {param_std:.3f}')
 
         # do corner plotting
@@ -334,3 +345,56 @@ class BayesianUnfolding:
               np.mean(sampler.acceptance_fraction)))
         print("Mean autocorrelation time: {0:.3f} steps".format(
               np.mean(sampler.get_autocorr_time())))
+        
+        # return parameter values
+        return param_aves,param_stds
+    
+    def plot_spectrum(self,param_guesses,param_aves,param_stds):
+        """ plot spectrum with uncertainty using the parameter mean values 
+        and the parameter standard deviations
+
+        Parameters
+        ----------
+        param_guesses : list[float]
+            initial guesses for the parameters fed into mcmc
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
+        """
+        # convert lists -> arrays and calculate max/min parameters
+        param_ave_array = np.array(param_aves)
+        param_std_array = np.array(param_stds)
+        param_max_array = param_ave_array + param_std_array
+        param_min_array = param_ave_array - param_std_array
+
+        # convert param arrays to tuples
+        theta = tuple(param_ave_array)
+        theta_max = tuple(param_max_array)
+        theta_min = tuple(param_min_array)
+        theta_guesses = tuple(param_guesses)
+
+        # calculate mean, max and min spectra
+        # and the spectrum from the initial guess parameters
+        mean_spectrum = [self.model(theta,i) for i in self.group_structure]
+        max_spectrum = [self.model(theta_max,i) for i in self.group_structure]
+        min_spectrum = [self.model(theta_min,i) for i in self.group_structure]
+        guess_spectrum = [self.model(theta_guesses,i) for i in self.group_structure]
+
+        # plot solution and prior spectrum guess
+        fig, ax = plt.subplots(1,figsize=(8,6))
+        ax.step(self.group_structure, guess_spectrum,
+                label='Initial guess',c='blue',where='mid')
+        ax.step(self.group_structure, mean_spectrum,
+                label='Solution',c='magenta',where='mid')
+        ax.fill_between(self.group_structure, min_spectrum,max_spectrum,
+                        alpha=0.25,step='mid')
+        #ax.set_xscale('log')
+        ax.set_xlim(0.1,20)
+        ax.set_xlabel('Neutron energy (MeV)')
+        ax.set_yscale('log')
+        ax.set_ylim(1e3,5e8)
+        ax.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)')
+        ax.grid()
+        ax.legend(loc="upper left",frameon=True, fontsize=18,fancybox=False,facecolor='white')
+        plt.savefig('spectrum.png')

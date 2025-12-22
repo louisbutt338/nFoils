@@ -17,12 +17,12 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
    weight='normal',size=20)
 
 class BayesianUnfolding:
-    """ class to do mcmc unfolding 
+    """ class to do mcmc unfolding with the emcee package
     """
 
     def __init__(self,files_json_path): 
-        """ Initialise Bayesian unfolding class, and set all unfolding data as 
-        numpy arrays of floats
+        """ Initialise Bayesian unfolding class 
+        set all unfolding data as numpy arrays of floats
 
         Attributes
         ----------
@@ -38,9 +38,10 @@ class BayesianUnfolding:
                   ) as files_json:
             files_paths = json.load(files_json)
 
-        # set energy grid attribute
+        # set energy grid attribute and convert to MeV
         energy_grid_path = files_paths["group_structure"]
-        self.energy_grid = np.fromfile(energy_grid_path, sep=" ")
+        self.energy_grid = (np.fromfile(energy_grid_path, sep=" "))
+        self.energy_grid = self.energy_grid[:-1] * 1e-6
 
         # set reaction rate attributes
         with open(files_paths["reaction_rates"]) as file:
@@ -61,49 +62,135 @@ class BayesianUnfolding:
             response_uncerts_csv = csv.reader(file,delimiter=',')
             self.response_matrix_uncerts = np.array(list(response_uncerts_csv),dtype=float)
 
-        # adjust for testing just the 14 mev peak, with only the last reaction
+        # TESTING:
+        # adjust to unfold just specific parts of the p-li spectrum
         # use [162:] gs values and [6:] rr/rf for just 14 MeV peak
         # use [140:] gs values and [3:] rr/rf for 14 and 8 MeV peak
-        self.energy_grid = self.energy_grid[140:-1] * 1e-6
+        self.energy_grid = self.energy_grid[140:]
         self.reaction_rates = self.reaction_rates[3:]
         self.reaction_rate_uncerts = self.reaction_rate_uncerts[3:]
         self.response_matrix = [i[140:] for i in self.response_matrix[3:]]
         self.response_matrix_uncerts = [i[140:] for i in self.response_matrix_uncerts[3:]]
 
 
-    # example probability distributions to construct prior and model
-    def gaussian(self,diff,peak,sigma):
-        return (( peak / np.sqrt(2 * np.pi * sigma ** 2) )
+    def gaussian(self,mean,peak,sigma,energy):
+        """ gaussian distribution for defining the model in MeV
+        
+        Parameters
+        ----------
+        mean : float
+            mean of the distribution
+        peak : float
+            peak of the distribution
+        sigma : float
+            width of the distribution
+        energy : float
+            neutron energy
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energy
+        """
+        diff = np.sum(energy - mean)
+        flux = (( peak / np.sqrt(2 * np.pi * sigma ** 2))
                 * np.exp( - 0.5 * diff ** 2 / sigma ** 2))
+        return flux
 
-    # empty functions for model and prior
-    def spectrum_model(self,theta,energy):
-        """ model for the spectrum, for calculation with the group structure
-        should be theta (the parameters) and energy input here
+    def lognormal(self,mean,peak,sigma,energy):
+        """ lognormal distribution for defining the model in MeV
+        
+        Parameters
+        ----------
+        mean : float
+            mean of the distribution
+        peak : float
+            peak of the distribution
+        sigma : float
+            width of the distribution
+        energy : float
+            neutron energy
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energy
         """
-        print('please create spectrum model first')
+        lndiff = np.sum(np.log(energy) - mean)
+        flux = (( peak / energy * np.sqrt(2 * np.pi * sigma ** 2))
+                * np.exp( - 0.5 * lndiff ** 2 / sigma ** 2))
+        return flux
+
+    def model(self,theta,energy):
+        """ model for the neutron flux, given energy and parameters theta. 
+        used to create the neutron spectrum prior. 
+        needs filling in by the user using the same parameters/returns
+
+        Parameters
+        ----------
+        theta : tuple
+            parameters
+        energy : float
+            neutron energy
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energy
+        """
+        print('please create flux model first')
         exit()
 
-    def spectrum_prior(self,theta):
-        """ prior for the spectrum
+    def prior(self,theta):
+        """ prior for the neutron spectrum, given parameters theta. 
+        combined with the likelihood to create the posterior. 
+        needs filling in by the user using the same
+        parameters/returns
+
+        Parameters
+        ----------
+        theta : tuple
+            parameters
+
+        Returns
+        -------
+        prior : float
+            prior distribution for the neutron spectrum
+            (neutron flux model for the entire group structure)
         """
-        print('please create spectrum prior first')
+        print('please create flux prior first')
         exit()
 
-    # likelihood for reaction rates
     def _log_likelihood(self,theta, rr, sigma_rr, response):
-        """ gaussian distribution for the reaction rate measurements
+        """ gaussian distribution for the reaction rate measurements, 
+        combined with the prior to create the posterior
 
-        input the reaction-wise and energy-wise array of RRs/responses
-        calculate reaction-wise sum
+        Parameters
+        ----------
+        theta : tuple
+            parameters
+        rr : array[array]
+            array of reaction rates
+        sigma_rr : array[array]
+            array of reaction rate uncertainties
+        response : array[array]
+            array of response functions for each reaction
+
+        Returns
+        -------
+        log_likelihood : float
+            log likelihood for reaction rate measurements
         """
-        spectrum_model_arr = [self.spectrum_model(theta,i) for i in self.energy_grid]
-        rr_model_arr = np.array([np.inner(spectrum_model_arr, i) for i in response])
+        flux_model_arr = [self.model(theta,i) for i in self.energy_grid]
+        rr_model_arr = np.array([np.inner(flux_model_arr, i) for i in response])
         rr_arr = np.concatenate(rr)
         sigma_rr_arr = np.concatenate(sigma_rr)
-        return -0.5 * np.sum(np.log(2 * np.pi * sigma_rr_arr ** 2)
-                             +(rr_arr - rr_model_arr) ** 2 / sigma_rr_arr ** 2)
+        likelihood = -0.5 * np.sum(np.log(2 * np.pi * sigma_rr_arr ** 2)
+                     +(rr_arr - rr_model_arr) ** 2 / sigma_rr_arr ** 2)
+        return likelihood
 
+    # try and get this to work to avoid doing expensive MC 
+    # over the MCMC process to incorporate response function uncertainty
     # def log_likelihood_response_function(self,theta, response, sigma_response, rr):
     #     """ input reaction-wise and energy-wise array of RRs/responses
     #     calculate reaction-wise sum
@@ -115,33 +202,64 @@ class BayesianUnfolding:
     #     return -0.5 * np.sum(np.log(2 * np.pi * sigma_response_arr ** 2)
     #                          +(response_arr - response_model_arr) ** 2 / sigma_response_arr ** 2)
 
-    # posterior for emcee to sample
     def _log_posterior(self,theta,rr,sigma_rr,response):
         """ combined distribution for the measurements (likelihoods)
-        and the parameterised neutron spectrum (prior).
-        checks for non physical prior first 
-        """
-        log_prior = np.log(self.spectrum_prior(theta))
-        if not np.isfinite(log_prior).any():
-            return -np.inf
-        return (log_prior + self._log_likelihood(theta,rr,sigma_rr,response))
-
-    # run mcmc
-    def run_ensemble_mcmc(self,nparam,param_names,rm_samples,
-                          nwalkers,nburn,nsteps,guesses):
-        """ run ensemble mcmc
-        need to seperate this out into lots of user-controllable functions
+        and the parameterised neutron spectrum (prior), for emcee to sample
+        checks for non physical prior first
 
         Parameters
         ----------
-        isotope_activity : list[float]
-            Activity and relative uncertainty of the isotope in Bqe
+        theta : tuple
+            parameters
+        rr : array[array]
+            array of reaction rates
+        sigma_rr : array[array]
+            array of reaction rate uncertainties
+        response : array[array]
+            array of response functions for each reaction
 
         Returns
         -------
-        correction_factor : float
-            correction factor to scale your Faraday cup current by
-            to get current on the lithium target
+        log_posterior : float
+            log posterior for neutron flux model, given
+            the reaction rate measurement disitribution
+        """
+        log_prior = np.log(self.prior(theta))
+        if not np.isfinite(log_prior).any():
+            return -np.inf
+        log_posterior = (log_prior + 
+                         self._log_likelihood(theta,rr,sigma_rr,response))
+        return log_posterior
+
+    # maybe seperate this out into some more functions?
+    def run_ensemble_mcmc(self,nparam,param_names,rm_samples,
+                          nwalkers,nburn,nsteps,guesses):
+        """ run ensemble mcmc for given random samples taken from the 
+        response matrix distributions (so, MCMCMC). 
+        produces corner plot for the parameters - use this to analyse 
+        the quality of your model/prior/limits/starting-guesses, and 
+        then try again with different inputs. 
+        should be an iterative process
+
+        Parameters
+        ----------
+        nparam : int
+            number of parameters in the neutron flux model
+        param_names : list[str]
+            list of the names of the parameters
+        rm_samples : int
+            number of samples to take from the response matrix
+            distributions. start with 1
+        nwalkers : int
+            number of MCMC walkers/chains
+        nburn : int
+            "burn-in" period to let chains stabilize
+        nsteps : int
+            total number of MCMC steps to take (including nburn)
+            no. of trace results =  nwalkers * (nsteps-nburn)
+        guesses : list[tuples]
+            set initial guesses for upper bound/lower bound of each parameter
+            sets starting walker positions
         """
         # filter warnings and random number generator
         warnings.filterwarnings("ignore")

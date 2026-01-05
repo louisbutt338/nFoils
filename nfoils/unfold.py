@@ -39,7 +39,7 @@ class BayesianUnfolding:
             files_paths = json.load(files_json)
 
         # set group structure attribute and convert to MeV
-        # and remove first value so RF/flux values line up
+        # and remove lowest energy value so RF/flux values line up
         group_structure_path = files_paths["group_structure"]
         self.group_structure = (np.fromfile(group_structure_path, sep=","))
         self.group_structure = self.group_structure[1:] * 1e-6
@@ -53,9 +53,6 @@ class BayesianUnfolding:
             reaction_uncerts_csv = csv.reader(file,delimiter=',')
             self.reaction_rate_uncerts = np.array(list(reaction_uncerts_csv),
                                                   dtype=float)
-        with open(files_paths["reaction_rate_labels"]) as file:
-            reaction_labels_csv = csv.reader(file,delimiter=',')
-            self.reaction_rate_labels = np.array(list(reaction_labels_csv))
 
         # set response matrix attributes
         with open(files_paths["response_matrix"]) as file:
@@ -67,7 +64,7 @@ class BayesianUnfolding:
             self.response_matrix_uncerts = np.array(list(response_uncerts_csv),
                                                     dtype=float)
 
-        # TESTING:
+        # FOR TESTING:
         # adjust to unfold just specific parts of the p-li spectrum
         # use [162:] gs values and [6:] rr/rf for just 14 MeV peak
         # use [140:] gs values and [3:] rr/rf for 14 and 8 MeV peak
@@ -376,24 +373,28 @@ class BayesianUnfolding:
 
         # calculate mean, max and min spectra
         # and the spectrum from the initial guess parameters
-        mean_spectrum = [self.model(theta,i) for i in self.group_structure]
-        max_spectrum = [self.model(theta_max,i) for i in self.group_structure]
-        min_spectrum = [self.model(theta_min,i) for i in self.group_structure]
-        guess_spectrum = [self.model(theta_guesses,i) for i in self.group_structure]
+        mean_spectrum = [self.model(theta,i) 
+                         for i in self.group_structure]
+        max_spectrum = [self.model(theta_max,i) 
+                        for i in self.group_structure]
+        min_spectrum = [self.model(theta_min,i) 
+                        for i in self.group_structure]
+        guess_spectrum = [self.model(theta_guesses,i) 
+                          for i in self.group_structure]
 
         # plot solution and prior spectrum guess
         fig, ax = plt.subplots(1,figsize=(8,6))
         ax.step(self.group_structure, guess_spectrum,
-                label='Initial guess',c='blue',where='mid')
+                label='Initial guess',c='blue',where='pre')
         ax.step(self.group_structure, mean_spectrum,
-                label='Solution',c='magenta',where='mid')
+                label='Solution',c='magenta',where='pre')
         ax.fill_between(self.group_structure, min_spectrum,max_spectrum,
-                        alpha=0.25,step='mid')
+                        alpha=0.25,step='pre')
         #ax.set_xscale('log')
-        ax.set_xlim(0.1,20)
+        ax.set_xlim(1,20)
         ax.set_xlabel('Neutron energy (MeV)')
         ax.set_yscale('log')
-        ax.set_ylim(1e3,5e8)
+        ax.set_ylim(1e3,1e8)
         ax.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)')
         ax.grid()
         ax.legend(loc="upper left",frameon=True, fontsize=18,fancybox=False,facecolor='white')

@@ -17,18 +17,18 @@ import csv
 
 
 class ActivityCalc:
-    """ class that calculates activities for gamma spec data. 
+    """ calculates activities and reaction rates from gamma spec data. 
     this gamma spec data should be written in a provided example json
     """
 
-    def __init__(self, data_file_name, json_path, irradiation_end,
+    def __init__(self, measurement_file, json_path, irradiation_end,
                  cal_file_name):
         """ Initialise ActivityCalc class
 
         Attributes
         ----------
-        data_file_name : str
-            name of the foil data json file
+        measurement_file : str
+            name of the foil measurement data json file
         json_path : str
             path to the directory with the json data in it
         irradiation_end : datetime object
@@ -38,7 +38,7 @@ class ActivityCalc:
         """
 
         # set attributes
-        self.data_file_name = data_file_name
+        self.data_file_name = measurement_file
         self.json_path = json_path
         self.irradiation_end = irradiation_end
         self.cal_file_name = cal_file_name
@@ -256,7 +256,7 @@ class ActivityCalc:
 
         Returns
         -------
-        intergrand : float
+        integrand : float
             activity integral from time and halflife
         """
         integrand = exp(- log(2) * (t/half_life))
@@ -306,7 +306,7 @@ class ActivityCalc:
         Parameters
         ----------
         a : float
-            Activity after irradiaiton
+            Activity after irradiation
         irradiation_time : float
             Time the irradiation spanned in s
         halflife : float
@@ -416,7 +416,7 @@ class ActivityCalc:
         }}
         return isotope_dictionary
 
-    def run(self, which_isotopes, irrad_time,results_name):
+    def calculate_activities(self, which_isotopes, irrad_time,results_name):
         """ run analysis for all isotopes requested
         and outputs as a nice json for C/E plotting
 
@@ -429,8 +429,10 @@ class ActivityCalc:
         results_name : str
             Name of results file
         """
-        # set up for all isotopes requested
+        # create empty file for results
         open(f"{self.json_path}/{results_name}.json", 'w').close()
+
+        # set up for all isotopes requested 
         if isinstance(which_isotopes, int):
             if which_isotopes > 0:
                 isotope_run_list = list(self.json_file_data.keys()
@@ -456,6 +458,133 @@ class ActivityCalc:
 
         # print results as one neat json for postprocessing
         with open(f"{self.json_path}/{results_name}.json", 'a') as output_file:
+            json.dump(results_dictionary, output_file,
+                      ensure_ascii=False, indent=4)
+
+class ActivitySim:
+    """ class for simulating reaction rates using a response function and spectrum. 
+    in development
+    """
+
+    def __init__(self, json_path,simulation_file):
+        """ Initialise activity simulation
+
+        Attributes
+        ----------
+        json_path : str
+            path to the directory with the json data in it
+        simulation_file : str
+            path to the foil simulation data file
+        """
+        # set attr
+        self.json_path = json_path
+        self.sim_file_name = simulation_file
+        
+        # load the simulation data
+        with open(f'{self.json_path}/{self.sim_file_name}.json'
+                  ) as sim_file:
+            self.sim_file_data = json.load(sim_file)
+
+    def _get_response_matrices(self,response_matrix,response_matrix_uncerts):
+        """ get response matrix and response matrix uncerts
+
+        Parameters
+        ----------
+        response_matrix : str
+            path to the response matrix csv file
+        response_matrix_uncerts : str
+            path to the response matrix uncertainty csv file
+        """
+        with open(response_matrix) as file:
+            response_matrix_csv = csv.reader(file,delimiter=',')
+            rm_array = np.array(list(response_matrix_csv),
+                                            dtype=float)
+        with open(response_matrix_uncerts) as file:
+            response_uncerts_csv = csv.reader(file,delimiter=',')
+            rm_u_array = np.array(list(response_uncerts_csv),
+                                                    dtype=float)
+        return rm_array,rm_u_array
+    
+    def _sim_one_reaction(self,isotope_name, rm,rm_u, spectrum):
+        """ do simulation (response matrix * spectrum) for one isotope
+        
+        Parameters
+        ----------
+        isotope_name : str
+            isotope name in the data file
+        rm : arr
+            response function for the reaction producing that isotope
+        rm_u : arr
+            response function uncertainties for the same reaction
+        spectrum : arr
+            neutron spectrum 
+        """
+        # check if we have a multi pathway isotope
+        # if so, maybe do sum of reaction rates??
+        if "pathway_probabilities" in self.sim_file_data[isotope_name]:
+            pathway_prob = (self.sim_file_data[isotope_name]
+                            ["pathway_probabilities"])
+            
+        # do the calculation
+        reaction_rate = rm*spectrum
+        uncert = (rm_u/rm)*spectrum
+        return reaction_rate,uncert
+    
+    def simulate_activities(self,which_isotopes,c_results_name,
+                            response_matrix,response_matrix_uncerts,spectrum):
+        """ run analysis for all isotopes requested
+        and outputs as a nice json
+
+        Parameters
+        ----------
+        which_isotopes : float
+            switch to control which isotopes from the data to run
+        c_results_name : str
+            Name of results file
+        response_matrix : str
+            filepath to response matrix
+        response_matrix_uncerts : str
+            filepath to response matrix uncertainties
+        spectrum : str
+            filepath to spectrum 
+        """
+        # create a new empty file for the results
+        open(f"{self.json_path}/{c_results_name}.json", 'w').close()
+
+        # set up for all isotopes requested 
+        if isinstance(which_isotopes, int):
+            if which_isotopes > 0:
+                isotope_run_list = list(self.sim_file_data.keys()
+                                        )[which_isotopes:]
+            if which_isotopes < 0:
+                file_isotopes = len(self.sim_file_data.keys())
+                isotope_run_list = list(self.sim_file_data.keys()
+                                        )[:file_isotopes+which_isotopes]
+        else:
+            if which_isotopes == 'all':
+                isotope_run_list = list(self.sim_file_data.keys())
+            else:
+                isotope_run_list = list(which_isotopes.split(" "))
+
+        # get response matrix data
+        rm_array,rm_u_array = self._get_response_matrices(response_matrix,
+                                                          response_matrix_uncerts)
+        
+        # get spectrum data
+        spectrum_data = np.fromfile(f'{spectrum}.txt', sep=" ")
+        flux_array = spectrum_data[::2]
+
+        # calculate average reaction rates for each isotope
+        results_dictionary = {}
+        for i in range(isotope_run_list):
+            print(f"************ activities for {i} ************")
+
+            # DO SIMULATION FOR SINGLE ISOTOPE/REACTION
+            results_dictionary.update(self._sim_one_reaction(
+                isotope_run_list[i], rm_array[i],rm_u_array[i], flux_array))
+
+        # print results as one neat json for postprocessing
+        with open(f"{self.json_path}/{c_results_name}.json", 'a') as output_file:
             json.dump(results_dictionary, output_file,
                       ensure_ascii=False, indent=4)
 
@@ -523,7 +652,7 @@ class ReactionRateRetrieval:
         rr_folder : str
             Path to the new folder to dump the reaction rate data into
         """
-        rr_folder = os.path.join(exp_folder, "reaction_rates")
+        rr_folder = os.path.join(exp_folder, "for_unfolding")
         os.makedirs(rr_folder,exist_ok=True)
         return rr_folder
 

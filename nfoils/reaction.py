@@ -6,7 +6,7 @@ L Fiorito, Nuclear data uncertainty propagation to integral responses
 using SANDY, Annals of Nuclear Energy 101 (359-366) 2017 
 """
 
-import csv
+import os
 import json
 import numpy as np
 import sandy
@@ -76,7 +76,7 @@ class NuclearData:
             # use the get_errorr function to grab cov,std data
             endf_file = self._get_endf_file(material)
             ekws = dict(ek=self.ek)
-            err = endf_file.get_errorr(temperature=0, err=1, chi=False,
+            err = endf_file.get_errorr(temperature=300, err=1, chi=False,
                                        nubar=False, prod=False, mubar=False,
                                        errorr_kws=ekws,
                                        verbose=False)["errorr33"]
@@ -118,7 +118,7 @@ class NuclearData:
             endf_file = self._get_endf_file(material)
             ekws = dict(ek=self.ek, nuclide_production=True, iwt=3)
             gendf = endf_file.get_gendf(minimal_processing=True,
-                                        err=0.005, temperature=0,
+                                        err=0.005, temperature=300,
                                         groupr_kws=ekws)
             xs = gendf.get_xs(mt=mt).data.to_numpy()
             xs_array = np.array([j for i in xs for j in i])
@@ -237,6 +237,10 @@ class PostprocessReactions(NuclearData):
         """
         super().__init__(ek, library)
 
+        # make new folder to save the responses/uncertainties in
+        self.results_folder = os.path.join("for_unfolding")
+        os.makedirs(self.results_folder,exist_ok=True)
+
     def _export_and_plot_stdev(self, material_list, mt_values_list,
                                reaction_labels):
         """ export stdev data to one txt and plot uncertainty percentages
@@ -284,7 +288,7 @@ class PostprocessReactions(NuclearData):
                 continue
 
         # export data to txt file
-        np.savetxt("reponse_matrix_uncertainties.txt",
+        np.savetxt(f"{self.results_folder}/reponse_matrix_uncertainties.txt",
                    big_response_function_uncert_list,
                    delimiter=',')
 
@@ -328,7 +332,8 @@ class PostprocessReactions(NuclearData):
         """
         # inital figure and txt list setting
         big_response_functions_list = []
-        np.savetxt("group_structure.txt",self.ek.ravel()[None],delimiter=',')
+        np.savetxt(f"{self.results_folder}/group_structure.txt",
+                   self.ek.ravel()[None],delimiter=',')
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
@@ -367,7 +372,7 @@ class PostprocessReactions(NuclearData):
                 continue
 
         # export data to txt file
-        np.savetxt("reponse_matrix.txt",
+        np.savetxt(f"{self.results_folder}/reponse_matrix.txt",
                    big_response_functions_list,
                    delimiter=',')
 

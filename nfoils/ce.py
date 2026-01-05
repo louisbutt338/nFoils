@@ -1,8 +1,8 @@
 """ 
-module for performing c/e analysis: comparing one set of experimental results 
-calculated from gamma spec three sets of activation foil, with up to three
-sets of calculated activation results (to compare up to three different 
-nuclear data libraries)
+module for performing c/e analysis
+
+compares experimental results calculated from gamma spec measurements 
+with up to three sets of calculated results simulated using FISPACT
 """
 
 import json

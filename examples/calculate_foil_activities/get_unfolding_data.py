@@ -1,5 +1,5 @@
-""" example for extracting single reaction rates to csv lists for unfolding 
-with spectra-uf. Use after calculate_e_results.py, which generates e_results
+""" example for extracting single reaction rate data for unfolding a 
+neutron spectrum
 """
 from nfoils.activity import ReactionRateRetrieval
 
@@ -10,7 +10,7 @@ exp_folder = '.'
 results_file_name = 'e_results'
 
 # get new folder containing reaction rates, uncertainties and isotopes
-# in csv format for reading by spectra-uf
+# in txt format for reading by unfolding module
 retriever = ReactionRateRetrieval()
 retriever.run(exp_folder,results_file_name)
 

@@ -19,10 +19,10 @@ conversion_factor = 1.7e7
 # get converted data
 timings,converted_data = history.get_new_data(conversion_factor)
 
-# dump converted data into a json
-new_data_dict = {'timings_s': [i for i in timings],
-                 'new_units_data':[i for i in converted_data]}
-with open('new_data.json','w',encoding='utf-8'
-          ) as new_data_json:
-    json.dump(new_data_dict,new_data_json,
+# dump converted rates into a json
+new_rates_dict = {'timings_s': [i for i in timings],
+                 'new_rates':[i for i in converted_data]}
+with open('new_rates.json','w',encoding='utf-8'
+          ) as new_rates_json:
+    json.dump(new_rates_dict,new_rates_json,
               ensure_ascii=False,indent=4)

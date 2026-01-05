@@ -2,7 +2,7 @@
 specified reactions in a specified nuclear data library. 
 note some libraries may be missing reactions and/or covariances.
 will also output the used energy group structure - together these
-can be used for the bayesian unfolding
+can be used for unfolding
 """
 import numpy as np
 from nfoils.reaction import PostprocessReactions
@@ -18,7 +18,7 @@ ek=np.fromfile('data/group_structure.txt',sep=" ")
 # specify nuclear data library (check the list available in sandy)
 # e.g. endfb_71 endfb_80 jendl_40u jeff_33 tendl_21
 # make sure you have internet to get library data
-library = 'jeff_33'
+library = 'tendl_21'
 
 # set path to a json with foil reaction data
 # should include dictionaries for each reaction including:

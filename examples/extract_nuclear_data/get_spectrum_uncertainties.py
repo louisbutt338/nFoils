@@ -1,5 +1,7 @@
 """ get the average uncertainty from an input neutron spectrum uncertainty 
-array, over a specific cross section range of a reaction
+array, for a specific set of nuclear reactions
+
+These can be input into the c_results file when doing c/e analysis
 """
 import numpy as np
 from nfoils.reaction import IsotopicSpectrumUncertainty

@@ -26,11 +26,11 @@ FISPACT activity predictions with the experimental results are also included, as
 ## Installation
 
 First set up a virtual environment with prerequisites installed \*, 
-then install the package with the following commands:
+then install a development version of the package with the following commands:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -r requirements.txt .
+pip install -r requirements.txt -e .
 ```
 
 To enable nuclear data extraction, install NJOY2016 by following the installation instructions on the 

@@ -34,13 +34,9 @@ calibration_file = 'data/calibrations'
 # input datetime for the end of the irradiation
 irradiation_end = datetime(2024,3,28, 18,17,00)
 
-# initialise class
+# load calibration and foil data
 activities = ActivityCalc(measurements_file,experiment_dir,
                           irradiation_end,calibration_file)
-
-# choose which isotopes to calculate activity for from the data json
-# 'all' or specific isotope i.e. 'Mn56'
-which_isotopes = 'all'
 
 # input the total irradiation time in seconds (for reaction rate calculation) 
 irrad_time = 3600*2
@@ -50,4 +46,4 @@ e_results_name = 'e_results'
 
 # get experimental results json with activities and reaction rates
 # uncertainties stem from peak fitting and efficiency uncertainty
-activities.calculate_activities(which_isotopes,irrad_time,e_results_name)
+activities.calculate_activities(irrad_time,e_results_name)

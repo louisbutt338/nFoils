@@ -28,7 +28,7 @@ class AsciiSummer:
             name of the ascii files WITHOUT the '_XXX' number on the end
         file_numbers : list[int]
             numbers of the first and last asciis to be summed
-            e.g. [0,2] will sum ASCIIS from 000 to 002
+            e.g. [0,2] will sum ASCIIS from '000' to '002'
         """
 
         # set attributes
@@ -99,7 +99,7 @@ class AsciiSummer:
             data in the middle of the ascii file
         """
         print("plotting summed ASCII...")
-        kev_array = [i*0.41653 for i in range(len(ascii_data))]
+        kev_array = [i*0.41653 for i,_ in enumerate(ascii_data)]
         fig, ax1 = plt.subplots(tight_layout=True)
         ax1.set_xlabel('Gamma energy (keV)') 
         ax1.set_ylabel('Counts')

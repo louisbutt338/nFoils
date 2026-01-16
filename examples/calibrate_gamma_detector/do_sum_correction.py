@@ -10,6 +10,8 @@ from nfoils.coincidence import SimpleCorrection
 #  "(peak energy in keV)": (peak counts per second)
 json_path = "data/peak_measurements"
 
-# get correction factors for each of the peak energies
+# load peak measurement data
 correct_eu152_results = SimpleCorrection(json_path)
+
+# get correction factors for each of the peak energies
 correct_eu152_results.run()

@@ -34,12 +34,8 @@ data_file_name = 'data/reactions'
 #  column 2: associated raw uncertainty in the same units
 spectrum_file = 'data/spectrum'
 
-# input no. of values to remove from the ends of the group structure
-# during the calculation
-# i.e. if there are no spectrum values at the fast neutron end, 
-# use [0,10] to cut off the last 10 values
-cutoff = [15,35]
+# load group structure and set library
+uncertainties = IsotopicSpectrumUncertainty(ek,library)
 
 # get the reaction-specific spectrum uncertainties 
-uncertainties = IsotopicSpectrumUncertainty(ek,library)
-uncertainties.get_isotopic_uncertainties(spectrum_file,data_file_name,cutoff)
+uncertainties.get_isotopic_uncertainties(spectrum_file,data_file_name)

@@ -14,6 +14,8 @@ ascii_filetag = 'uBB_20s_x60_20mins'
 # list of file numbers to sum together i.e. [0,3] = '000' to '003'
 file_numbers = [0,3]
 
-# sum the asciis together in one new file and plot the resulting spectrum
+# load specified ascii data
 ascii_summer = AsciiSummer(folder_path,ascii_filetag,file_numbers)
+
+# sum the asciis together in one new file and plot the resulting spectrum
 ascii_summer.run()

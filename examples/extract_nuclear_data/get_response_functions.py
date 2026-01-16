@@ -36,7 +36,9 @@ reaction_labels = ["${}^{197}$Au(n,2n)",
                    "${}^{93}$Nb(n,2n)",
                    "${}^{58}$Ni(n,2n)"]
 
-# get response functions and/or nuclear data uncertainties
+# load group structure and set library
 reactions = PostprocessReactions(ek,library)
+
+# get response functions and/or nuclear data uncertainties
 reactions.run_rf(data_file_name,reaction_labels)
 reactions.run_stdev(data_file_name,reaction_labels)

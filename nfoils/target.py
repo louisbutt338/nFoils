@@ -131,7 +131,7 @@ class TargetAnalysis:
         timing_list : list[int]
             List of irradiation timings in s
         real_cross_section : list[float]
-            Cross section (mb) and relative uncertainty
+            Cross section (mb) and relative uncertainty in a list
         current_frac_uncert : float
             Relative uncertainty on the current readings
         energy_frac_uncert : float
@@ -157,9 +157,7 @@ class TargetAnalysis:
         # calculate incident particles and be7 cross section
         summed_incident_particles = sum(
             [self._no_of_beam_particles(
-                current_list[i],
-                timing_list[i]) for i in range(
-                    len(current_list))])
+                j,timing_list[i]) for i,j in enumerate(current_list)])
         be7_cross_section = self._cross_section(
             self._no_of_isotopes(isotope_activity[0],
                                  isotope_halflife),

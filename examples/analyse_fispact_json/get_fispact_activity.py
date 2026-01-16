@@ -8,9 +8,8 @@ from nfoils.fispact import JsonRetriever,GammaSpectrumModel
 # see fispact/pypact documentation for format specifics
 json_path = 'data/fispact_output'
 
-# initialise to retrive activity data and simulate a gamma spectrum
+# load fispact activity data and simulate a gamma spectrum
 retrieve_json = JsonRetriever(json_path) 
-gamma_spec = GammaSpectrumModel()
 
 # input fispact irradiation history time interval that you want 
 # to interrogate (check your fispact .in and .out files if unsure)
@@ -33,4 +32,5 @@ for i in isotope_dictionary.items():
 
     # plot a basic simulated gamma spectrum for each isotope
     isotope_ag_form = isotope.title()
+    gamma_spec = GammaSpectrumModel()
     gamma_spec.plot_gamma(isotope_ag_form,isotope_act)

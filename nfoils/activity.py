@@ -30,7 +30,8 @@ class ActivityCalc:
         measurement_file : str
             name of the foil measurement data json file
         json_path : str
-            path to the directory with the json data in it
+            path to the directory with the json data in it.
+            defaults to current dir
         irradiation_end : datetime object
             datetime object for the exact end of the irradiation
         cal_file_name : str
@@ -354,7 +355,7 @@ class ActivityCalc:
         final_activity_list = []
         final_uncert_list = []
         intensity, energy, halflife = self._get_decay_database(isotope_name)
-        for n in range(len(intensity[:5])):
+        for n,_ in enumerate(intensity[:5]):
             if self.json_file_data[isotope_name]['counts'][n] != 0:
 
                 self_attenuation_factor = self._self_attenuation_correction(
@@ -416,18 +417,20 @@ class ActivityCalc:
         }}
         return isotope_dictionary
 
-    def calculate_activities(self, which_isotopes, irrad_time,results_name):
+    def calculate_activities(self, irrad_time,results_name,
+                             which_isotopes='all'):
         """ run analysis for all isotopes requested
         and outputs as a nice json for C/E plotting
 
         Parameters
         ----------
-        which_isotopes : float
-            switch to control which isotopes from the data to run
         irrad_time : float
             Total irradiation time for reaction rate calculation
         results_name : str
             Name of results file
+        which_isotopes : str
+            switch to control which isotopes from the data to run.
+            'all' or a specific isotope ('Mn56' for example)
         """
         # create empty file for results
         open(f"{self.json_path}/{results_name}.json", 'w').close()

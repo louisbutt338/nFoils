@@ -7,7 +7,6 @@ Instrumentation and Methods for Astrophysics 2012
 
 import emcee
 import corner
-import warnings
 import numpy as np
 import csv
 import json
@@ -15,12 +14,13 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
    weight='normal',size=20)
+from scipy import stats
 
 class BayesianUnfolding:
     """ class to do mcmc unfolding with the emcee package
     """
 
-    def __init__(self,files_json_path): 
+    def __init__(self,files_json_path,nparam,param_names,guesses): 
         """ Initialise Bayesian unfolding class 
         set all unfolding data as numpy arrays of floats
 
@@ -28,148 +28,449 @@ class BayesianUnfolding:
         ----------
         files_json_path : str
             path to the files data json
+        nparam : int
+            number of parameters in the neutron flux model
+        param_names : list[str]
+            list of the names of the parameters
+        guesses : list[float]
+            initial guesses for the parameters fed into mcmc
         """
-
-        # set files json attribute
-        self.files_json_path = files_json_path
+        # set parameter attributes
+        self.nparam = nparam
+        self.param_names = param_names
+        self.guesses = guesses
 
         # load the datafiles paths
-        with open(self.files_json_path
+        with open(files_json_path
                   ) as files_json:
             files_paths = json.load(files_json)
 
         # set group structure attribute and convert to MeV
         # and remove lowest energy value so RF/flux values line up
         group_structure_path = files_paths["group_structure"]
-        self.group_structure = (np.fromfile(group_structure_path, sep=","))
-        self.group_structure = self.group_structure[1:] * 1e-6
+        self._group_structure = (np.fromfile(group_structure_path, sep=","))
+        self._group_structure = self._group_structure[1:] * 1e-6
 
         # set reaction rate attributes
         with open(files_paths["reaction_rates"]) as file:
             reaction_rate_csv = csv.reader(file,delimiter=',')
-            self.reaction_rates = np.array(list(reaction_rate_csv),
+            self._reaction_rates = np.array(list(reaction_rate_csv),
                                            dtype=float)
         with open(files_paths["reaction_rate_uncerts"]) as file:
             reaction_uncerts_csv = csv.reader(file,delimiter=',')
-            self.reaction_rate_uncerts = np.array(list(reaction_uncerts_csv),
+            self._reaction_rate_uncerts = np.array(list(reaction_uncerts_csv),
                                                   dtype=float)
 
         # set response matrix attributes
         with open(files_paths["response_matrix"]) as file:
             response_matrix_csv = csv.reader(file,delimiter=',')
-            self.response_matrix = np.array(list(response_matrix_csv),
+            self._response_matrix = np.array(list(response_matrix_csv),
                                             dtype=float)
         with open(files_paths["response_matrix_uncerts"]) as file:
             response_uncerts_csv = csv.reader(file,delimiter=',')
-            self.response_matrix_uncerts = np.array(list(response_uncerts_csv),
+            self._response_matrix_uncerts = np.array(list(response_uncerts_csv),
                                                     dtype=float)
 
-        # FOR TESTING:
-        # adjust to unfold just specific parts of the p-li spectrum
-        # use [162:] gs values and [6:] rr/rf for just 14 MeV peak
-        # use [140:] gs values and [3:] rr/rf for 14 and 8 MeV peak
-        # use [70:] gs vals and [2:] rr/rf for 0.1MeV+
-        #self.group_structure = self.group_structure[70:]
-        #self.reaction_rates = self.reaction_rates[2:]
-        #self.reaction_rate_uncerts = self.reaction_rate_uncerts[2:]
-        #self.response_matrix = [i[70:] for i in self.response_matrix[2:]]
-        #self.response_matrix_uncerts = [i[70:] for i in 
-        #                                self.response_matrix_uncerts[2:]]
+    # getters and setters for the data attributes
+
+    @property
+    def group_structure(self):
+        """ gets group structure attribute
+        
+        Returns
+        -------
+        group_structure : array
+            group structure in MeV
+        """
+        return self._group_structure
+
+    @group_structure.setter
+    def group_structure(self, group_structure):
+        """ sets group structure attribute 
+        
+        Parameter
+        ---------
+        group_structure : arr[arr]
+            group structure in MeV
+        """
+        self._group_structure = group_structure
+
+    @property
+    def reaction_rates(self):
+        """ gets reaction rates attribute
+        
+        Returns
+        -------
+        reaction_rates : arr[arr]
+            foil reaction rates
+        """
+        return self._reaction_rates
+
+    @reaction_rates.setter
+    def reaction_rates(self, reaction_rates):
+        """ sets reaction rates attribute 
+        
+        Parameter
+        ---------
+        reaction_rates : arr[arr]
+            foil reaction rates
+        """
+        self._reaction_rates = reaction_rates
+
+    @property
+    def reaction_rate_uncerts(self):
+        """ gets reaction rate uncertainties attribute
+        
+        Returns
+        -------
+        reaction_rate_uncerts : arr[arr]
+            foil reaction rate uncertainties
+        """
+        return self._reaction_rate_uncerts
+
+    @reaction_rate_uncerts.setter
+    def reaction_rate_uncerts(self, reaction_rate_uncerts):
+        """ sets reaction rate uncertainties attribute 
+        
+        Parameter
+        ---------
+        reaction_rate_uncerts : arr[arr]
+            foil reaction rate uncertainties
+        """
+        self._reaction_rate_uncerts = reaction_rate_uncerts
+
+    @property
+    def response_matrix(self):
+        """ gets response matrix attribute
+        
+        Returns
+        -------
+        response_matrix : arr[arr]
+            foil reaction response matrix
+        """
+        return self._response_matrix
+
+    @response_matrix.setter
+    def response_matrix(self, response_matrix):
+        """ sets response matrix attribute 
+        
+        Parameter
+        ---------
+        response_matrix : arr[arr]
+            foil reaction response matrix
+        """
+        self._response_matrix = response_matrix
+
+    @property
+    def response_matrix_uncerts(self):
+        """ gets response matrix uncertainties attribute
+        
+        Returns
+        -------
+        response_matrix_uncerts : arr[arr]
+            foil reaction response matrix uncertainties
+        """
+        return self._response_matrix_uncerts
+
+    @response_matrix_uncerts.setter
+    def response_matrix_uncerts(self, response_matrix_uncerts):
+        """ sets response matrix uncertainties attribute 
+        
+        Parameter
+        ---------
+        response_matrix_uncerts : arr[arr]
+            foil reaction response matrix uncerts
+        """
+        self._response_matrix_uncerts = response_matrix_uncerts
+
+    # example distributions to make your model with
 
     def gaussian(self,mean,sigma,peak,energy):
-        """ gaussian distribution for defining the model in MeV
+        """ gaussian distribution 
+        see scipy.stats documentation for further details
         
         Parameters
         ----------
         mean : float
-            mean of the distribution
+            mean of the distribution (MeV)
         sigma : float
-            width of the distribution
+            width of the distribution (MeV)
         peak : float
-            peak of the distribution
+            peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy
+            neutron energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            neutron flux for the given energies
         """
-        diff = np.sum(energy - mean)
-        non_scaled_peak = ( 1 / np.sqrt(2 * np.pi * sigma ** 2))
-        scale = 1e-2 * peak / non_scaled_peak
-        flux = ((scale / np.sqrt(2 * np.pi * sigma ** 2))
-                * np.exp( - 0.5 * diff ** 2 / sigma ** 2))
+        non_scaled_peak = stats.norm.pdf(mean,loc=mean,scale=sigma)
+        scale = peak / non_scaled_peak
+        flux = scale*stats.norm.pdf(np.sum(energy),loc=mean,scale=sigma)
         return flux
-
-    def lognormal(self,mean,sigma,peak,energy):
-        """ lognormal distribution for defining the model in MeV
+    
+    def skewgaussian(self,mean,sigma,peak,skew,energy):
+        """ skewed gaussian distribution 
+        see scipy.stats documentation for further details
         
         Parameters
         ----------
         mean : float
-            mean of the distribution
+            mean of the distribution (MeV)
         sigma : float
-            width of the distribution
+            width of the distribution (MeV)
         peak : float
-            peak of the distribution
+            peak of the distribution (n/cm2/s)
+        skew : float
+            skew of distribution
         energy : float
-            neutron energy
+            neutron energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            neutron flux for the given energies
         """
-        lndiff = np.sum(np.log(energy) - mean)
-        front_term = np.sum(np.dot(energy, np.sqrt(2 * np.pi * sigma ** 2)))
-        non_scaled_peak = ( 1 / front_term)
-        scale = 1e-2 * peak / non_scaled_peak
-        flux = ((scale / front_term)
-                * np.exp( - 0.5 * lndiff ** 2 / sigma ** 2))
+        non_scaled_peak = stats.skewnorm.pdf(mean,skew,loc=mean,scale=sigma)
+        scale = peak / non_scaled_peak
+        flux = scale*stats.skewnorm.pdf(np.sum(energy),skew,loc=mean,scale=sigma)
         return flux
 
-    def model(self,theta,energy):
-        """ model for the neutron flux, given energy and parameters theta. 
-        used to create the neutron spectrum prior. 
-        needs filling in by the user using the same parameters/returns
-
+    def lognormal(self,mode,sigma,peak,energy):
+        """ lognormal distribution 
+        see scipy.stats documentation for further details
+        
         Parameters
         ----------
-        theta : tuple
-            parameters
+        mode : float
+            mode of the distribution (MeV)`
+        sigma : float
+            width of the logarithm of the distribution
+        peak : float
+            peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy
+            neutron energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            neutron flux for the given energies
         """
-        print('please create flux model first')
-        exit()
-
-    def prior(self,theta):
-        """ prior for the neutron spectrum, given parameters theta. 
-        combined with the likelihood to create the posterior. 
-        needs filling in by the user using the same
-        parameters/returns
+        mu = np.log(mode) + sigma**2
+        non_scaled_peak = np.sum(stats.lognorm.pdf(mode,s=sigma,scale=np.exp(mu)))
+        scale = peak / non_scaled_peak
+        flux= scale * stats.lognorm.pdf(np.sum(energy),s=sigma,scale=np.exp(mu))
+        return flux
+    
+    def gamma(self,alpha,beta,peak,energy):
+        """ gamma distribution 
+        see scipy.stats documentation for further details
 
         Parameters
         ----------
-        theta : tuple
-            parameters
+        alpha : float
+            shape parameter for distribution
+        beta : float
+            scale parameter for the distribution
+        peak : float
+            peak of the distribution (n/cm2/s)
+        energy : float
+            neutron energy MeV
 
         Returns
         -------
-        prior : float
-            prior distribution for the neutron spectrum
-            (neutron flux model for the entire group structure)
+        flux : float
+            neutron flux for the given energies
         """
-        print('please create flux prior first')
-        exit()
+        mode = (alpha-1)*beta
+        non_scaled_peak = (stats.gamma.pdf(mode,a=alpha,scale=beta))
+        scale=peak/non_scaled_peak
+        flux = scale * stats.gamma.pdf(np.sum(energy),a=alpha,scale=beta)
+        return flux
+    
+    def weibull(self,alpha,beta,peak,energy):
+        """ weibull distribution 
+        see scipy.stats documentation for further details
 
-    def _log_likelihood(self,theta, rr, sigma_rr, response):
+        Parameters
+        ----------
+        alpha : float
+            shape parameter for distribution
+        beta : float
+            scale parameter for the distribution
+        peak : float
+            peak of the distribution (n/cm2/s)
+        energy : float
+            neutron energy in MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        mode = beta*((alpha-1)/beta)**(1/alpha)
+        non_scaled_peak = stats.weibull_min.pdf(mode,c=alpha,scale=beta)
+        scale=peak/non_scaled_peak
+        flux = scale * stats.weibull_min.pdf(np.sum(energy),c=alpha,scale=beta)
+        return flux
+    
+    def fission(self,alpha,beta,peak,energy):
+        """ simple Watt fission peak distribution (modified maxwellian)
+        see FRUIT paper for details (doi.org/10.1016/j.nima.2007.07.033)
+
+        Parameters
+        ----------
+        alpha : float
+            shape parameter for distribution. 0-1
+        beta : float
+            scale parameter for the distribution. 1-2
+        peak : float
+            peak of the distribution (n/cm2/s)
+        energy : float
+            neutron energy in MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        mode_energy = alpha*beta
+        non_scaled_peak = ((mode_energy**alpha)*
+                           np.exp(-mode_energy/beta))
+        scale = peak/non_scaled_peak
+        flux=(scale*(np.sum(energy)**alpha)*
+              np.exp(-np.sum(energy)/beta))
+        return flux
+    
+    def fission_openmc(self,alpha,beta,peak,energy):
+        """ more specific Watt fission distribution (modified maxwellian)
+        see openmc docs and romano paper (arxiv.org/html/2402.09454v1)
+
+        Parameters
+        ----------
+        alpha : float
+            shape parameter for distribution
+        beta : float
+            scale parameter for the distribution
+        peak : float
+            peak of the distribution (n/cm2/s)
+        energy : float
+            neutron energy in MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        front = (2*np.exp(-0.25*alpha*beta)/
+                 np.sqrt(np.pi*beta*(alpha**3)))
+        watt_function = (np.exp(-np.sum(energy)/alpha)*
+                         np.sinh(np.sqrt(beta*np.sum(energy))))
+        flux = peak*front*watt_function
+        return flux
+    
+    def evaporation(self,evap_temp,peak,energy):
+        """ evaporation peak distribution (modified maxwellian)
+        see FRUIT paper for details (doi.org/10.1016/j.nima.2007.07.033)
+
+        Parameters
+        ----------
+        evap_temp : float
+            mode/evaporation temperature (MeV) (t>0)
+        peak : float
+            peak of the distribution (n/cm2/s)
+        energy : float
+            neutron energy in MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        non_scaled_peak = ((1/evap_temp)*
+                           np.exp(-1))
+        scale = peak/non_scaled_peak
+        flux=(scale*(np.sum(energy)/(evap_temp**2))*
+              np.exp(-np.sum(energy)/evap_temp))
+        return flux
+
+    def epithermal(self,alpha,beta,scale,e_limit,energy):
+        """ epithermal straight line distribution 
+        see FRUIT paper for details (doi.org/10.1016/j.nima.2007.07.033)
+
+        Parameters
+        ----------
+        alpha : float
+            slope parameter 1 (t>0.5)
+        beta : float
+            slope parameter 2 (0-1)
+        scale : float
+            scale of the distribution (n/cm2/s)
+        e_limit : float
+            lower energy limit ~1e-7 (MeV)
+        energy : float
+            neutron energy in MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        term1 = 1-np.exp(-(np.sum(energy)/e_limit)**2)
+        term2 = np.sum(energy)**(alpha-1)
+        term3 = np.exp(-np.sum(energy)/beta)
+        flux = scale*term1*term2*term3
+        return flux
+    
+    def thermal(self,mean,peak,energy):
+        """ thermal peak distribution 
+        see FRUIT paper for details (doi.org/10.1016/j.nima.2007.07.033)
+
+        Parameters
+        ----------
+        mean : float
+            mean/thermal neutron energy ~1.53e-8 (MeV)
+        peak : float
+            peak of the distribution (n/cm2/s)
+        energy : float
+            neutron energy in MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        non_scaled_peak = (1/mean)*np.exp(-1)
+        scale=peak/non_scaled_peak
+        flux=(scale*(np.sum(energy)/mean**2)
+              *np.exp(-np.sum(energy)/mean))
+        return flux
+    
+    def powerlaw(self,exponent,scale,energy):
+        """ simple power law distribution. 
+        Use for the low-energy neutron spectrum
+        
+        Parameters
+        ----------
+        exponent: float
+            exponent/slope of the distribution
+        scale: float
+            scale of the distribution (n/cm2/s)
+        energy : float
+            neutron energy MeV
+
+        Returns
+        -------
+        flux : float
+            neutron flux for the given energies
+        """
+        flux = scale * np.sum(np.power(energy,exponent))
+        return flux
+    
+    # pre-set probability distributions for likelihood and posterior
+
+    def log_likelihood(self,theta, model,rr, sigma_rr, response):
         """ gaussian distribution for the reaction rate measurements, 
         combined with the prior to create the posterior
 
@@ -177,6 +478,8 @@ class BayesianUnfolding:
         ----------
         theta : tuple
             parameters
+        model : callable
+            neutron flux model
         rr : array[array]
             array of reaction rates
         sigma_rr : array[array]
@@ -189,14 +492,14 @@ class BayesianUnfolding:
         log_likelihood : float
             log likelihood for reaction rate measurements
         """
-        flux_model_arr = [self.model(theta,i) for i in self.group_structure]
+        flux_model_arr = [model(theta,i) for i in self.group_structure]
         rr_model_arr = np.array([np.inner(flux_model_arr, i) 
                                  for i in response])
         rr_arr = np.concatenate(rr)
         sigma_rr_arr = np.concatenate(sigma_rr)
-        likelihood = -0.5 * np.sum(np.log(2 * np.pi * sigma_rr_arr ** 2)
+        loglikelihood = -0.5 * np.sum(np.log(2 * np.pi * sigma_rr_arr ** 2)
                      +(rr_arr - rr_model_arr) ** 2 / sigma_rr_arr ** 2)
-        return likelihood
+        return loglikelihood
 
     # try and get this to work to avoid doing expensive MC 
     # over the MCMC process to incorporate response function uncertainty
@@ -214,7 +517,8 @@ class BayesianUnfolding:
     #             +(response_arr - response_model_arr) ** 2
     #             / sigma_response_arr ** 2))
 
-    def _log_posterior(self,theta,rr,sigma_rr,response):
+    def log_posterior(self,theta,model,log_prior,log_likelihood,
+                      rr,sigma_rr,response):
         """ combined distribution for the measurements (likelihoods)
         and the parameterised neutron spectrum (prior), for emcee to sample
         checks for non physical prior first
@@ -223,6 +527,12 @@ class BayesianUnfolding:
         ----------
         theta : tuple
             parameters
+        model : callable
+            neutron flux model function
+        log_prior : callable
+            log prior function
+        log_likelihood : callable
+            log likelihood function
         rr : array[array]
             array of reaction rates
         sigma_rr : array[array]
@@ -236,29 +546,82 @@ class BayesianUnfolding:
             log posterior for neutron flux model, given
             the reaction rate measurement disitribution
         """
-        log_prior = np.log(self.prior(theta))
-        if not np.isfinite(log_prior).any():
+        if not np.isfinite(log_prior(theta,model)).any():
             return -np.inf
-        log_posterior = (log_prior + 
-                         self._log_likelihood(theta,rr,sigma_rr,response))
+        log_posterior = (log_prior(theta,model) + 
+                         log_likelihood(theta,model,rr,sigma_rr,response))
         return log_posterior
+    
+    # run methods
 
-    # maybe seperate this out into some more functions?
-    def run_ensemble_mcmc(self,nparam,param_names,rm_samples,
-                          nwalkers,nburn,nsteps,guesses):
-        """ run ensemble mcmc for given random samples taken from the 
-        response matrix distributions (so, MCMCMC). 
-        produces corner plot for the parameters - use this to analyse 
-        the quality of your model/prior/starting-guesses, and 
-        then try again with different inputs. 
-        should be an iterative process
+    def _setup_sampler(self,rm_samples,nwalkers):
+        """ set up gaussian dsitributed response matrices to sample from 
+        and initial parameter guesses for each walker
 
         Parameters
         ----------
-        nparam : int
-            number of parameters in the neutron flux model
-        param_names : list[str]
-            list of the names of the parameters
+        rm_samples : int
+            number of samples to take from the response matrix
+            distributions. start with 1
+        nwalkers : int
+            number of MCMC walkers/chains
+
+        Returns
+        -------
+        new_guesses : arr[arr]
+            starting guesses for each walker
+        rm_dist : arr[arr]
+            gaussian-distributed set of response matrices
+        """
+
+        # random number generator
+        np.random.seed(42)
+
+        # get a gaussian-distributed set of response matrices
+        rm = self.response_matrix
+        rm_u = self.response_matrix_uncerts
+        rm_u_norm = [i*j for i,j in zip(rm,rm_u)]
+        rm_dist = np.array([])
+        rm_dist = [([np.random.normal(i,j) 
+                     for i,j in zip(rm,rm_u_norm)]) 
+                     for k in range(rm_samples)]
+
+        # stack the initial parameter guesses as 
+        # starting positions for each walker 
+        new_guesses = []
+        for i in range(self.nparam):
+            low_guess  = self.guesses[i] - 0.1*self.guesses[i]
+            high_guess = self.guesses[i] + 0.1*self.guesses[i]
+            new_guesses.append(np.random.randint(low=low_guess*1e8,
+                                                 high=high_guess*1e8,
+                                                 size=nwalkers)/1e8)
+        new_guesses = np.stack(new_guesses,axis=1)
+
+        return new_guesses,rm_dist
+
+    def run_sampler(self,log_post,model,log_prior,log_likelihood,
+                    rm_samples,nwalkers,nburn,nsteps,pool=None):
+        """ run ensemble mcmc for given random samples taken from the 
+        response matrix distributions. The reaction rate distribution 
+        is the likelihood in the model.
+        Recommend the following method:
+        (1) run sampler iteratively using multiple rm_samples but low
+        nwalkers/nsteps, to improve your model/prior/guesses. 
+        Use the results/corner plot to improve your prior
+        (2) once you have a good prior/guesses, increase 
+        nwalkers/nsteps as much as possible. Feel free to bastardise
+        this module to run it on a HPC, otherwise will be v slow
+
+        Parameters
+        ----------
+        log_post : callable
+            set to the log_posterior function
+        model : callable 
+            set to the model function
+        log_prior : callable
+            set to the log prior function
+        log_likelihood : callable
+            set to the log likelihood function
         rm_samples : int
             number of samples to take from the response matrix
             distributions. start with 1
@@ -269,9 +632,63 @@ class BayesianUnfolding:
         nsteps : int
             total number of MCMC steps to take (including nburn)
             no. of trace results =  nwalkers * (nsteps-nburn)
-        guesses : list[int]
-            set initial guesses for each parameter
-            sets starting walker positions
+        pool : callable
+            set to multiprocessing.Pool() for parallel, or
+            defaults to None
+
+        Returns
+        -------
+        samples : callable
+            output chain from ensemble sampler
+        """
+
+        # get the reaction rate data
+        rr = self.reaction_rates
+        rr_u = self.reaction_rate_uncerts
+
+        # get the guesses for each walker and response matrix distributions
+        new_guesses,rm_dist = self._setup_sampler(rm_samples,nwalkers)
+
+        # call the sampler for each response matrix sample 
+        # response functions will vary within their uncertainties
+        # the reaction rate distribution is the likelihood
+        for i in range(rm_samples):
+            print(f'running sampler for response matrix sample {i+1}')
+            sampler = emcee.EnsembleSampler(nwalkers, self.nparam,
+                                            log_post, 
+                                            args=[model,log_prior,
+                                                  log_likelihood,
+                                                  rr,rr_u,rm_dist[i]],
+                                            pool=pool)
+            # run the sampler for nsteps
+            sampler.run_mcmc(new_guesses,nsteps)
+
+        # get sampler results, removing nburn steps 
+        samples = sampler.get_chain(flat=True,discard=nburn)
+
+        # print acceptance fraction and autocorr time
+        print("Mean acceptance fraction: {0:.3f}".format(
+              np.mean(sampler.acceptance_fraction)))
+        #print("Mean autocorrelation time: {0:.3f} steps".format(
+        #      np.mean(sampler.get_autocorr_time())))
+
+        return samples
+    
+    # postprocessing methods
+
+    def postpro_sampler(self,samples,plotname='corner'):
+        """ take results (samples) from run_mcmc. generate 
+        a corner plot and output the values for parameters and
+        their standard deviations.
+        use corner plot to analyse the quality of your model/prior 
+        and then try again with different inputs - iterative process
+
+        Parameters
+        ----------
+        samples : callable
+            output chain from the ensemble sampler
+        plotname : str
+            name of the corner plot
 
         Returns
         -------
@@ -280,122 +697,207 @@ class BayesianUnfolding:
         param_stds : list[float]
             standard deviation values for the parameters
         """
-        # filter warnings and random number generator
-        warnings.filterwarnings("ignore")
-        np.random.seed(42)
 
-        # example data for unfolding
-        rr = self.reaction_rates
-        rr_u = self.reaction_rate_uncerts
-        rm = self.response_matrix
-        rm_u = self.response_matrix_uncerts
-
-        # get a gaussian-distributed set of response matrices 
-        rm_u_norm = [i*j for i,j in zip(rm,rm_u)]
-        rm_dist = np.array([])
-        rm_dist = [([np.random.normal(i,j) 
-                             for i,j in zip(rm,rm_u_norm)]) 
-                             for k in range(rm_samples)]
-
-        # stack the initial parameter guesses as 
-        # starting positions for each walker 
-        new_guesses = []
-        for i in range(nparam):
-            low_guess = guesses[i] - 0.1*guesses[i]
-            high_guess = guesses[i] + 0.1*guesses[i]
-            new_guesses.append(np.random.randint(low=low_guess*1e2,
-                                                 high=high_guess*1e2,
-                                                 size=nwalkers)/1e2)
-        new_guesses = np.stack(new_guesses,axis=1)
-
-        # call the sampler for each response matrices sample 
-        # response matrices will vary within their uncertainties
-        # the reaction rate distribution is the likelihood
-        for i in range(rm_samples):
-            print(f'running sampler for response matrices sample {i+1}')
-            sampler = emcee.EnsembleSampler(nwalkers, nparam,
-                                            self._log_posterior,
-                                            args=[rr,rr_u,rm_dist[i]])
-
-            # run the sampler for nsteps
-            sampler.run_mcmc(new_guesses,nsteps)
-
-        # get parameter results, removing nburn steps 
-        samples = sampler.get_chain(flat=True,discard=nburn)
+        # get parameters
         param_aves = []
         param_stds = []
-        for i in range(nparam):
+        print('Parameter results:')
+        for i in range(self.nparam):
             param_ave = (float(np.mean(samples[:,i])))
             param_aves.append(param_ave)
             param_std = (float(np.std(samples[:,i])))
             param_stds.append(param_std)
-            print(f'{param_names[i]} = {param_ave:.3f} +- {param_std:.3f}')
+            print(f'{self.param_names[i]} = {param_ave:.3f} +- {param_std:.3f}')
 
         # do corner plotting
         fig = corner.corner(samples,
                             bins=40,
-                            labels=param_names)
-        plt.savefig('corner')
-
-        # print acceptance fraction and autocorr time
-        print("Mean acceptance fraction: {0:.3f}".format(
-              np.mean(sampler.acceptance_fraction)))
-        print("Mean autocorrelation time: {0:.3f} steps".format(
-              np.mean(sampler.get_autocorr_time())))
+                            labels=self.param_names)
+        plt.savefig(f'{plotname}.png')
         
-        # return parameter values
         return param_aves,param_stds
     
-    def plot_spectrum(self,param_guesses,param_aves,param_stds):
-        """ plot spectrum with uncertainty using the parameter mean values 
-        and the parameter standard deviations
+    def _get_spectra(self,model,param_aves,param_stds,
+                     cutoff=None):
+        """ get spectra from the model params
 
         Parameters
         ----------
-        param_guesses : list[float]
-            initial guesses for the parameters fed into mcmc
+        model : callable 
+            set to the model function
         param_aves : list[float]
             mean values for the parameters
         param_stds : list[float]
             standard deviation values for the parameters
+        cutoff : int
+            number of unphysical values 
+            to cut off from the end of the spectrum
+
+        Returns
+        -------
+        mean_spectrum : list[float]
+            the solution spectrum
+        max_spectrum : list[float]
+            the upper bound spectrum
+        min_spectrum : list[float]
+            the lower bound spectrum
+        guess_spectrum : list[float]
+            the prior guess spectrum
         """
-        # convert lists -> arrays and calculate max/min parameters
+        # shorthand for the group structure
+        gs = self.group_structure
+
+        # calculate max/min parameters and convert all to tuples
         param_ave_array = np.array(param_aves)
         param_std_array = np.array(param_stds)
-        param_max_array = param_ave_array + param_std_array
-        param_min_array = param_ave_array - param_std_array
+        theta_max = tuple(param_ave_array + param_std_array)
+        theta_min = tuple(param_ave_array - param_std_array)
+        theta_guesses = tuple(self.guesses)
 
-        # convert param arrays to tuples
-        theta = tuple(param_ave_array)
-        theta_max = tuple(param_max_array)
-        theta_min = tuple(param_min_array)
-        theta_guesses = tuple(param_guesses)
+        # calculate mean, max, min, initial guess spectra
+        max_spectrum = [model(theta_max,i) for i in gs]
+        min_spectrum = [model(theta_min,i) for i in gs]
+        guess_spectrum = [model(theta_guesses,i) for i in gs]
+        mean_spectrum = [np.mean([i,j]) for i,j in zip(min_spectrum,max_spectrum)]
 
-        # calculate mean, max and min spectra
-        # and the spectrum from the initial guess parameters
-        mean_spectrum = [self.model(theta,i) 
-                         for i in self.group_structure]
-        max_spectrum = [self.model(theta_max,i) 
-                        for i in self.group_structure]
-        min_spectrum = [self.model(theta_min,i) 
-                        for i in self.group_structure]
-        guess_spectrum = [self.model(theta_guesses,i) 
-                          for i in self.group_structure]
+        # remove preset unphysical values from spectra
+        if cutoff != None:
+            for i in range(len(gs)-cutoff,len(gs)):
+                mean_spectrum[i]=0
+                max_spectrum[i]=0
+                min_spectrum[i]=0
+                guess_spectrum[i]=0
+
+        return (mean_spectrum,max_spectrum,
+                min_spectrum,guess_spectrum)
+    
+    def plot_simple_spectrum(self,model,param_aves,param_stds,
+                             cutoff=None,plotname='spectrum'):
+        """ plot solution spectrum+uncertainty and initial
+        parameter guess spectrum. simple linear plot
+
+        Parameters
+        ----------
+        model : callable 
+            set to the model function
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
+        cutoff : int
+            number of unphysical values 
+            to cut off from the end of the spectrum
+        plotname : str
+            name of the spectrum plot
+        """
+        # get all the spectra and the group structure
+        gs = self.group_structure
+        (mean_spectrum,max_spectrum,
+        min_spectrum,guess_spectrum) = self._get_spectra(model,
+                                                         param_aves,
+                                                         param_stds,
+                                                         cutoff)
 
         # plot solution and prior spectrum guess
-        fig, ax = plt.subplots(1,figsize=(8,6))
-        ax.step(self.group_structure, guess_spectrum,
-                label='Initial guess',c='blue',where='pre')
-        ax.step(self.group_structure, mean_spectrum,
+        fig, ax = plt.subplots(1,figsize=(10,6))
+        ax.step(gs, guess_spectrum,
+                label='Prior guess',c='blue',where='pre')
+        ax.step(gs, mean_spectrum,
                 label='Solution',c='magenta',where='pre')
-        ax.fill_between(self.group_structure, min_spectrum,max_spectrum,
+        ax.fill_between(gs, min_spectrum,max_spectrum,
                         alpha=0.25,step='pre')
         #ax.set_xscale('log')
-        ax.set_xlim(1,20)
+        ax.set_xlim(0,18)
         ax.set_xlabel('Neutron energy (MeV)')
         ax.set_yscale('log')
-        ax.set_ylim(1e3,1e8)
+        ax.set_ylim(1e0,1e7)
         ax.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)')
         ax.grid()
-        ax.legend(loc="upper left",frameon=True, fontsize=18,fancybox=False,facecolor='white')
-        plt.savefig('spectrum.png')
+        ax.legend(loc="lower left",frameon=True, fontsize=18,
+                  fancybox=False,facecolor='white')
+        fig.tight_layout()
+        plt.savefig(f'{plotname}.png')
+
+
+    def plot_split_spectrum(self,model,param_aves,param_stds,
+                             cutoff=None,plotname='spectrum'):
+        """ plot solution spectrum+uncertainty and initial
+        parameter guess spectrum. split log-linear plot
+
+        Parameters
+        ----------
+        model : callable 
+            set to the model function
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
+        cutoff : int
+            number of unphysical values 
+            to cut off from the end of the spectrum
+        plotname : str
+            name of the spectrum plot
+        """
+
+        # get all the spectra and the group structure
+        gs = self.group_structure
+        (mean_spectrum,max_spectrum,
+        min_spectrum,guess_spectrum) = self._get_spectra(model,
+                                                         param_aves,
+                                                         param_stds,
+                                                         cutoff)
+
+        fig, ((ax1,ax2),(ax3,ax4)) = (plt.subplots(2,2,figsize=(13,7),
+                                    gridspec_kw={'width_ratios': [1, 2],
+                                                 'height_ratios': [4, 1]}))
+        # plot a priori, solution and uncertainty 
+        ax1.step(gs, guess_spectrum, label='Prior guess',where='pre',c='blue')
+        ax2.step(gs, guess_spectrum, label='Prior guess',where='pre',c='blue')
+        ax1.step(gs, mean_spectrum, label='Solution', where='pre',c='magenta')
+        ax2.step(gs, mean_spectrum, label='Solution', where='pre',c='magenta')
+        ax1.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.25)
+        ax2.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.25)
+
+        # plot C/T graph with uncertainty
+        soln_ct = np.array(mean_spectrum)/np.array(guess_spectrum)
+        min_ct = np.array(min_spectrum)/np.array(guess_spectrum)
+        max_ct = np.array(max_spectrum)/np.array(guess_spectrum)
+        ax3.step(gs, soln_ct, where='pre',c='magenta')
+        ax4.step(gs, soln_ct, where='pre',c='magenta')
+        ax3.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.25)
+        ax4.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.25)
+        ax3.step(gs[:-cutoff], np.ones(len(gs[:-cutoff])),where='post',c='blue')
+        ax4.step(gs[:-cutoff], np.ones(len(gs[:-cutoff])),where='post',c='blue')
+
+        # plotting parameters for all 4 graphs 
+        ax1.set_xscale('log')
+        ax1.set_yscale('log')
+        ax1.set_ylim(1e2,1e7)
+        ax1.set_xlim(1e-8,1e0)
+        ax1.tick_params(axis='x',labelbottom=False)
+        ax1.grid()
+        ax1.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)',y=0.5)
+        ax2.set_yscale('log')
+        ax2.set_ylim(1e2,1e7)
+        ax2.set_xlim(1,16)
+        ax2.tick_params(axis='y',labelleft=False)
+        ax2.tick_params(axis='x',labelbottom=False)
+        ax2.grid()
+        ax2.legend(loc="upper left", bbox_to_anchor=(0.03, 0.263), borderaxespad=0,
+                   frameon=True, fontsize=18,fancybox=False,facecolor='white',framealpha=1)
+        ax3.set_xscale('log')
+        ax3.set_yscale('log')
+        ax3.set_ylim(1e-1,1e1)
+        ax3.set_xlim(1e-8,1e0)
+        ax3.grid()
+        ax3.set_ylabel('C/M',y=0.5)
+        ax4.set_yscale('log')
+        ax4.set_ylim(1e-1,1e1)
+        ax4.set_xlim(1,16)
+        ax4.tick_params(axis='y',labelleft=False)
+        ax4.grid()
+        fig.supxlabel('Neutron energy (MeV)',y=0.04)
+        fig.tight_layout()
+        plt.show
+        plt.subplots_adjust(wspace=0.04, hspace=0.1)
+        plt.savefig(f'{plotname}.png')

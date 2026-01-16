@@ -17,6 +17,8 @@ from nfoils.history import IrradTimeline
 #  atomic mass (g/mol)
 #  total relative uncertainty on all the above
 target_json = 'data/target'
+
+# load target data
 analyse_target = TargetAnalysis(target_json)
 
 # be7 activity (Bq) at end of irradiation and relative uncertainty
@@ -25,14 +27,14 @@ isotope_activity = [1e3,0.01]
 isotope_halflife = 53.22*(24*3600)
 
 # irradiation experiment timeline details
-# faraday cup current array in uA
+# faraday cup current list in uA
 current_list = [8]
 # relative uncertainty on the current
 current_rel_uncert = 0.06
-# timing array in seconds
+# timing list in seconds
 timing_list  = [120]
 
-# cross-section for 7Li()7Be in mb and relative uncertainty 
+# cross-section for 7Li()7Be in mb and relative uncertainty in a list
 # for the particle energy in the middle of target
 cross_section = [50,0.01]
 
@@ -46,7 +48,7 @@ c_factor,rel_uncert = analyse_target.run(isotope_activity,isotope_halflife,
                                          energy_rel_uncert)
 
 
-# example for rescaling an input value by the correction:
+# example to rescale an input value by the correction:
 
 # example value you want to rescale i.e. neutron flux (n/cm2/src p)
 foil_flux = 1e-05 
@@ -59,15 +61,14 @@ rescaled_flux = foil_flux*c_factor*source_p_per_s_per_ua
 print(f"rescaled flux is {rescaled_flux} n/cm2/s/uA +- {rel_uncert*100}%")
 
 
-# write a fispact history in units of particles/s on the target:
+# example to write a fispact history in units of particles/s on the target:
 
 # rescale cup currents to target currents
 target_current_list = [i*c_factor for i in current_list]
 
-# set fispact irrad hist filename
-output_filename = "fispact_history_target"
+# load current and timing data
+history = IrradTimeline(target_current_list,timing_list)
 
 # convert target currents into target rate (particles/s) and print 
 # a fispact history with them in 
-history = IrradTimeline(target_current_list,timing_list)
-history.fispact_hist_writer(source_p_per_s_per_ua,output_filename)
+history.fispact_hist_writer(source_p_per_s_per_ua)

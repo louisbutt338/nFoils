@@ -11,11 +11,10 @@ from nfoils.fitting import CurveFitter
 input_data = "data/efficiencies"
 
 # interpolation energy range in keV, as [start,end].
-# for interpolating the model fit on 
-# and finding the average uncertainty over this range
+# for doing the model fit and finding the average uncertainty
 interp_range = [100,1800]
 
-# initialise class
+# load efficiency data and set energy range
 curve_fitter = CurveFitter(input_data,interp_range)
 
 # number of monte carlo samples you want to run

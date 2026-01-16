@@ -10,7 +10,7 @@ from nfoils.history import RateConversion
 #  column 2: measured count rate in /s
 filename = "data/rate"
 
-# initialise
+# load initial rate data
 history = RateConversion(filename)
 
 # enter conversion factor to multiply by the rate values

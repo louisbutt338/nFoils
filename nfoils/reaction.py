@@ -270,20 +270,19 @@ class PostprocessReactions(NuclearData):
             # plot uncertainty data
             if array_of_arrays is not None:
                 ek_mev = [(i/1e6) for i in self.ek]
-                for m in range(len(array_of_arrays)):
+                for std in array_of_arrays:
                     c = next(color)
-                    standard_dev = array_of_arrays[m]
-                    ax1.stairs(standard_dev, ek_mev,
+                    ax1.stairs(std, ek_mev,
                                label=f'{reaction}', color=c, lw=1.5)
-                    ax2.stairs(standard_dev, ek_mev,
+                    ax2.stairs(std, ek_mev,
                                label=f'{reaction}', color=c, lw=1.5)
                     
                     # export data to one csv file
                     #with open('response_function_uncertainty.csv', 'a', newline='') as f:
                     #    writer = csv.writer(f, delimiter=',')
-                    #    writer.writerow(standard_dev*(1/100))
+                    #    writer.writerow(std*(1/100))
                     # add data to txt file list
-                    big_response_function_uncert_list.append(standard_dev)
+                    big_response_function_uncert_list.append(std)
             else:
                 continue
 
@@ -351,11 +350,10 @@ class PostprocessReactions(NuclearData):
             # plot data
             if array_of_arrays is not None:
                 ek_mev = [(i/1e6) for i in self.ek]
-                for m in range(len(array_of_arrays)):
+                for xs in array_of_arrays:
                     c = next(color)
-                    cross_section = array_of_arrays[m]
                     response_function = self._calculate_response_function(
-                        cross_section, density, mass, abundance,
+                        xs, density, mass, abundance,
                         atomic_mass)
                     ax1.stairs(response_function, ek_mev,
                                label=f'{reaction_label}', color=c, lw=1.5)
@@ -499,7 +497,8 @@ class IsotopicSpectrumUncertainty(NuclearData):
         percent_uncertainty = np.dot(uncertainties, xs)
         return percent_uncertainty
     
-    def get_isotopic_uncertainties(self, spectrum_file, datafile, cutoffs):
+    def get_isotopic_uncertainties(self, spectrum_file, datafile,
+                                   cutoffs=None):
         """ Get all the uncertainties for your reactions
         and prints the results
 
@@ -511,12 +510,21 @@ class IsotopicSpectrumUncertainty(NuclearData):
             Name of the json datafile
         cutoffs : list[int]
             how many vals to cut off at the end of the group structure
-            as there is no spectrum there i.e. [1,5] cuts off 1 from bottom
-            and 5 from top
+            if there is no spectrum there i.e. [1,5] cuts off 1 from the 
+            bottom and 5 from the top of the group structure
         """
-        # unpack the data and do cutoffs from the energy grid
+        # unpack the data
         data_lists = self._unpack_datafile(datafile)
-        self.ek = self.ek[cutoffs[0]:-cutoffs[1]]
+
+        # do cutoffs from the energy grid if requested
+        if cutoffs==None:
+            spectrum_uncert_array = (self._read_spectrum_uncert
+                                     (spectrum_file))
+        else:
+            self.ek = self.ek[cutoffs[0]:-cutoffs[1]]
+            spectrum_uncert_array = (self._read_spectrum_uncert
+                                     (spectrum_file)
+                                     [cutoffs[0]:-cutoffs[1]])
 
         # loop through specified materials and MT values
         uncertainties = []
@@ -528,12 +536,8 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
             # get the uncertainties for each
             if array_of_arrays is not None:
-                for m in range(len(array_of_arrays)):
-                    cross_section = array_of_arrays[m]
-                    norm_cross_section = (self._normalise_xs(cross_section))
-                    spectrum_uncert_array = (self._read_spectrum_uncert
-                                             (spectrum_file)
-                                             [cutoffs[0]:-cutoffs[1]])
+                for xs in array_of_arrays:
+                    norm_cross_section = (self._normalise_xs(xs))
                     uncertainty = self._isotopic_uncertainty(
                         spectrum_uncert_array,norm_cross_section)
                     uncertainties.append(uncertainty)

@@ -101,7 +101,8 @@ class IrradTimeline:
             i*pps_per_ua for i in self.current_list]
         return target_particles_per_s
 
-    def fispact_hist_writer(self,pps_per_ua,output_file):
+    def fispact_hist_writer(self,pps_per_ua,
+                            output_file='fispact_history'):
         """ write a fispact irradiation history to file, in units of 
         charged particles per s
 
@@ -111,12 +112,13 @@ class IrradTimeline:
             float value for converting from currents in uA to
             charged particles per s
         output_file : str
-            desired filepath to the output fispact irradiation history
+            desired filepath to the output fispact irradiation history 
+            file name
         """
         print('writing fispact irradiation history...')
         output_txt_file = f"{output_file}.txt"
         with open(output_txt_file, 'w') as irrad_history_file:
-            for i in range(len(self.current_list)):
+            for i,_ in enumerate(self.current_list):
                 irrad_history_file.writelines(
                     f"FLUX {self._flux_conversion(pps_per_ua)[i]} \n")
                 irrad_history_file.writelines(

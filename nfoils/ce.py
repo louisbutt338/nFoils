@@ -297,7 +297,7 @@ class CEPlotter:
                     for i in isotope_list]
         calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
                     for i in isotope_list]
-        
+
         if len(libraries) in (2,3):
             calc_a_2 = [model_results[i]["activities"][1]
                         for i in isotope_list]
@@ -368,7 +368,7 @@ class CEPlotter:
         #print some results
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         for i,j in enumerate(new_isotope_list):
-            print(f'********* {j} C/E results')
+            #print(f'********* {j} C/E results')
             #print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
             #      f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
             #      f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")

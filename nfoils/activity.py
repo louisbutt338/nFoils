@@ -674,7 +674,7 @@ class ReactionRateRetrieval:
             list of the uncertainties on the non-interfering reaction rates
         """
         # list the three filenames and three datasets
-        filename_list = ['isotopes','reaction_rates','reaction_rate_uncerts']
+        filename_list = ['isotopes','reaction_rates','reaction_rate_uncertainties']
         results_list_of_lists = [isotope_list,rr_list,rr_u_list]
 
         # loop through the datasets and dump the data in a txt for each

@@ -48,8 +48,8 @@ class BayesianUnfolding:
         # set group structure attribute and convert to MeV
         # and remove lowest energy value so RF/flux values line up
         group_structure_path = files_paths["group_structure"]
-        self._group_structure = (np.fromfile(group_structure_path, sep=","))
-        self._group_structure = self._group_structure[1:] * 1e-6
+        self._group_structure_raw = (np.fromfile(group_structure_path, sep=","))
+        self._group_structure = self._group_structure_raw[1:] * 1e-6
 
         # set reaction rate attributes
         with open(files_paths["reaction_rates"]) as file:
@@ -203,11 +203,11 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         non_scaled_peak = stats.norm.pdf(mean,loc=mean,scale=sigma)
         scale = peak / non_scaled_peak
-        flux = scale*stats.norm.pdf(np.sum(energy),loc=mean,scale=sigma)
+        flux = scale*stats.norm.pdf(energy,loc=mean,scale=sigma)
         return flux
     
     def skewgaussian(self,mean,sigma,peak,skew,energy):
@@ -230,11 +230,11 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         non_scaled_peak = stats.skewnorm.pdf(mean,skew,loc=mean,scale=sigma)
         scale = peak / non_scaled_peak
-        flux = scale*stats.skewnorm.pdf(np.sum(energy),skew,loc=mean,scale=sigma)
+        flux = scale*stats.skewnorm.pdf(energy,skew,loc=mean,scale=sigma)
         return flux
 
     def lognormal(self,mode,sigma,peak,energy):
@@ -255,12 +255,12 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         mu = np.log(mode) + sigma**2
-        non_scaled_peak = np.sum(stats.lognorm.pdf(mode,s=sigma,scale=np.exp(mu)))
+        non_scaled_peak = stats.lognorm.pdf(mode,s=sigma,scale=np.exp(mu))
         scale = peak / non_scaled_peak
-        flux= scale * stats.lognorm.pdf(np.sum(energy),s=sigma,scale=np.exp(mu))
+        flux= scale * stats.lognorm.pdf(energy,s=sigma,scale=np.exp(mu))
         return flux
     
     def gamma(self,alpha,beta,peak,energy):
@@ -281,12 +281,12 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         mode = (alpha-1)*beta
-        non_scaled_peak = (stats.gamma.pdf(mode,a=alpha,scale=beta))
+        non_scaled_peak = stats.gamma.pdf(mode,a=alpha,scale=beta)
         scale=peak/non_scaled_peak
-        flux = scale * stats.gamma.pdf(np.sum(energy),a=alpha,scale=beta)
+        flux = scale * stats.gamma.pdf(energy,a=alpha,scale=beta)
         return flux
     
     def weibull(self,alpha,beta,peak,energy):
@@ -307,12 +307,12 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         mode = beta*((alpha-1)/beta)**(1/alpha)
         non_scaled_peak = stats.weibull_min.pdf(mode,c=alpha,scale=beta)
         scale=peak/non_scaled_peak
-        flux = scale * stats.weibull_min.pdf(np.sum(energy),c=alpha,scale=beta)
+        flux = scale * stats.weibull_min.pdf(energy,c=alpha,scale=beta)
         return flux
     
     def fission(self,alpha,beta,peak,energy):
@@ -333,14 +333,14 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         mode_energy = alpha*beta
         non_scaled_peak = ((mode_energy**alpha)*
                            np.exp(-mode_energy/beta))
         scale = peak/non_scaled_peak
-        flux=(scale*(np.sum(energy)**alpha)*
-              np.exp(-np.sum(energy)/beta))
+        flux=((scale*(energy)**alpha)*
+              np.exp(-energy/beta))
         return flux
     
     def fission_openmc(self,alpha,beta,peak,energy):
@@ -361,12 +361,12 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         front = (2*np.exp(-0.25*alpha*beta)/
                  np.sqrt(np.pi*beta*(alpha**3)))
-        watt_function = (np.exp(-np.sum(energy)/alpha)*
-                         np.sinh(np.sqrt(beta*np.sum(energy))))
+        watt_function = (np.exp(-energy/alpha)*
+                         np.sinh(np.sqrt(beta*energy)))
         flux = peak*front*watt_function
         return flux
     
@@ -386,13 +386,12 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
-        non_scaled_peak = ((1/evap_temp)*
-                           np.exp(-1))
+        non_scaled_peak = ((1/evap_temp)* np.exp(-1))
         scale = peak/non_scaled_peak
-        flux=(scale*(np.sum(energy)/(evap_temp**2))*
-              np.exp(-np.sum(energy)/evap_temp))
+        flux=(scale*(energy/(evap_temp**2))*
+              np.exp(-energy/evap_temp))
         return flux
 
     def epithermal(self,alpha,beta,scale,e_limit,energy):
@@ -415,11 +414,11 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
-        term1 = 1-np.exp(-(np.sum(energy)/e_limit)**2)
-        term2 = np.sum(energy)**(alpha-1)
-        term3 = np.exp(-np.sum(energy)/beta)
+        term1 = 1-np.exp(-(energy/e_limit)**2)
+        term2 = energy**(alpha-1)
+        term3 = np.exp(-energy/beta)
         flux = scale*term1*term2*term3
         return flux
     
@@ -439,12 +438,12 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
         non_scaled_peak = (1/mean)*np.exp(-1)
         scale=peak/non_scaled_peak
-        flux=(scale*(np.sum(energy)/mean**2)
-              *np.exp(-np.sum(energy)/mean))
+        flux=(scale*(energy/mean**2)
+              *np.exp(-energy/mean))
         return flux
     
     def powerlaw(self,exponent,scale,energy):
@@ -463,9 +462,9 @@ class BayesianUnfolding:
         Returns
         -------
         flux : float
-            neutron flux for the given energies
+            neutron flux for the given energy
         """
-        flux = scale * np.sum(np.power(energy,exponent))
+        flux = scale * (np.power(energy,exponent))
         return flux
     
     # pre-set probability distributions for likelihood and posterior
@@ -492,8 +491,8 @@ class BayesianUnfolding:
         log_likelihood : float
             log likelihood for reaction rate measurements
         """
-        flux_model_arr = [model(theta,i) for i in self.group_structure]
-        rr_model_arr = np.array([np.inner(flux_model_arr, i) 
+        model_for_gs = [model(theta,i) for i in self.group_structure]
+        rr_model_arr = np.array([np.inner(model_for_gs, i) 
                                  for i in response])
         rr_arr = np.concatenate(rr)
         sigma_rr_arr = np.concatenate(sigma_rr)
@@ -717,8 +716,30 @@ class BayesianUnfolding:
         
         return param_aves,param_stds
     
-    def _get_spectra(self,model,param_aves,param_stds,
-                     cutoff=None):
+    def _lethargy_conv(self,spectrum,group_structure):
+        """ convert a spectrum into lethargy spectrum
+
+        Parameters
+        ----------
+        spectrum : list[float]
+            spectrum in n/cm2/s (length n)
+        group_structure : list[float]
+            group structure in MeV (length n+1)
+        
+        Returns
+        -------
+        spectrum_leth : list[float]
+            the lethargy specturm
+        """
+        spectrum_leth = []
+        for i,j in enumerate(spectrum):
+            e_u = group_structure[i+1]
+            e_l = group_structure[i]
+            leth = np.log(e_u/e_l)
+            spectrum_leth.append(j/leth)
+        return spectrum_leth
+    
+    def _get_spectra(self,model,param_aves,param_stds,cutoff=None):
         """ get spectra from the model params
 
         Parameters
@@ -744,8 +765,9 @@ class BayesianUnfolding:
         guess_spectrum : list[float]
             the prior guess spectrum
         """
-        # shorthand for the group structure
+        # shorthand for the unfolding and raw group structures
         gs = self.group_structure
+        gs_raw = self._group_structure_raw
 
         # calculate max/min parameters and convert all to tuples
         param_ave_array = np.array(param_aves)
@@ -758,7 +780,14 @@ class BayesianUnfolding:
         max_spectrum = [model(theta_max,i) for i in gs]
         min_spectrum = [model(theta_min,i) for i in gs]
         guess_spectrum = [model(theta_guesses,i) for i in gs]
-        mean_spectrum = [np.mean([i,j]) for i,j in zip(min_spectrum,max_spectrum)]
+        mean_spectrum = [np.mean([i,j]) for i,j 
+                         in zip(min_spectrum,max_spectrum)]
+        
+        # lethargise spectrums
+        #guess_spectrum = self._lethargy_conv(guess_spectrum,gs_raw)
+        #max_spectrum = self._lethargy_conv(max_spectrum,gs_raw)
+        #min_spectrum = self._lethargy_conv(min_spectrum,gs_raw)
+        #mean_spectrum = self._lethargy_conv(mean_spectrum,gs_raw)
 
         # remove preset unphysical values from spectra
         if cutoff != None:
@@ -807,10 +836,10 @@ class BayesianUnfolding:
         ax.fill_between(gs, min_spectrum,max_spectrum,
                         alpha=0.25,step='pre')
         #ax.set_xscale('log')
-        ax.set_xlim(0,18)
+        ax.set_xlim(0)
         ax.set_xlabel('Neutron energy (MeV)')
         ax.set_yscale('log')
-        ax.set_ylim(1e0,1e7)
+        ax.set_ylim(1e0)
         ax.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)')
         ax.grid()
         ax.legend(loc="lower left",frameon=True, fontsize=18,
@@ -820,7 +849,7 @@ class BayesianUnfolding:
 
 
     def plot_split_spectrum(self,model,param_aves,param_stds,
-                             cutoff=None,plotname='spectrum'):
+                            cutoff=None,plotname='spectrum'):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. split log-linear plot
 
@@ -846,6 +875,14 @@ class BayesianUnfolding:
                                                          param_aves,
                                                          param_stds,
                                                          cutoff)
+        
+        # cutoff swithces for the C/T graph
+        if cutoff!= None:
+            gs_cutoff = gs[:-cutoff]
+            ones_cutoff = np.ones(len(gs[:-cutoff]))
+        else:
+            gs_cutoff = gs
+            ones_cutoff = np.ones(len(gs))
 
         fig, ((ax1,ax2),(ax3,ax4)) = (plt.subplots(2,2,figsize=(13,7),
                                     gridspec_kw={'width_ratios': [1, 2],
@@ -866,20 +903,20 @@ class BayesianUnfolding:
         ax4.step(gs, soln_ct, where='pre',c='magenta')
         ax3.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.25)
         ax4.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.25)
-        ax3.step(gs[:-cutoff], np.ones(len(gs[:-cutoff])),where='post',c='blue')
-        ax4.step(gs[:-cutoff], np.ones(len(gs[:-cutoff])),where='post',c='blue')
+        ax3.step(gs_cutoff, ones_cutoff, where='post',c='blue')
+        ax4.step(gs_cutoff, ones_cutoff, where='post',c='blue')
 
         # plotting parameters for all 4 graphs 
         ax1.set_xscale('log')
         ax1.set_yscale('log')
-        ax1.set_ylim(1e2,1e7)
-        ax1.set_xlim(1e-8,1e0)
+        ax1.set_ylim(1e0)
+        ax1.set_xlim(1e-7,1e0)
         ax1.tick_params(axis='x',labelbottom=False)
         ax1.grid()
         ax1.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)',y=0.5)
         ax2.set_yscale('log')
-        ax2.set_ylim(1e2,1e7)
-        ax2.set_xlim(1,16)
+        ax2.set_ylim(1e0)
+        ax2.set_xlim(1)
         ax2.tick_params(axis='y',labelleft=False)
         ax2.tick_params(axis='x',labelbottom=False)
         ax2.grid()
@@ -888,12 +925,12 @@ class BayesianUnfolding:
         ax3.set_xscale('log')
         ax3.set_yscale('log')
         ax3.set_ylim(1e-1,1e1)
-        ax3.set_xlim(1e-8,1e0)
+        ax3.set_xlim(1e-7,1)
         ax3.grid()
         ax3.set_ylabel('C/M',y=0.5)
         ax4.set_yscale('log')
         ax4.set_ylim(1e-1,1e1)
-        ax4.set_xlim(1,16)
+        ax4.set_xlim(1)
         ax4.tick_params(axis='y',labelleft=False)
         ax4.grid()
         fig.supxlabel('Neutron energy (MeV)',y=0.04)
@@ -901,3 +938,4 @@ class BayesianUnfolding:
         plt.show
         plt.subplots_adjust(wspace=0.04, hspace=0.1)
         plt.savefig(f'{plotname}.png')
+

@@ -287,7 +287,7 @@ class PostprocessReactions(NuclearData):
                 continue
 
         # export data to txt file
-        np.savetxt(f"{self.results_folder}/reponse_matrix_uncertainties.txt",
+        np.savetxt(f"{self.results_folder}/response_matrix_uncertainties.txt",
                    big_response_function_uncert_list,
                    delimiter=',')
 
@@ -370,7 +370,7 @@ class PostprocessReactions(NuclearData):
                 continue
 
         # export data to txt file
-        np.savetxt(f"{self.results_folder}/reponse_matrix.txt",
+        np.savetxt(f"{self.results_folder}/response_matrix.txt",
                    big_response_functions_list,
                    delimiter=',')
 

@@ -34,6 +34,7 @@ def model(theta,energy):
     mean_energy = 14
 
     # create the model and return the flux
+    # can import generic distributions from the module or make your own
     flux = unfold.gaussian(mean_energy,sigma,peak,energy)
     return flux
 
@@ -80,6 +81,7 @@ nsteps = 5000
 #samples = unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,
 #                             rm_samples,nwalkers,nburn,nsteps)
 #params,stds = unfold.postpro_sampler(samples)
+#print('BIC =',unfold.bayesian_info_criterion(model,params,stds))
 #np.savetxt('results.txt', np.transpose([guesses,params,stds]))
 #unfold.plot_simple_spectrum(model,params,stds)
 
@@ -89,5 +91,6 @@ if __name__ == '__main__':
         samples=unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,
                                    rm_samples,nwalkers,nburn,nsteps,pool)
         params,stds = unfold.postpro_sampler(samples)
+        print('BIC =',unfold.get_bic(model,params,stds))
         np.savetxt('results.txt',np.transpose([guesses,params,stds]))
         unfold.plot_simple_spectrum(model,params,stds)

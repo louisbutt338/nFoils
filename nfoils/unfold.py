@@ -314,17 +314,15 @@ class BayesianUnfolding:
         scale=peak/non_scaled_peak
         flux = scale * stats.weibull_min.pdf(energy,c=alpha,scale=beta)
         return flux
-    
-    def fission(self,alpha,beta,peak,energy):
-        """ simple Watt fission peak distribution (modified maxwellian)
-        see FRUIT paper for details (doi.org/10.1016/j.nima.2007.07.033)
+
+    def maxwellian(self,temp,peak,energy):
+        """ simple maxwellian peak distribution
+        see www-ucjf.troja.mff.cuni.cz/cnr11/presentations_dir/kawano.pdf
 
         Parameters
         ----------
-        alpha : float
-            shape parameter for distribution. 0-1
-        beta : float
-            scale parameter for the distribution. 1-2
+        temp : float
+            mode/evaporation temperature (MeV) (t>0)
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
@@ -335,22 +333,20 @@ class BayesianUnfolding:
         flux : float
             neutron flux for the given energy
         """
-        mode_energy = alpha*beta
-        non_scaled_peak = ((mode_energy**alpha)*
-                           np.exp(-mode_energy/beta))
+        non_scaled_peak = np.sqrt(temp)* np.exp(-1)
         scale = peak/non_scaled_peak
-        flux=((scale*(energy)**alpha)*
-              np.exp(-energy/beta))
+        flux=(scale*np.sqrt(energy)*
+              np.exp(-energy/temp))
         return flux
     
-    def fission_openmc(self,alpha,beta,peak,energy):
-        """ more specific Watt fission distribution (modified maxwellian)
-        see openmc docs and romano paper (arxiv.org/html/2402.09454v1)
+    def watt(self,temp,beta,peak,energy):
+        """ Watt fission distribution (modified maxwellian)
+        see www-ucjf.troja.mff.cuni.cz/cnr11/presentations_dir/kawano.pdf
 
         Parameters
         ----------
-        alpha : float
-            shape parameter for distribution
+        temp : float
+            mode/evaporation temperature (MeV) (t>0)
         beta : float
             scale parameter for the distribution
         peak : float
@@ -363,20 +359,20 @@ class BayesianUnfolding:
         flux : float
             neutron flux for the given energy
         """
-        front = (2*np.exp(-0.25*alpha*beta)/
-                 np.sqrt(np.pi*beta*(alpha**3)))
-        watt_function = (np.exp(-energy/alpha)*
-                         np.sinh(np.sqrt(beta*energy)))
-        flux = peak*front*watt_function
+        non_scaled_peak = (np.sinh(np.sqrt(beta*energy))*
+                           np.exp(-1))
+        scale = peak/non_scaled_peak
+        flux = scale * (np.sinh(np.sqrt(beta*energy))*
+                        np.exp(-energy/temp))
         return flux
     
-    def evaporation(self,evap_temp,peak,energy):
-        """ evaporation peak distribution (modified maxwellian)
-        see FRUIT paper for details (doi.org/10.1016/j.nima.2007.07.033)
+    def weisskopf(self,temp,peak,energy):
+        """ weisskopf/evaporation peak distribution (modified maxwellian)
+        see www-ucjf.troja.mff.cuni.cz/cnr11/presentations_dir/kawano.pdf
 
         Parameters
         ----------
-        evap_temp : float
+        temp : float
             mode/evaporation temperature (MeV) (t>0)
         peak : float
             peak of the distribution (n/cm2/s)
@@ -388,10 +384,9 @@ class BayesianUnfolding:
         flux : float
             neutron flux for the given energy
         """
-        non_scaled_peak = ((1/evap_temp)* np.exp(-1))
+        non_scaled_peak = temp * np.exp(-1)
         scale = peak/non_scaled_peak
-        flux=(scale*(energy/(evap_temp**2))*
-              np.exp(-energy/evap_temp))
+        flux = (scale*energy*np.exp(-energy/temp))
         return flux
 
     def epithermal(self,alpha,beta,scale,e_limit,energy):
@@ -716,7 +711,7 @@ class BayesianUnfolding:
         
         return param_aves,param_stds
     
-    def _lethargy_conv(self,spectrum,group_structure):
+    def lethargy_conv(self,spectrum,group_structure):
         """ convert a spectrum into lethargy spectrum
 
         Parameters
@@ -739,7 +734,7 @@ class BayesianUnfolding:
             spectrum_leth.append(j/leth)
         return spectrum_leth
     
-    def _get_spectra(self,model,param_aves,param_stds,cutoff=None):
+    def get_spectra(self,model,param_aves,param_stds,cutoff=None):
         """ get spectra from the model params
 
         Parameters
@@ -765,9 +760,8 @@ class BayesianUnfolding:
         guess_spectrum : list[float]
             the prior guess spectrum
         """
-        # shorthand for the unfolding and raw group structures
+        # shorthand for the unfolding group structure
         gs = self.group_structure
-        gs_raw = self._group_structure_raw
 
         # calculate max/min parameters and convert all to tuples
         param_ave_array = np.array(param_aves)
@@ -782,12 +776,6 @@ class BayesianUnfolding:
         guess_spectrum = [model(theta_guesses,i) for i in gs]
         mean_spectrum = [np.mean([i,j]) for i,j 
                          in zip(min_spectrum,max_spectrum)]
-        
-        # lethargise spectrums
-        #guess_spectrum = self._lethargy_conv(guess_spectrum,gs_raw)
-        #max_spectrum = self._lethargy_conv(max_spectrum,gs_raw)
-        #min_spectrum = self._lethargy_conv(min_spectrum,gs_raw)
-        #mean_spectrum = self._lethargy_conv(mean_spectrum,gs_raw)
 
         # remove preset unphysical values from spectra
         if cutoff != None:
@@ -801,7 +789,7 @@ class BayesianUnfolding:
                 min_spectrum,guess_spectrum)
     
     def plot_simple_spectrum(self,model,param_aves,param_stds,
-                             cutoff=None,plotname='spectrum'):
+                             cutoff=None,plotname='spectrum_plot'):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. simple linear plot
 
@@ -822,10 +810,10 @@ class BayesianUnfolding:
         # get all the spectra and the group structure
         gs = self.group_structure
         (mean_spectrum,max_spectrum,
-        min_spectrum,guess_spectrum) = self._get_spectra(model,
-                                                         param_aves,
-                                                         param_stds,
-                                                         cutoff)
+        min_spectrum,guess_spectrum) = self.get_spectra(model,
+                                                        param_aves,
+                                                        param_stds,
+                                                        cutoff)
 
         # plot solution and prior spectrum guess
         fig, ax = plt.subplots(1,figsize=(10,6))
@@ -849,7 +837,7 @@ class BayesianUnfolding:
 
 
     def plot_split_spectrum(self,model,param_aves,param_stds,
-                            cutoff=None,plotname='spectrum'):
+                            cutoff=None,plotname='spectrum_plot'):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. split log-linear plot
 
@@ -871,10 +859,10 @@ class BayesianUnfolding:
         # get all the spectra and the group structure
         gs = self.group_structure
         (mean_spectrum,max_spectrum,
-        min_spectrum,guess_spectrum) = self._get_spectra(model,
-                                                         param_aves,
-                                                         param_stds,
-                                                         cutoff)
+        min_spectrum,guess_spectrum) = self.get_spectra(model,
+                                                        param_aves,
+                                                        param_stds,
+                                                        cutoff)
         
         # cutoff swithces for the C/T graph
         if cutoff!= None:
@@ -939,3 +927,68 @@ class BayesianUnfolding:
         plt.subplots_adjust(wspace=0.04, hspace=0.1)
         plt.savefig(f'{plotname}.png')
 
+    def dump_spectrum(self,model,param_aves,param_stds,
+                      cutoff=None,txtname='spectrum_text'):
+        """ dump spectrum for further analysis
+        """
+        # get all the spectra and the group structure
+        (mean_spectrum,max_spectrum,
+        min_spectrum,guess_spectrum) = self.get_spectra(model,
+                                                        param_aves,
+                                                        param_stds,
+                                                        cutoff)
+    
+        # get raw uncertainty and dump spectrum+uncert
+        print(f'total flux = {np.sum(mean_spectrum)} n/cm2/s')
+        uncert_spectrum=[(i-j) for i,j in zip(max_spectrum,mean_spectrum)]
+        np.savetxt(f'{txtname}.txt', 
+                   np.transpose([mean_spectrum,uncert_spectrum]))
+
+    def residual_sum_squares(self,spectrum):
+        """ find residual sum of sqaures for reaction rates, for 
+        a given converged unfolding model
+
+        
+        Parameters
+        ----------
+        spectrum : list[float]
+            final unfolded spectrum
+
+        Returns
+        -------
+        rss : float
+            residual sum of squares for unfolding model
+        """
+        pred_rates = [i*spectrum for i in self.response_matrix]
+        obs_rates = self.reaction_rates
+        squares_list = [(i-j)**2 for i,j in zip(obs_rates,pred_rates)]
+        rss = np.sum(squares_list)
+        return rss
+
+    def get_bic(self,model,param_aves,param_stds,cutoff=None):
+        """ calculate bayesian information criterion, 
+        for a given converged unfolding model
+
+        Parameters
+        ----------
+        model : callable 
+            set to the model function
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
+        cutoff : int
+            number of unphysical values 
+            to cut off from the end of the spectrum
+
+        Returns
+        -------
+        bic : float
+            Bayesian information criterion for model
+        """
+        mean_spectrum= self.get_spectra(model,param_aves,
+                                        param_stds,cutoff)[0]
+        rss = self.residual_sum_squares(mean_spectrum)
+        num_rrs = len(self.reaction_rates) 
+        bic = (num_rrs*np.log(rss/num_rrs) + self.nparam*np.log(num_rrs))
+        return bic

@@ -3,11 +3,12 @@
 Python package for the measurement of neutron spectra with activation foils. Contributors are welcome!
 
 Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. 
-Please reference this code appropriately in your work - accompanying papers to be provided ~2025~2026.
+Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ 
+when hell freezes over.
 
 ### Neutron spectrum measurement
 
-The main purpose of the package is for the probabilistic unfolding of complex fast neutron spectra 
+The main purpose of the package is for the probabilistic measurement of complex fast neutron spectra 
 (such as a fusion spectrum). This requires all input data should be considered as probability distributions, 
 e.g. foil response functions from nuclear data libraries and reaction rate calculations from foil 
 gamma spectrum measurements. It also requires an unfolding method (used to estimate the neutron spectrum) 
@@ -17,7 +18,7 @@ likelihood made up of the input data.
 
 To do this, the package includes modules for extracting and calculating response functions, 
 calibrating a gamma detector, calculating foil activities and reaction rates, and the Bayesian unfolding 
-program to measure the spectrum. Uncertainty on all inputs/outputs is carefully considered everywhere.
+program to measure the spectrum. Uncertainty on all inputs/outputs is considered everywhere.
 
 Tools for performing a flux estimation on a lithium target neutron source, 
 postprocessing of ASCII gamma spec files, and validating of a model/unfolded neutron spectrum by comparing 

@@ -441,16 +441,17 @@ class BayesianUnfolding:
               *np.exp(-energy/mean))
         return flux
     
-    def powerlaw(self,exponent,scale,energy):
+    def powerlaw(self,alpha,scale,energy):
         """ simple power law distribution. 
         Use for the low-energy neutron spectrum
         
         Parameters
         ----------
-        exponent: float
-            exponent/slope of the distribution
+        alpha: float
+            exponent/slope of the distribution 1-2
         scale: float
             scale of the distribution (n/cm2/s)
+            (hypothetical flux around 1 MeV)
         energy : float
             neutron energy MeV
 
@@ -459,7 +460,7 @@ class BayesianUnfolding:
         flux : float
             neutron flux for the given energy
         """
-        flux = scale * (np.power(energy,exponent))
+        flux = scale / (np.power(energy,(1-alpha)))
         return flux
     
     # pre-set probability distributions for likelihood and posterior
@@ -789,7 +790,7 @@ class BayesianUnfolding:
                 min_spectrum,guess_spectrum)
     
     def plot_simple_spectrum(self,model,param_aves,param_stds,
-                             cutoff=None,plotname='spectrum_plot'):
+                             cutoff=None,plotname='spectrum'):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. simple linear plot
 
@@ -837,7 +838,7 @@ class BayesianUnfolding:
 
 
     def plot_split_spectrum(self,model,param_aves,param_stds,
-                            cutoff=None,plotname='spectrum_plot'):
+                            cutoff=None,plotname='spectrum'):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. split log-linear plot
 
@@ -904,7 +905,7 @@ class BayesianUnfolding:
         ax1.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)',y=0.5)
         ax2.set_yscale('log')
         ax2.set_ylim(1e0)
-        ax2.set_xlim(1)
+        ax2.set_xlim(1,15)
         ax2.tick_params(axis='y',labelleft=False)
         ax2.tick_params(axis='x',labelbottom=False)
         ax2.grid()
@@ -918,7 +919,7 @@ class BayesianUnfolding:
         ax3.set_ylabel('C/M',y=0.5)
         ax4.set_yscale('log')
         ax4.set_ylim(1e-1,1e1)
-        ax4.set_xlim(1)
+        ax4.set_xlim(1,15)
         ax4.tick_params(axis='y',labelleft=False)
         ax4.grid()
         fig.supxlabel('Neutron energy (MeV)',y=0.04)
@@ -928,8 +929,22 @@ class BayesianUnfolding:
         plt.savefig(f'{plotname}.png')
 
     def dump_spectrum(self,model,param_aves,param_stds,
-                      cutoff=None,txtname='spectrum_text'):
+                      cutoff=None,txtname='spectrum'):
         """ dump spectrum for further analysis
+
+        Parameters
+        ----------
+        model : callable 
+            set to the model function
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
+        cutoff : int
+            number of unphysical values 
+            to cut off from the end of the spectrum
+        txtname : str
+            name of the dumped spectrum txt file
         """
         # get all the spectra and the group structure
         (mean_spectrum,max_spectrum,
@@ -937,7 +952,7 @@ class BayesianUnfolding:
                                                         param_aves,
                                                         param_stds,
                                                         cutoff)
-    
+
         # get raw uncertainty and dump spectrum+uncert
         print(f'total flux = {np.sum(mean_spectrum)} n/cm2/s')
         uncert_spectrum=[(i-j) for i,j in zip(max_spectrum,mean_spectrum)]

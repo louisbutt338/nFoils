@@ -1,4 +1,4 @@
-""" example for unfolding a 14 MeV peak spectrum 
+""" example for unfolding a broad 14 MeV peak spectrum 
 from reaction rates and response functions with uncertainties. 
 options for running in sequential or in parallel
 """
@@ -18,7 +18,7 @@ nparam = 2
 param_names = ['sigma','peak']
 
 # set initial guesses for each parameter
-guesses = [0.5, 1e5]
+guesses = [0.8, 1e5]
 
 # load the unfolding data and parameter info
 unfold = BayesianUnfolding(files_json,nparam,param_names,guesses)
@@ -68,7 +68,7 @@ log_posterior = unfold.log_posterior
 rm_samples = 1
 
 # number of MCMC walkers/chains
-nwalkers = 30
+nwalkers = 20
 
 # "burn-in" period to let chains stabilize
 nburn = 500

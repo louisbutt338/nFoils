@@ -1,6 +1,6 @@
 # nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
-Python package for the measurement of neutron spectra with activation foils. Contributors are welcome!
+Python toolkit for probabilistic neutron measurements with activation foils. Contributors are welcome!
 
 Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. 
 Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ 
@@ -8,17 +8,17 @@ when hell freezes over.
 
 ### Neutron spectrum measurement
 
-The main purpose of the package is for the probabilistic measurement of complex fast neutron spectra 
-(such as a fusion spectrum). This requires all input data should be considered as probability distributions, 
-e.g. foil response functions from nuclear data libraries and reaction rate calculations from foil 
-gamma spectrum measurements. It also requires an unfolding method (used to estimate the neutron spectrum) 
-which takes these distributions into account. For this we use Bayesian unfolding, sampling from a posterior 
-made up of the prior physics-informed guess for what the spectrum should look like parametrically, and the 
-likelihood made up of the input data. 
+The purpose of the package is the probabilistic measurement of complex fast neutron spectra 
+(such as a fusion reactor spectrum). This requires the calculation of probability distributions for the 
+measurement data e.g. foil response functions from nuclear data libraries, and reaction rates from foil 
+gamma spectrum measurements. It also requires an unfolding method which takes these distributions and uses them 
+to estimate a neutron spectrum distribution. For this we developed a Bayesian version of parametric unfolding, 
+which takes a physics-informed parameterisation of the spectrum as a prior, and a likelihood from the input data 
+dsitributions, and samples from the combined posterior.
 
 To do this, the package includes modules for extracting and calculating response functions, 
-calibrating a gamma detector, calculating foil activities and reaction rates, and the Bayesian unfolding 
-program to measure the spectrum. Uncertainty on all inputs/outputs is considered everywhere.
+calibrating a gamma detector, calculating foil activities and reaction rates, and the parametric unfolding 
+program to estimate the spectrum. Uncertainty on all inputs/outputs is considered everywhere.
 
 Tools for performing a flux estimation on a lithium target neutron source, 
 postprocessing of ASCII gamma spec files, and validating of a model/unfolded neutron spectrum by comparing 
@@ -27,7 +27,7 @@ FISPACT activity predictions with the experimental results are also included, as
 ## Installation
 
 First set up a virtual environment with prerequisites installed \*, 
-then install a development version of the package with the following commands:
+then install a development version of the package \** with the following commands:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
@@ -43,15 +43,18 @@ export NJOY=/path/to/njoy
 
 \* environment should include python>=3.11.0 pip>=25.0.0 setuptools>=64.0.0 git>=2.39.5 openblas>=0.3.30
 
+\** development version encouraged, so you can adapt the code to your heart's content 
+
 ## How to use
 
-Key example folders are:
+Suggest testing the examples and using them as a starting point for your own measurement. 
+Key example folders for a basic foil measurement are:
 
 - *extract_nuclear_data* for getting relevant foil response functions and uncertainties, 
 using [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016)
 - *calculate_foil_activities* for measuring foil activities from gamma spectrum peak
 measurements, using [actigamma](https://github.com/fispact/actigamma)
-- *unfold_neutron_spectrum* for Bayesian unfolding of a neutron spectrum, using 
+- *unfold_neutron_spectrum* for probabilistic unfolding of a neutron spectrum, using 
 [emcee](https://github.com/dfm/emcee) and [corner](https://github.com/dfm/corner.py)
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 

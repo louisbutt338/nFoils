@@ -1,0 +1,38 @@
+{
+    "Au196": {
+            "live_time": 418,
+            "datetime": [2024,3,28, 22,43,46],
+            "counts": [126.4,0,0,0,0],
+            "counts_uncertainty": [14.6,0,0,0,0],
+            "coincidence_factor": [0.952,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.005,
+            "density_gcm3": 19.30,
+            "foil_material": "au"
+        },
+    "Nb92m": {
+            "live_time": 24133,
+            "datetime": [2024,4,3, 10,16,14],
+            "counts": [3861,0,0,0,0],
+            "counts_uncertainty": [67.5,0,0,0,0],
+            "coincidence_factor": [0.8158,0,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 8.4,
+            "foil_material": "nb"
+        },
+    "Ni57": {
+            "live_time": 274848.9,
+            "datetime": [2024,3,29, 11,29,26],
+            "counts": [7419.6,0,0,0,0],
+            "counts_uncertainty": [101.676,0,0,0,0],
+            "coincidence_factor": [0.963,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.1,
+            "density_gcm3": 8.9,
+            "foil_material": "ni"
+        }
+}

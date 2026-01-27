@@ -28,7 +28,7 @@ class AsciiSummer:
             name of the ascii files WITHOUT the '_XXX' number on the end
         file_numbers : list[int]
             numbers of the first and last asciis to be summed
-            e.g. [0,2] will sum ASCIIS from 000 to 002
+            e.g. [0,2] will sum ASCIIS from '000' to '002'
         """
 
         # set attributes
@@ -37,12 +37,13 @@ class AsciiSummer:
         self.first_file_number =  file_numbers[0]
         self.last_file_number = file_numbers[1]
 
-    def _parse_ascii(self, spectrum_number):
+    def _parse_ascii(self, spectrum_path):
         """ parses the ascii spectrum data from the selected ascii file
 
         Parameters
         ----------
-        spectrum_number : str
+        spectrum_path : str
+            full path to the ascii file to be analysed
             number at the end of the .spe filename format as string
 
         Returns
@@ -54,8 +55,7 @@ class AsciiSummer:
         ascii_footer : list[str]
             text footer at bottom of the file
         """
-        filename = (f"{self.folder_path}/{self.ascii_filetag}"
-                    f"_{spectrum_number}.Spe")
+        filename = spectrum_path
         with open(filename,'r') as ascii_data_file:
             ascii_contents = ascii_data_file.readlines()
             ascii_header = ascii_contents[:12]
@@ -84,7 +84,9 @@ class AsciiSummer:
         for n in ascii_number_array:
             n_string = (f"{n :03d}")
             ascii_number_array_strings.append(n_string)
-            all_ascii_data.append(self._parse_ascii(n_string)[1])
+            filepath = (f"{self.folder_path}/{self.ascii_filetag}"
+                        f"_{n_string}.Spe")
+            all_ascii_data.append(self._parse_ascii(filepath)[1])
         ascii_histogram = [sum(x) for x in zip(*all_ascii_data)]
         return ascii_histogram,ascii_number_array_strings
     
@@ -97,7 +99,7 @@ class AsciiSummer:
             data in the middle of the ascii file
         """
         print("plotting summed ASCII...")
-        kev_array = [i*0.41653 for i in range(len(ascii_data))]
+        kev_array = [i*0.41653 for i,_ in enumerate(ascii_data)]
         fig, ax1 = plt.subplots(tight_layout=True)
         ax1.set_xlabel('Gamma energy (keV)') 
         ax1.set_ylabel('Counts')
@@ -118,16 +120,19 @@ class AsciiSummer:
         print('writing summed ASCII...')
         filename = f"{self.ascii_filetag}_summed.Spe"
         with open(filename,'w') as ascii_histogram_file:
-            for line in self._parse_ascii(self._loop_parser()[1][0])[0]:
+            first_spectrum_number = self._loop_parser()[1][0]
+            first_spectrum_path = (f"{self.folder_path}/{self.ascii_filetag}"
+                    f"_{first_spectrum_number}.Spe")
+            for line in self._parse_ascii(first_spectrum_path)[0]:
                 ascii_histogram_file.write(line)
             for line in self._loop_parser()[0]:
                 ascii_histogram_file.write(f"{line}\n")
-            for line in self._parse_ascii(self._loop_parser()[1][0])[2]:
+            for line in self._parse_ascii(first_spectrum_path)[2]:
                 ascii_histogram_file.write(line)
 
         # plot the summed ascii file in this case 
         # change 'summed' to plot another one
-        summed_spe_data = self._parse_ascii('summed')[1]
+        summed_spe_data = self._parse_ascii(filename)[1]
         self._plot_ascii(summed_spe_data)
 
 

@@ -1,35 +1,61 @@
 # nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
-Python toolkit for the characterisation of neutron spectra and validation of nuclear data with activation foils. In development - contact 
-LJB841@bham.ac.uk for further information or if anything is misbehaving
+Python toolkit for probabilistic neutron measurements with activation foils. Contributors are welcome!
 
-Dependent on [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016) for nuclear data extraction, 
-and [actigamma](https://github.com/fispact/actigamma) for radioactive isotope data. All worth checking out if you have got this far
+Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. 
+Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ 
+when hell freezes over.
 
-Please reference this repo appropriately in your work - accompanying paper to be provided late 2025
+### Neutron spectrum measurement
 
-## installing nFoils
+The purpose of the package is the probabilistic measurement of complex fast neutron spectra 
+(such as a fusion reactor spectrum). This requires the calculation of probability distributions for the 
+measurement data e.g. foil response functions from nuclear data libraries, and reaction rates from foil 
+gamma spectrum measurements. It also requires an unfolding method which takes these distributions and uses them 
+to estimate a neutron spectrum distribution. For this we developed a Bayesian version of parametric unfolding, 
+which takes a physics-informed parameterisation of the spectrum as a prior, and a likelihood from the input data 
+dsitributions, and samples from the combined posterior.
 
-first set up a virtual environment for the package with installation dependencies \* i.e. with conda:
-```
-conda create --name nfoils_env python pip setuptools openblas
-```
+To do this, the package includes modules for extracting and calculating response functions, 
+calibrating a gamma detector, calculating foil activities and reaction rates, and the parametric unfolding 
+program to estimate the spectrum. Uncertainty on all inputs/outputs is considered everywhere.
 
-then install the package i.e. for a non-editable version:
+Tools for performing a flux estimation on a lithium target neutron source, 
+postprocessing of ASCII gamma spec files, and validating of a model/unfolded neutron spectrum by comparing 
+FISPACT activity predictions with the experimental results are also included, as a special treat.
+
+## Installation
+
+First set up a virtual environment with prerequisites installed \*, 
+then install a development version of the package \** with the following commands:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -r requirements.txt .
+pip install -r requirements.txt -e .
 ```
 
-to use the reaction.py module, install NJOY2016 by following the installation instructions on the [NJOY website](https://docs.njoy21.io/install.html)
-
-then setting the path to the NJOY2016 executable:
+To enable nuclear data extraction, install NJOY2016 by following the installation instructions on the 
+[NJOY website](https://docs.njoy21.io/install.html), 
+then set the path to the NJOY2016 executable with the command:
 ```
 export NJOY=/path/to/njoy
 ```
 
-\*tested for python>=3.11.0 pip>=25.0.0 setuptools>=64.0.0 git>=2.39.5 openblas>=0.3.30
+\* environment should include python>=3.11.0 pip>=25.0.0 setuptools>=64.0.0 git>=2.39.5 openblas>=0.3.30
+
+\** development version encouraged, so you can adapt the code to your heart's content 
+
+## How to use
+
+Suggest testing the examples and using them as a starting point for your own measurement. 
+Key example folders for a basic foil measurement are:
+
+- *extract_nuclear_data* for getting relevant foil response functions and uncertainties, 
+using [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016)
+- *calculate_foil_activities* for measuring foil activities from gamma spectrum peak
+measurements, using [actigamma](https://github.com/fispact/actigamma)
+- *unfold_neutron_spectrum* for probabilistic unfolding of a neutron spectrum, using 
+[emcee](https://github.com/dfm/emcee) and [corner](https://github.com/dfm/corner.py)
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
 Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 

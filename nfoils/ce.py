@@ -1,8 +1,8 @@
 """ 
-module for performing c/e analysis: comparing one set of experimental results 
-calculated from gamma spec three sets of activation foil, with up to three
-sets of calculated activation results (to compare up to three different 
-nuclear data libraries)
+module for performing c/e analysis
+
+compares experimental results calculated from gamma spec measurements 
+with up to three sets of calculated results simulated using FISPACT
 """
 
 import json
@@ -18,7 +18,7 @@ class CEPlotter:
     analysis also
     """
 
-    def __init__(self, folder,plotname):
+    def __init__(self, folder,plotname='ce'):
         """ Initialise CEPlotter class
 
         Attributes
@@ -59,7 +59,7 @@ class CEPlotter:
             list of c/e values
         """
         c_over_e_list = []
-        for i in np.arange(len(isotope_list)):
+        for i,_ in enumerate(isotope_list):
             c_over_e =  ((foil_weight[i]*ssf[i]*calc_activities[i])/
                          exp_activities[i])
             c_over_e_list.append(c_over_e)
@@ -88,12 +88,12 @@ class CEPlotter:
             list of c/e uncertainties
         """
         c_over_e_uncerts = []
-        for i in np.arange(len(isotope_list)):
+        for i,_ in enumerate(isotope_list):
             fispact_error = calc_uncerts[i]
             c_error = np.sqrt(fispact_error**2 
                               +spectrum_flux_frac_uncerts[i]**2)
             e_error = exp_uncerts[i]/exp_activities[i]
-            ce_error =  np.sqrt( c_error**2 + e_error**2)
+            ce_error =  np.sqrt(c_error**2 + e_error**2)
             c_over_e_uncerts.append(ce_error)
         return c_over_e_uncerts
 
@@ -142,7 +142,7 @@ class CEPlotter:
         # plot the results and legend for library 1 on axis 1
         ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,
                         top=True)
-        ax1.set_xticks(np.arange(len(new_order)),labels=new_isotope_list,
+        ax1.set_xticks(range(len(new_order)),labels=new_isotope_list,
                        rotation=45)
         ax1.set_ylim(y_axis[0],y_axis[1])
         ax1.scatter (new_isotope_list,ce_results_1,s=40 , c='b',
@@ -218,10 +218,10 @@ class CEPlotter:
         """
         weights = []
         weighted_values = []
-        for i in np.arange(len(ce_value_array)):
-            if ce_value_array[i] > 0:
-                weight = 1/((ce_error_array[i])**2)
-                weighted_value = weight*ce_value_array[i]
+        for i,j in enumerate(ce_value_array):
+            if j > 0:
+                weight = 1/(ce_error_array[i]**2)
+                weighted_value = weight*j
                 weights.append(weight)
                 weighted_values.append(weighted_value)
         summed_weights = np.sum(weights)
@@ -230,9 +230,10 @@ class CEPlotter:
         weighted_ce_error = 1/np.sqrt(summed_weights)
         return weighted_ce_result,weighted_ce_error
     
-    def run(self,calc_results,exp_results,flux_norm,flux_error,
-            we_isotopes,libraries,new_order,plot_splitting,
-            y_axis,we_library,legend_x_coord):
+    def run(self,calc_results,exp_results,libraries,
+            flux_error,we_isotopes,we_library,new_order=None,
+            y_axis=[0.1,3],flux_norm=1,legend_x_coord=0.05,
+            plot_splitting=[]):
         """ read the c_results data and e_results data, 
         calculate C/E results and uncerts and plot 
         and do weighted average analysis
@@ -243,30 +244,30 @@ class CEPlotter:
             String name of the calculated results (without .json)
         exp_results : str
             String name of the experimental results (without .json)
-        flux_norm : float
-            Normalisation factor for the C/E results i.e. if you didn't
-            normalise the flux properly in your fispact calculation 
-            and need to do a bit more
+        libraries : list[str]
+            List of the three library names that you are using
         flux_error : float
             Fractional uncertainty on the flux estimation
         we_isotopes : list[int]
             specify isotopes you want to do weighted average analysis on 
             like [4,19] for isotopes 4-->19
-        libraries : list[str]
-            List of the three library names that you are using
-        new_order : list[int]
-            New order of the original isotopes to plot in 
-            i.e. [4,3,2,1,0] will reverse an original list of 5 isotopes
-        plot_splitting : list[float]
-            list of floats to add vertical lines on plot 
-            i.e. [3.5,4.5] adds lines in between 3rd,4th,5th isotopes
-        y_axis : list[float]
-            set y axis limits i.e. [0,2] for C/E = 0-->2
         we_library : str
             Name of the library to do the weighted ave analysis on 
             (must be one of 'libraries')
+        new_order : list[int]
+            New order of the original isotopes to plot in 
+            i.e. [4,3,2,1,0] will reverse an original list of 5 isotopes
+        y_axis : list[float]
+            set y axis limits for plot i.e. [0,2] for C/E = 0-->2
+        flux_norm : float
+            Normalisation factor for the C/E results i.e. if you didn't
+            normalise the flux properly in your fispact calculation 
+            and need to do a bit more
         legend_x_coord : float
-            X co ordinate to place the start of the legend on the plot
+            X co-ordinate to place the start of the legend on the plot
+        plot_splitting : list[float]
+            list of floats to add vertical lines to split plot up 
+            i.e. [3.5,4.5] adds lines in between the 3rd,4th,5th isotopes
         """
         with open(f"{self.folder}/{calc_results}.json") as model_results_path:
             model_results = json.load(model_results_path)
@@ -279,6 +280,10 @@ class CEPlotter:
                for i in isotope_list]
         isotope_list_mathmode = [model_results[i]["mathmode_name"]
                                  for i in isotope_list]
+        
+        # switches for re-ordering the isotope list
+        if new_order==None:
+            new_order = [i for i,_ in enumerate(isotope_list)]
 
         # get isotopic spectrum + flux uncertainties from c_results 
         spectrum_frac_u = [model_results[i]
@@ -292,7 +297,7 @@ class CEPlotter:
                     for i in isotope_list]
         calc_u_1 = [model_results[i]["fractional_uncertainties"][0]
                     for i in isotope_list]
-        
+
         if len(libraries) in (2,3):
             calc_a_2 = [model_results[i]["activities"][1]
                         for i in isotope_list]
@@ -321,7 +326,7 @@ class CEPlotter:
             exit()
 
         # extract experimental activities from e_results
-        # using average activities of included peaks
+        # using average activities of measured peaks
         # (used only first isotopes for bham p-li march 2024 experiment)
         exp_a = [np.mean(exp_results_data[key]["activities"])
                  for key in isotope_list]
@@ -362,8 +367,8 @@ class CEPlotter:
         
         #print some results
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
-        for i in range(len(new_isotope_list)):
-            print(f'********* {new_isotope_list[i]} C/E results')
+        for i,j in enumerate(new_isotope_list):
+            #print(f'********* {j} C/E results')
             #print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
             #      f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
             #      f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")

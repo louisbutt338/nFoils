@@ -1,0 +1,53 @@
+{
+    "Au196": {
+        "activities": [
+            5.511966042770194
+        ],
+        "activity_uncertainties": [
+            0.6737623128716912
+        ],
+        "pathway_probabilities": [
+            1
+        ],
+        "reaction_rates": [
+            592.7730316957826
+        ],
+        "reaction_rate_uncertainty": [
+            72.45837977669962
+        ]
+    },
+    "Nb92m": {
+        "activities": [
+            9.474389857923367
+        ],
+        "activity_uncertainties": [
+            0.41359140139627704
+        ],
+        "pathway_probabilities": [
+            1
+        ],
+        "reaction_rates": [
+            1669.5838991394185
+        ],
+        "reaction_rate_uncertainty": [
+            72.88337876620633
+        ]
+    },
+    "Ni57": {
+        "activities": [
+            3.8900139792992623
+        ],
+        "activity_uncertainties": [
+            0.1644786737640215
+        ],
+        "pathway_probabilities": [
+            1
+        ],
+        "reaction_rates": [
+            102.6947891533809
+        ],
+        "reaction_rate_uncertainty": [
+            4.34217018558546
+        ]
+    }
+}

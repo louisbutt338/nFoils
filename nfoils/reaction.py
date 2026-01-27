@@ -6,7 +6,7 @@ L Fiorito, Nuclear data uncertainty propagation to integral responses
 using SANDY, Annals of Nuclear Energy 101 (359-366) 2017 
 """
 
-import csv
+import os
 import json
 import numpy as np
 import sandy
@@ -76,7 +76,7 @@ class NuclearData:
             # use the get_errorr function to grab cov,std data
             endf_file = self._get_endf_file(material)
             ekws = dict(ek=self.ek)
-            err = endf_file.get_errorr(temperature=0, err=1, chi=False,
+            err = endf_file.get_errorr(temperature=300, err=1, chi=False,
                                        nubar=False, prod=False, mubar=False,
                                        errorr_kws=ekws,
                                        verbose=False)["errorr33"]
@@ -118,7 +118,7 @@ class NuclearData:
             endf_file = self._get_endf_file(material)
             ekws = dict(ek=self.ek, nuclide_production=True, iwt=3)
             gendf = endf_file.get_gendf(minimal_processing=True,
-                                        err=0.005, temperature=0,
+                                        err=0.005, temperature=300,
                                         groupr_kws=ekws)
             xs = gendf.get_xs(mt=mt).data.to_numpy()
             xs_array = np.array([j for i in xs for j in i])
@@ -237,9 +237,13 @@ class PostprocessReactions(NuclearData):
         """
         super().__init__(ek, library)
 
+        # make new folder to save the responses/uncertainties in
+        self.results_folder = os.path.join("for_unfolding")
+        os.makedirs(self.results_folder,exist_ok=True)
+
     def _export_and_plot_stdev(self, material_list, mt_values_list,
                                reaction_labels):
-        """ export stdev data to one csv and plot uncertainty percentages
+        """ export stdev data to one txt and plot uncertainty percentages
 
         Parameters
         ----------
@@ -250,8 +254,8 @@ class PostprocessReactions(NuclearData):
         reaction_labels : list[str]
             list of reaction labels for plot
         """
-        # inital figure and csv setting
-        open('uncertainty.csv', 'w').close()
+        # inital figure and txt list settings
+        big_response_function_uncert_list = []
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
@@ -266,19 +270,26 @@ class PostprocessReactions(NuclearData):
             # plot uncertainty data
             if array_of_arrays is not None:
                 ek_mev = [(i/1e6) for i in self.ek]
-                for mt_iterator in range(len(array_of_arrays)):
+                for std in array_of_arrays:
                     c = next(color)
-                    ax1.stairs(array_of_arrays[mt_iterator], ek_mev,
+                    ax1.stairs(std, ek_mev,
                                label=f'{reaction}', color=c, lw=1.5)
-                    ax2.stairs(array_of_arrays[mt_iterator], ek_mev,
+                    ax2.stairs(std, ek_mev,
                                label=f'{reaction}', color=c, lw=1.5)
-                # export data to one csv file
-                for xs_stdev in array_of_arrays:
-                    with open('uncertainty.csv', 'a', newline='') as f:
-                        writer = csv.writer(f, delimiter=',')
-                        writer.writerow(xs_stdev*(1/100))
+                    
+                    # export data to one csv file
+                    #with open('response_function_uncertainty.csv', 'a', newline='') as f:
+                    #    writer = csv.writer(f, delimiter=',')
+                    #    writer.writerow(std*(1/100))
+                    # add data to txt file list
+                    big_response_function_uncert_list.append(std)
             else:
                 continue
+
+        # export data to txt file
+        np.savetxt(f"{self.results_folder}/response_matrix_uncertainties.txt",
+                   big_response_function_uncert_list,
+                   delimiter=',')
 
         # final plotting params
         ax1.set_xlim(1e-8, 1e0)
@@ -299,7 +310,7 @@ class PostprocessReactions(NuclearData):
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
                             mass_list, abundance_list, atomic_mass_list,
                             labels_list):
-        """ export response function data to one csv and plots RFs
+        """ export response function data to one txt and plots RFs
 
         Parameters
         ----------
@@ -318,9 +329,10 @@ class PostprocessReactions(NuclearData):
         labels_list : list[str]
             list of reaction labels for plot
         """
-        # inital figure and csv setting
-        open('response_function.csv', 'w').close()
-        np.savetxt("group_structure.csv", self.ek.ravel()[None], delimiter=',')
+        # inital figure and txt list setting
+        big_response_functions_list = []
+        np.savetxt(f"{self.results_folder}/group_structure.txt",
+                   self.ek.ravel()[None],delimiter=',')
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
@@ -338,24 +350,30 @@ class PostprocessReactions(NuclearData):
             # plot data
             if array_of_arrays is not None:
                 ek_mev = [(i/1e6) for i in self.ek]
-                for m in range(len(array_of_arrays)):
+                for xs in array_of_arrays:
                     c = next(color)
-                    cross_section = array_of_arrays[m]
                     response_function = self._calculate_response_function(
-                        cross_section, density, mass, abundance,
+                        xs, density, mass, abundance,
                         atomic_mass)
                     ax1.stairs(response_function, ek_mev,
                                label=f'{reaction_label}', color=c, lw=1.5)
                     ax2.stairs(response_function, ek_mev,
                                label=f'{reaction_label}', color=c, lw=1.5)
 
-                # export data to one csv file
-                with open('response_function.csv', 'a', newline='') as f:
-                    writer = csv.writer(f, delimiter=',')
-                    writer.writerow(response_function)
+                ## export data to one csv file
+                #with open('response_function.csv', 'a', newline='') as f:
+                #    writer = csv.writer(f, delimiter=',')
+                #    writer.writerow(response_function)
+                # add data to txt file list
+                big_response_functions_list.append(response_function)
             else:
                 continue
-        
+
+        # export data to txt file
+        np.savetxt(f"{self.results_folder}/response_matrix.txt",
+                   big_response_functions_list,
+                   delimiter=',')
+
         # final plotting params
         ax1.set_xlim(1e-8, 1e0)
         ax1.set_ylim(1e-11, 1e3)
@@ -374,7 +392,8 @@ class PostprocessReactions(NuclearData):
         fig.savefig('response_function.png')
 
     def run_rf(self, datafile, labels):
-        """ extract response functions, dump in csv format and plot
+        """ extract response functions, dump in txt format for unfolding
+          and plot
 
         Parameters
         ----------
@@ -388,7 +407,8 @@ class PostprocessReactions(NuclearData):
         self._export_and_plot_rf(*data_lists, labels)
 
     def run_stdev(self, datafile, labels):
-        """ extract standard deviations, dump in csv format and plot
+        """ extract standard deviations, dump in txt format for unfolding
+          and plot
 
         Parameters
         ----------
@@ -477,7 +497,8 @@ class IsotopicSpectrumUncertainty(NuclearData):
         percent_uncertainty = np.dot(uncertainties, xs)
         return percent_uncertainty
     
-    def get_isotopic_uncertainties(self, spectrum_file, datafile, cutoffs):
+    def get_isotopic_uncertainties(self, spectrum_file, datafile,
+                                   cutoffs=None):
         """ Get all the uncertainties for your reactions
         and prints the results
 
@@ -489,12 +510,21 @@ class IsotopicSpectrumUncertainty(NuclearData):
             Name of the json datafile
         cutoffs : list[int]
             how many vals to cut off at the end of the group structure
-            as there is no spectrum there i.e. [1,5] cuts off 1 from bottom
-            and 5 from top
+            if there is no spectrum there i.e. [1,5] cuts off 1 from the 
+            bottom and 5 from the top of the group structure
         """
-        # unpack the data and do cutoffs from the energy grid
+        # unpack the data
         data_lists = self._unpack_datafile(datafile)
-        self.ek = self.ek[cutoffs[0]:-cutoffs[1]]
+
+        # do cutoffs from the energy grid if requested
+        if cutoffs==None:
+            spectrum_uncert_array = (self._read_spectrum_uncert
+                                     (spectrum_file))
+        else:
+            self.ek = self.ek[cutoffs[0]:-cutoffs[1]]
+            spectrum_uncert_array = (self._read_spectrum_uncert
+                                     (spectrum_file)
+                                     [cutoffs[0]:-cutoffs[1]])
 
         # loop through specified materials and MT values
         uncertainties = []
@@ -506,12 +536,8 @@ class IsotopicSpectrumUncertainty(NuclearData):
 
             # get the uncertainties for each
             if array_of_arrays is not None:
-                for m in range(len(array_of_arrays)):
-                    cross_section = array_of_arrays[m]
-                    norm_cross_section = (self._normalise_xs(cross_section))
-                    spectrum_uncert_array = (self._read_spectrum_uncert
-                                             (spectrum_file)
-                                             [cutoffs[0]:-cutoffs[1]])
+                for xs in array_of_arrays:
+                    norm_cross_section = (self._normalise_xs(xs))
                     uncertainty = self._isotopic_uncertainty(
                         spectrum_uncert_array,norm_cross_section)
                     uncertainties.append(uncertainty)

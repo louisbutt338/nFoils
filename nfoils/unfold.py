@@ -359,7 +359,7 @@ class BayesianUnfolding:
         flux : float
             neutron flux for the given energy
         """
-        non_scaled_peak = (np.sinh(np.sqrt(beta*energy))*
+        non_scaled_peak = (np.sinh(np.sqrt(beta*temp))*
                            np.exp(-1))
         scale = peak/non_scaled_peak
         flux = scale * (np.sinh(np.sqrt(beta*energy))*
@@ -647,6 +647,7 @@ class BayesianUnfolding:
         # call the sampler for each response matrix sample 
         # response functions will vary within their uncertainties
         # the reaction rate distribution is the likelihood
+        all_samples = []
         for i in range(rm_samples):
             print(f'running sampler for response matrix sample {i+1}')
             sampler = emcee.EnsembleSampler(nwalkers, self.nparam,
@@ -658,23 +659,27 @@ class BayesianUnfolding:
             # run the sampler for nsteps
             sampler.run_mcmc(new_guesses,nsteps)
 
-        # get sampler results, removing nburn steps 
-        samples = sampler.get_chain(flat=True,discard=nburn)
+            # print acceptance fraction and autocorr time
+            print("mean acceptance fraction: {0:.3f}".format(
+                  np.mean(sampler.acceptance_fraction)))
+            #print("mean autocorrelation time: {0:.3f} steps".format(
+            #      np.mean(sampler.get_autocorr_time())))
 
-        # print acceptance fraction and autocorr time
-        print("Mean acceptance fraction: {0:.3f}".format(
-              np.mean(sampler.acceptance_fraction)))
-        #print("Mean autocorrelation time: {0:.3f} steps".format(
-        #      np.mean(sampler.get_autocorr_time())))
+            # get sampler results and append, removing nburn steps 
+            samples = sampler.get_chain(flat=True,discard=nburn)
+            all_samples.append(samples)
 
-        return samples
+        # join sample results together 
+        concat_samples = np.concatenate(all_samples)
+
+        return concat_samples
     
     # postprocessing methods
 
     def postpro_sampler(self,samples,plotname='corner'):
         """ take results (samples) from run_mcmc. generate 
         a corner plot and output the values for parameters and
-        their standard deviations.
+        their covariance matrix.
         use corner plot to analyse the quality of your model/prior 
         and then try again with different inputs - iterative process
 
@@ -689,20 +694,23 @@ class BayesianUnfolding:
         -------
         param_aves : list[float]
             mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
+        param_cov_matrix : list[float]
+            covariance matrix for the parameters
         """
 
-        # get parameters
+        # get parameters - not stds
         param_aves = []
-        param_stds = []
+        #param_stds = []
         print('Parameter results:')
         for i in range(self.nparam):
             param_ave = (float(np.mean(samples[:,i])))
             param_aves.append(param_ave)
-            param_std = (float(np.std(samples[:,i])))
-            param_stds.append(param_std)
-            print(f'{self.param_names[i]} = {param_ave:.3f} +- {param_std:.3f}')
+            #param_std = (float(np.std(samples[:,i])))
+            #param_stds.append(param_std)
+            print(f'{self.param_names[i]} = {param_ave:.3f}')
+
+        # get cov matrix
+        param_cov_matrix = np.cov(samples, rowvar=False)
 
         # do corner plotting
         fig = corner.corner(samples,
@@ -710,7 +718,7 @@ class BayesianUnfolding:
                             labels=self.param_names)
         plt.savefig(f'{plotname}.png')
         
-        return param_aves,param_stds
+        return param_aves,param_cov_matrix
     
     def lethargy_conv(self,spectrum,group_structure):
         """ convert a spectrum into lethargy spectrum

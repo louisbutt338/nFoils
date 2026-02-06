@@ -135,7 +135,7 @@ class CEPlotter:
             X co ordinate to place the start of the legend on the plot
         """
         #initial plotting settings
-        fig, ax1 = plt.subplots(figsize=(16,6))
+        fig, ax1 = plt.subplots(figsize=(12,6))
         fig.supxlabel('Neutron-transmuted isotopes',x=0.5,y=-0.14) 
         fig.supylabel('C/E',x=0.06,y=0.5)
 

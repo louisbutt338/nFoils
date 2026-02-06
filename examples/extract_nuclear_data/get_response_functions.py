@@ -15,9 +15,8 @@ from nfoils.reaction import PostprocessReactions
 # or define your own group structure elsewhere and import it in
 ek=np.fromfile('data/group_structure.txt',sep=" ")
 
-# specify nuclear data library (check the list available in sandy)
-# e.g. endfb_71 endfb_80 jendl_40u jeff_33 tendl_21
-# make sure you have internet to get library data
+# specify nuclear data library
+# check which folders are available in data/endf
 library = 'tendl_21'
 
 # set path to a json with foil reaction data
@@ -36,9 +35,17 @@ reaction_labels = ["${}^{197}$Au(n,2n)",
                    "${}^{93}$Nb(n,2n)",
                    "${}^{58}$Ni(n,2n)"]
 
+# endf files, should be saved to data/endf/{library}
+# put in same order as reactions in reaction_file
+endf_files = [
+    'n_079-Au-197_7925.dat',
+    'n_041-Nb-93_4125.dat',
+    'n_028-Ni-58_2825.dat'
+]
+
 # load group structure and set library
 reactions = PostprocessReactions(ek,library)
 
 # get response functions and/or nuclear data uncertainties
-reactions.run_rf(data_file_name,reaction_labels)
-reactions.run_stdev(data_file_name,reaction_labels)
+reactions.run_rf(data_file_name,reaction_labels,endf_files)
+reactions.run_stdev(data_file_name,reaction_labels,endf_files)

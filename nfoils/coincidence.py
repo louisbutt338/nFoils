@@ -29,8 +29,7 @@ class SimpleCorrection:
         self.cps_json_name = cps_json_path
 
         # load the cps and energy data
-        with open(f'{cps_json_path}.json'
-                  ) as cps_data_file:
+        with open(cps_json_path) as cps_data_file:
             self.cps_data = json.load(cps_data_file)
 
         # set dicts for the rest of the code

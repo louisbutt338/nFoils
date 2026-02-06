@@ -39,8 +39,7 @@ class CurveFitter:
                                              interp_range[1],1)
         
         # load the datafile
-        with open(f'{input_data}.json'
-                  ) as json_datafile:
+        with open(input_data) as json_datafile:
             self.experimental_data = json.load(json_datafile)
 
         # get x,y,errors from the datafile

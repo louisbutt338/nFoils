@@ -30,8 +30,7 @@ class RateConversion:
         countrate : list[float]
             List of counts
         """
-        input_filepath = f"{self.filename}.txt"
-        with open(input_filepath,'r') as txt_data_file:
+        with open(self.filename,'r') as txt_data_file:
             txt_contents = txt_data_file.readlines()
             time = []
             countrate = []

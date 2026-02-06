@@ -8,7 +8,7 @@ from nfoils.history import RateConversion
 # should include:
 #  column 1: timespan of measurement in s
 #  column 2: measured count rate in /s
-filename = "data/rate"
+filename = "data/rate.txt"
 
 # load initial rate data
 history = RateConversion(filename)

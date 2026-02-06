@@ -700,13 +700,10 @@ class BayesianUnfolding:
 
         # get parameters - not stds
         param_aves = []
-        #param_stds = []
         print('Parameter results:')
         for i in range(self.nparam):
             param_ave = (float(np.mean(samples[:,i])))
             param_aves.append(param_ave)
-            #param_std = (float(np.std(samples[:,i])))
-            #param_stds.append(param_std)
             print(f'{self.param_names[i]} = {param_ave:.3f}')
 
         # get cov matrix

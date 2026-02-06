@@ -45,12 +45,12 @@ class ActivityCalc:
         self.cal_file_name = cal_file_name
 
         # load the foil data
-        with open(f'{self.json_path}/{self.data_file_name}.json'
+        with open(f'{self.json_path}/{self.data_file_name}'
                   ) as json_datafile:
             self.json_file_data = json.load(json_datafile)
 
         # load the calibration data
-        with open(f'{self.json_path}/{self.cal_file_name}.json'
+        with open(f'{self.json_path}/{self.cal_file_name}'
                   ) as cal_file:
             self.cal_file_data = json.load(cal_file)
 
@@ -219,7 +219,8 @@ class ActivityCalc:
         activity = c / (i * selected_efficiency)
         return activity
 
-    def _self_attenuation_correction(self, material, e, thickness, density):
+    def _self_attenuation_correction(self, material, e, thickness, density,
+                                     xcom_path):
         """ gamma self absorption correction factor taken from XCOM mu data
         (arnold, p41)
 
@@ -233,13 +234,15 @@ class ActivityCalc:
             Thickness of foil in cm
         density : float
             Density of foil material in g/cm3
+        xcom_path : str
+            path to xcom attenuation data folder
 
         Returns
         -------
         self_att_factor : float
             self attenuation factor for the foil
         """
-        xcom = np.fromfile(f'../../data/XCOM_new/{material}.txt', sep=" ")
+        xcom = np.fromfile(f'{xcom_path}/{material}.txt', sep=" ")
         mass_coeff = np.interp(e/1000, xcom[::2], xcom[1::2])
         self_att_factor = ((mass_coeff * density * thickness)
                            / (1 - exp(- mass_coeff * density * thickness)))
@@ -321,7 +324,8 @@ class ActivityCalc:
         rr_ave = a / (1 - self._activity_integrand(irradiation_time, halflife))
         return rr_ave
 
-    def _run_one_isotope(self, isotope_name, calibration_name, irrad_time):
+    def _run_one_isotope(self, isotope_name, calibration_name, 
+                         irrad_time, xcom_path):
         """ run analysis for one isotope
 
         Parameters
@@ -333,6 +337,8 @@ class ActivityCalc:
             i.e. "B03_hpge_endcap"
         irrad_time : int
             Irradiation time in seconds
+        xcom_path : str
+            path to xcom attenuation data folder
 
         Returns
         -------
@@ -362,7 +368,8 @@ class ActivityCalc:
                     self.json_file_data[isotope_name]['foil_material'],
                     energy[n],
                     self.json_file_data[isotope_name]['thickness_cm'],
-                    self.json_file_data[isotope_name]['density_gcm3'])
+                    self.json_file_data[isotope_name]['density_gcm3'],
+                    xcom_path)
                 inv_coincidence_factor = (
                     1/(self.json_file_data[isotope_name]
                        ['coincidence_factor'][n]))
@@ -418,7 +425,7 @@ class ActivityCalc:
         return isotope_dictionary
 
     def calculate_activities(self, irrad_time,results_name,
-                             which_isotopes='all'):
+                             xcom_path,which_isotopes='all'):
         """ run analysis for all isotopes requested
         and outputs as a nice json for C/E plotting
 
@@ -428,12 +435,14 @@ class ActivityCalc:
             Total irradiation time for reaction rate calculation
         results_name : str
             Name of results file
+        xcom_path : str
+            path to xcom attenuation data folder
         which_isotopes : str
             switch to control which isotopes from the data to run.
             'all' or a specific isotope ('Mn56' for example)
         """
         # create empty file for results
-        open(f"{self.json_path}/{results_name}.json", 'w').close()
+        open(f"{self.json_path}/{results_name}", 'w').close()
 
         # set up for all isotopes requested 
         if isinstance(which_isotopes, int):
@@ -457,7 +466,7 @@ class ActivityCalc:
             calibration_name = (self.json_file_data[isotope_name]
                                 ["calibration"])
             results_dictionary.update(self._run_one_isotope(
-                isotope_name, calibration_name, irrad_time))
+                isotope_name, calibration_name, irrad_time,xcom_path))
 
         # print results as one neat json for postprocessing
         with open(f"{self.json_path}/{results_name}.json", 'a') as output_file:
@@ -484,7 +493,7 @@ class ActivitySim:
         self.sim_file_name = simulation_file
         
         # load the simulation data
-        with open(f'{self.json_path}/{self.sim_file_name}.json'
+        with open(f'{self.json_path}/{self.sim_file_name}'
                   ) as sim_file:
             self.sim_file_data = json.load(sim_file)
 
@@ -552,7 +561,7 @@ class ActivitySim:
             filepath to spectrum 
         """
         # create a new empty file for the results
-        open(f"{self.json_path}/{c_results_name}.json", 'w').close()
+        open(f"{self.json_path}/{c_results_name}", 'w').close()
 
         # set up for all isotopes requested 
         if isinstance(which_isotopes, int):
@@ -598,13 +607,6 @@ class ReactionRateRetrieval:
 
     def __init__(self):
         """ Initialise RRR class
-
-        Attributes
-        ----------
-        results_file_name : str
-            name of the experimental results file output by ActivityCalc
-        exp_folder : str
-            path to the experiment directory with the results file in it
         """
 
     def _retrieve_rr_data(self,results_file_data):
@@ -727,7 +729,7 @@ class ReactionRateRetrieval:
 
         # # check for experimental results and get data
         try:
-            with open(f'{exp_folder}/{results_file_name}.json' 
+            with open(f'{exp_folder}/{results_file_name}' 
                       ) as results_file:
                 results_file_data = json.load(results_file)
         except FileNotFoundError:

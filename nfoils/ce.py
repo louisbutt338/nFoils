@@ -241,9 +241,9 @@ class CEPlotter:
         Parameters
         ----------
         calc_results : str
-            String name of the calculated results (without .json)
+            String name of the calculated results 
         exp_results : str
-            String name of the experimental results (without .json)
+            String name of the experimental results 
         libraries : list[str]
             List of the three library names that you are using
         flux_error : float
@@ -269,7 +269,7 @@ class CEPlotter:
             list of floats to add vertical lines to split plot up 
             i.e. [3.5,4.5] adds lines in between the 3rd,4th,5th isotopes
         """
-        with open(f"{self.folder}/{calc_results}.json") as model_results_path:
+        with open(f"{self.folder}/{calc_results}") as model_results_path:
             model_results = json.load(model_results_path)
 
         # extract foil data and isotopes from c_results
@@ -318,7 +318,7 @@ class CEPlotter:
 
         # check for experimental results and get data
         try:
-            with open(f"{self.folder}/{exp_results}.json") as exp_results_path:
+            with open(f"{self.folder}/{exp_results}") as exp_results_path:
                 exp_results_data = json.load(exp_results_path)
         except FileNotFoundError:
             print('please run calculate_e_results.py first ' \

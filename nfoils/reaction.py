@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]},
    weight='normal', size=20)
-from urllib.error import HTTPError
 
 
 class NuclearData:
@@ -29,8 +28,7 @@ class NuclearData:
         ek : array[float]
             array of the energy binning being used
         library : str
-            name of the nuclear data library to extract data from.
-            needs to be in sandy's special format though, so check that
+            nuclear data library folder to extract data from
         """
 
         # set attributes
@@ -53,18 +51,14 @@ class NuclearData:
             Endf file for the specified material
             See sandy documentation for more details
         """
-        # get endf file from online IAEA database
         try:
-            endf_file = sandy.get_endf6_file(self.library, "xs", material)
-
-        # get endf file from local endf files
-        except HTTPError:
-            print('HTTP error, retrieving endf file locally')
-            lib_path = f'data/endf/{self.library}'
-            file_path = f'{lib_path}/{endf_path}'
+            # get endf file from local endf files
+            file_path = f'{self.library}/{endf_path}'
             endf_file = sandy.Endf6.from_file(file_path)
 
-        # give up
+            # get endf file from online IAEA database
+            #endf_file = sandy.get_endf6_file(self.library, "xs", material)
+
         except FileNotFoundError:
             print('cannot find endf file locally')
 
@@ -227,7 +221,7 @@ class NuclearData:
         atomic_mass_list : list[float]
             list of atomic masses for foils
         """
-        with open(f'{datafile}.json') as json_file:
+        with open(datafile) as json_file:
             json_file_data = json.load(json_file)
             material_list = [x['mat_number'] for x in json_file_data.values()]
             mt_list = [x['mt_value'] for x in json_file_data.values()]
@@ -253,8 +247,7 @@ class PostprocessReactions(NuclearData):
         ek : array[float]
             array of the energy binning being used
         library : str
-            name of the nuclear data library to extract data from.
-            needs to be in sandy's special format though, so check that
+            nuclear data library folder to extract data from
         """
         super().__init__(ek, library)
 
@@ -419,7 +412,7 @@ class PostprocessReactions(NuclearData):
 
     def run_rf(self, datafile, labels,endf_files):
         """ extract response functions, dump in txt format for unfolding
-          and plot
+        and plot
 
         Parameters
         ----------
@@ -436,7 +429,7 @@ class PostprocessReactions(NuclearData):
 
     def run_stdev(self, datafile, labels, endf_files):
         """ extract standard deviations, dump in txt format for unfolding
-          and plot
+        and plot
 
         Parameters
         ----------
@@ -466,8 +459,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         ek : array[float]
             array of the energy binning being used
         library : str
-            name of the nuclear data library to extract data from.
-            needs to be in sandy's special format though, so check that
+            nuclear data library folder to extract data from
         """
         super().__init__(ek, library)
 
@@ -484,7 +476,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         frac_uncert : array[float]
             full spectrum fractional uncertainty array
         """
-        spectrum_data = np.fromfile(f'{spectrum_file}.txt', sep=" ")
+        spectrum_data = np.fromfile(spectrum_file, sep=" ")
         flux_vals = spectrum_data[::2]
         uncert_vals = spectrum_data[1::2]
         frac_uncert = np.divide(uncert_vals, flux_vals)

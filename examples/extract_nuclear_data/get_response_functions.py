@@ -13,11 +13,10 @@ from nfoils.reaction import PostprocessReactions
 #ek=sandy.energy_grids.SCALE238
 
 # or define your own group structure elsewhere and import it in
-ek=np.fromfile('data/group_structure.txt',sep=" ")
+ek=np.fromfile('../../data/energy_grids/group_structure_175.txt', sep=" ")
 
-# specify nuclear data library
-# check which folders are available in data/endf
-library = 'tendl_21'
+# path to local nuclear data library
+library = '../../data/endf/tendl_21' 
 
 # set path to a json with foil reaction data
 # should include dictionaries for each reaction including:
@@ -27,7 +26,7 @@ library = 'tendl_21'
 #  mass of the foil in g
 #  atomic mass of the foil in amu
 #  abundance of the parent isotope in the foil
-data_file_name = 'data/reactions'
+data_file_name = 'data/reactions.json'
 
 # input list of reaction labels for plotting, as r-strings/f-strings 
 # these must match the order of the reactions listed in the foil data json
@@ -35,7 +34,7 @@ reaction_labels = ["${}^{197}$Au(n,2n)",
                    "${}^{93}$Nb(n,2n)",
                    "${}^{58}$Ni(n,2n)"]
 
-# endf files, should be saved to data/endf/{library}
+# endf files, should be saved in library
 # put in same order as reactions in reaction_file
 endf_files = [
     'n_079-Au-197_7925.dat',
@@ -48,4 +47,4 @@ reactions = PostprocessReactions(ek,library)
 
 # get response functions and/or nuclear data uncertainties
 reactions.run_rf(data_file_name,reaction_labels,endf_files)
-reactions.run_stdev(data_file_name,reaction_labels,endf_files)
+#reactions.run_stdev(data_file_name,reaction_labels,endf_files)

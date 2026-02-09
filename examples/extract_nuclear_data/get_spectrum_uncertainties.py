@@ -14,7 +14,9 @@ from nfoils.reaction import IsotopicSpectrumUncertainty
 # or define your own group structure and import in e.g.
 ek=np.fromfile('../../data/energy_grids/group_structure_175.txt', sep=" ")
 
-# path to nuclear data library saved local
+# path to nuclear data library saved locally.
+# the relevant files must be downloaded from
+# https://nds.iaea.org/public/download-endf/
 library = '../../data/endf/tendl_21' 
 
 # set path to a json with foil reaction data
@@ -33,8 +35,8 @@ data_file_name = 'data/reactions.json'
 #  column 2: associated raw uncertainty in the same units
 spectrum_file = 'data/spectrum.txt'
 
-# endf files, should be saved to library
-# put in same order as reactions in reaction_file
+# endf nuclear data files, should be saved in library.
+# list here in the same order as reactions in reaction_file
 endf_files = [
     'n_079-Au-197_7925.dat',
     'n_041-Nb-93_4125.dat',

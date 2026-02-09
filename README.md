@@ -13,14 +13,14 @@ The purpose of the package is the probabilistic measurement of complex fast neut
 measurement data e.g. foil response functions from nuclear data libraries, and reaction rates from foil 
 gamma spectrum measurements. It also requires an unfolding method which takes these distributions and uses them 
 to estimate a neutron spectrum distribution. For this we developed a Bayesian version of parametric unfolding, 
-which takes a physics-informed parameterisation of the spectrum as a prior, and a likelihood from the input data 
-dsitributions, and samples from the combined posterior.
+which takes a physics-informed parameterisation of the spectrum as a prior, a likelihood constructed from the 
+input data distributions, and then samples from the combined posterior.
 
 To do this, the package includes modules for extracting and calculating response functions, 
 calibrating a gamma detector, calculating foil activities and reaction rates, and the parametric unfolding 
 program to estimate the spectrum. Uncertainty on all inputs/outputs is considered everywhere.
 
-Tools for performing a flux estimation on a lithium target neutron source, 
+Extra tools for performing a flux estimation on a lithium target neutron source, 
 postprocessing of ASCII gamma spec files, and validating of a model/unfolded neutron spectrum by comparing 
 FISPACT activity predictions with the experimental results are also included, as a special treat.
 

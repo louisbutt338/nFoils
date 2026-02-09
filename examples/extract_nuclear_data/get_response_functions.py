@@ -15,7 +15,9 @@ from nfoils.reaction import PostprocessReactions
 # or define your own group structure elsewhere and import it in
 ek=np.fromfile('../../data/energy_grids/group_structure_175.txt', sep=" ")
 
-# path to local nuclear data library
+# path to local nuclear data library.
+# the relevant files must be downloaded from
+# https://nds.iaea.org/public/download-endf/
 library = '../../data/endf/tendl_21' 
 
 # set path to a json with foil reaction data
@@ -34,8 +36,8 @@ reaction_labels = ["${}^{197}$Au(n,2n)",
                    "${}^{93}$Nb(n,2n)",
                    "${}^{58}$Ni(n,2n)"]
 
-# endf files, should be saved in library
-# put in same order as reactions in reaction_file
+# endf nuclear data files, should be saved in library.
+# list here in the same order as reactions in reaction_file
 endf_files = [
     'n_079-Au-197_7925.dat',
     'n_041-Nb-93_4125.dat',

@@ -28,21 +28,22 @@ class NuclearData:
         ek : array[float]
             array of the energy binning being used
         library : str
-            name of the nuclear data library to extract data from.
-            needs to be in sandy's special format though, so check that
+            nuclear data library folder to extract data from
         """
 
         # set attributes
         self.ek = ek
         self.library = library
 
-    def _get_endf_file(self, material):
-        """ run the sandy get_endf routine (fiorito)
+    def _get_endf_file(self, material, endf_path):
+        """ get endf file for specified material
 
         Parameters
         ----------
         material : float
             MAT number
+        endf_path : str
+            material endf filename for locally saved file
 
         Returns
         -------
@@ -50,10 +51,20 @@ class NuclearData:
             Endf file for the specified material
             See sandy documentation for more details
         """
-        endf_file = sandy.get_endf6_file(self.library, "xs", material)
+        try:
+            # get endf file from local endf files
+            file_path = f'{self.library}/{endf_path}'
+            endf_file = sandy.Endf6.from_file(file_path)
+
+            # get endf file from online IAEA database
+            #endf_file = sandy.get_endf6_file(self.library, "xs", material)
+
+        except FileNotFoundError:
+            print('cannot find endf file locally')
+
         return endf_file
 
-    def _get_errorr_data(self, material, mt_value):
+    def _get_errorr_data(self, material, mt_value, endf_file):
         """ get covariance, standard deviation from a material endf6 file
         or return empty arrays (fiorito)
 
@@ -63,6 +74,8 @@ class NuclearData:
             MAT number
         mt_value : int
             MT number
+        endf_file : str
+            material endf filename for locally saved file
 
         Returns
         -------
@@ -74,7 +87,7 @@ class NuclearData:
         mt = [mt_value]
         try:
             # use the get_errorr function to grab cov,std data
-            endf_file = self._get_endf_file(material)
+            endf_file = self._get_endf_file(material,endf_file)
             ekws = dict(ek=self.ek)
             err = endf_file.get_errorr(temperature=300, err=1, chi=False,
                                        nubar=False, prod=False, mubar=False,
@@ -96,7 +109,7 @@ class NuclearData:
                   f': MT {mt}')
             return np.array([]),np.array([])
 
-    def _get_gendf_data(self, material, mt_value):
+    def _get_gendf_data(self, material, mt_value, endf_file):
         """ get groupwise cross sections from a material endf6 file
         or return empty array (fiorito)
 
@@ -106,6 +119,8 @@ class NuclearData:
             MAT number
         mt_value : float
             MT number
+        endf_file : str
+            material endf filename for locally saved file
 
         Returns
         -------
@@ -115,7 +130,7 @@ class NuclearData:
         mt = [mt_value]
         try:
             # use the get_gendf function to grab xs data
-            endf_file = self._get_endf_file(material)
+            endf_file = self._get_endf_file(material,endf_file)
             ekws = dict(ek=self.ek, nuclide_production=True, iwt=3)
             gendf = endf_file.get_gendf(minimal_processing=True,
                                         err=0.005, temperature=300,
@@ -206,7 +221,7 @@ class NuclearData:
         atomic_mass_list : list[float]
             list of atomic masses for foils
         """
-        with open(f'{datafile}.json') as json_file:
+        with open(datafile) as json_file:
             json_file_data = json.load(json_file)
             material_list = [x['mat_number'] for x in json_file_data.values()]
             mt_list = [x['mt_value'] for x in json_file_data.values()]
@@ -232,8 +247,7 @@ class PostprocessReactions(NuclearData):
         ek : array[float]
             array of the energy binning being used
         library : str
-            name of the nuclear data library to extract data from.
-            needs to be in sandy's special format though, so check that
+            nuclear data library folder to extract data from
         """
         super().__init__(ek, library)
 
@@ -242,7 +256,7 @@ class PostprocessReactions(NuclearData):
         os.makedirs(self.results_folder,exist_ok=True)
 
     def _export_and_plot_stdev(self, material_list, mt_values_list,
-                               reaction_labels):
+                               reaction_labels, endf_files):
         """ export stdev data to one txt and plot uncertainty percentages
 
         Parameters
@@ -253,6 +267,8 @@ class PostprocessReactions(NuclearData):
             list of endf mt values
         reaction_labels : list[str]
             list of reaction labels for plot
+        endf_files : list[str]
+            Names for the endf files saved locally
         """
         # inital figure and txt list settings
         big_response_function_uncert_list = []
@@ -262,9 +278,10 @@ class PostprocessReactions(NuclearData):
         color = iter(plt.cm.rainbow(np.linspace(0, 1, len(material_list))))
 
         # loop through specified materials and MT values
-        for material, mt, reaction in zip(material_list, mt_values_list,
-                                          reaction_labels):
-            nuclear_data = self._get_errorr_data(material, mt)
+        for (material, mt, 
+             reaction, e_file) in zip(material_list, mt_values_list,
+                                        reaction_labels,endf_files):
+            nuclear_data = self._get_errorr_data(material, mt, e_file)
             array_of_arrays = self._extract_array_data(nuclear_data[1])
 
             # plot uncertainty data
@@ -309,7 +326,7 @@ class PostprocessReactions(NuclearData):
 
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
                             mass_list, abundance_list, atomic_mass_list,
-                            labels_list):
+                            labels_list, endf_files):
         """ export response function data to one txt and plots RFs
 
         Parameters
@@ -328,6 +345,8 @@ class PostprocessReactions(NuclearData):
             list of atomic masses
         labels_list : list[str]
             list of reaction labels for plot
+        endf_files : list[str]
+            Names for the endf files saved locally
         """
         # inital figure and txt list setting
         big_response_functions_list = []
@@ -340,11 +359,11 @@ class PostprocessReactions(NuclearData):
 
         # loop through specified materials and MT values
         for (material, mt, density, mass, abundance,
-             atomic_mass, reaction_label) in zip(
+             atomic_mass, reaction_label, e_file) in zip(
                  material_list, mt_list, density_list,
                  mass_list, abundance_list, atomic_mass_list,
-                 labels_list):
-            nuclear_data = self._get_gendf_data(material, mt)
+                 labels_list,endf_files):
+            nuclear_data = self._get_gendf_data(material, mt,e_file)
             array_of_arrays = self._extract_array_data(nuclear_data)
 
             # plot data
@@ -391,9 +410,9 @@ class PostprocessReactions(NuclearData):
         fig.supxlabel("Neutron energy (MeV)", y=0.03)
         fig.savefig('response_function.png')
 
-    def run_rf(self, datafile, labels):
+    def run_rf(self, datafile, labels,endf_files):
         """ extract response functions, dump in txt format for unfolding
-          and plot
+        and plot
 
         Parameters
         ----------
@@ -402,13 +421,15 @@ class PostprocessReactions(NuclearData):
         labels : list[str]
             list of the raw string mathmode reaction labels, 
             matching the reactions in the datafile
+        endf_files : list[str]
+            Names for the endf files saved locally
         """
         data_lists = self._unpack_datafile(datafile)
-        self._export_and_plot_rf(*data_lists, labels)
+        self._export_and_plot_rf(*data_lists, labels,endf_files)
 
-    def run_stdev(self, datafile, labels):
+    def run_stdev(self, datafile, labels, endf_files):
         """ extract standard deviations, dump in txt format for unfolding
-          and plot
+        and plot
 
         Parameters
         ----------
@@ -417,9 +438,12 @@ class PostprocessReactions(NuclearData):
         labels : list[str]
             list of the raw string mathmode reaction labels,
             matching the reactions in the datafile
+        endf_files : list[str]
+            Names for the endf files saved locally
         """
         data_lists = self._unpack_datafile(datafile)
-        self._export_and_plot_stdev(data_lists[0], data_lists[1], labels)
+        self._export_and_plot_stdev(data_lists[0], data_lists[1],
+                                    labels,endf_files)
 
 
 class IsotopicSpectrumUncertainty(NuclearData):
@@ -435,8 +459,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         ek : array[float]
             array of the energy binning being used
         library : str
-            name of the nuclear data library to extract data from.
-            needs to be in sandy's special format though, so check that
+            nuclear data library folder to extract data from
         """
         super().__init__(ek, library)
 
@@ -453,7 +476,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         frac_uncert : array[float]
             full spectrum fractional uncertainty array
         """
-        spectrum_data = np.fromfile(f'{spectrum_file}.txt', sep=" ")
+        spectrum_data = np.fromfile(spectrum_file, sep=" ")
         flux_vals = spectrum_data[::2]
         uncert_vals = spectrum_data[1::2]
         frac_uncert = np.divide(uncert_vals, flux_vals)
@@ -498,7 +521,7 @@ class IsotopicSpectrumUncertainty(NuclearData):
         return percent_uncertainty
     
     def get_isotopic_uncertainties(self, spectrum_file, datafile,
-                                   cutoffs=None):
+                                   endf_files,cutoffs=None):
         """ Get all the uncertainties for your reactions
         and prints the results
 
@@ -508,6 +531,8 @@ class IsotopicSpectrumUncertainty(NuclearData):
             Name of the spectrum txt file
         datafile : str
             Name of the json datafile
+        endf_files : list[str]
+            Names for the endf files saved locally
         cutoffs : list[int]
             how many vals to cut off at the end of the group structure
             if there is no spectrum there i.e. [1,5] cuts off 1 from the 
@@ -530,8 +555,9 @@ class IsotopicSpectrumUncertainty(NuclearData):
         uncertainties = []
         materials = []
         mts = []
-        for (material, mt) in zip(data_lists[0], data_lists[1]):
-            nuclear_data = self._get_gendf_data(material, mt)
+        for (material,mt,endf_file) in zip(data_lists[0],
+                                           data_lists[1],endf_files):
+            nuclear_data = self._get_gendf_data(material, mt,endf_file)
             array_of_arrays = self._extract_array_data(nuclear_data)
 
             # get the uncertainties for each

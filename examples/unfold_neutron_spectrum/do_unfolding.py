@@ -65,32 +65,45 @@ log_posterior = unfold.log_posterior
 
 # number of samples from the response function distributions
 # computational expense skyrockets here, so start with 1
-rm_samples = 1
+rm_samples = 5
 
 # number of MCMC walkers/chains
 nwalkers = 20
 
 # "burn-in" period to let chains stabilize
-nburn = 500
+nburn = 50
 
 # total number of MCMC steps to take (including nburn)
 # no. of trace results =  nwalkers * (nsteps-nburn)
-nsteps = 5000
+nsteps = 100
 
-# run sampler, postprocess, save results, plot spectrum (single)
-#samples = unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,
-#                             rm_samples,nwalkers,nburn,nsteps)
-#params,stds = unfold.postpro_sampler(samples)
-#print('BIC =',unfold.bayesian_info_criterion(model,params,stds))
-#np.savetxt('results.txt', np.transpose([guesses,params,stds]))
-#unfold.plot_simple_spectrum(model,params,stds)
+# run sampler on single cpu
+#if __name__ == '__main__':
+#    samples = unfold.run_sampler(log_posterior,model,log_prior,
+#                                 log_likelihood,rm_samples,
+#                                 nwalkers,nburn,nsteps)
+#    
+#    # postprocess and save results
+#    params,cov_matrix = unfold.postpro_sampler(samples)
+#    np.savetxt('params.txt', np.transpose(params))
+#    np.savetxt('cov_matrix.txt', np.transpose(cov_matrix))
+#
+#    # do lazy stdev calculation and plot spectrum
+#    stds = np.diag(np.sqrt(cov_matrix))
+#    unfold.plot_simple_spectrum(model,params,stds)
 
-# run sampler, postprocess, save results, plot spectrum (parallel)
+# run sampler in parallel
 if __name__ == '__main__':
    with mp.Pool() as pool:
-        samples=unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,
-                                   rm_samples,nwalkers,nburn,nsteps,pool)
-        params,stds = unfold.postpro_sampler(samples)
-        print('BIC =',unfold.get_bic(model,params,stds))
-        np.savetxt('results.txt',np.transpose([guesses,params,stds]))
+        samples=unfold.run_sampler(log_posterior,model,log_prior,
+                                   log_likelihood,rm_samples,
+                                   nwalkers,nburn,nsteps,pool)
+        
+        # postprocess and save results
+        params,cov_matrix = unfold.postpro_sampler(samples)
+        np.savetxt('params.txt', np.transpose(params))
+        np.savetxt('cov_matrix.txt', np.transpose(cov_matrix))
+
+        # lazy stdev calculation and plot spectrum
+        stds = np.diag(np.sqrt(cov_matrix))
         unfold.plot_simple_spectrum(model,params,stds)

@@ -28,8 +28,7 @@ class TargetAnalysis:
         self.target_json_name = target_json_name
 
         # load the target data
-        with open(f'{self.target_json_name}.json'
-                  ) as target_file:
+        with open(self.target_json_name) as target_file:
             self.target_data = json.load(target_file)
 
     def _no_of_isotopes(self,activity,t_half):

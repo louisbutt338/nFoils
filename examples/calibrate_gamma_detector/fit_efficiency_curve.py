@@ -8,7 +8,7 @@ from nfoils.fitting import CurveFitter
 #  efficiency
 #  raw uncertainty on the efficiency
 #  fractional coincidence summing correction
-input_data = "data/efficiencies"
+input_data = "data/efficiencies.json"
 
 # interpolation energy range in keV, as [start,end].
 # for doing the model fit and finding the average uncertainty

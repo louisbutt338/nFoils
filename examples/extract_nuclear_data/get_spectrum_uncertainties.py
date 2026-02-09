@@ -12,11 +12,12 @@ from nfoils.reaction import IsotopicSpectrumUncertainty
 #ek=sandy.energy_grids.SCALE238
 
 # or define your own group structure and import in e.g.
-ek=np.fromfile('data/group_structure.txt',sep=" ")
+ek=np.fromfile('../../data/energy_grids/group_structure_175.txt', sep=" ")
 
-# specify nuclear data library (check the list available in sandy)
-# make sure you have internet to get library data 
-library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
+# path to nuclear data library saved locally.
+# the relevant files must be downloaded from
+# https://nds.iaea.org/public/download-endf/
+library = '../../data/endf/tendl_21' 
 
 # set path to a json with foil reaction data
 # should include dictionaries for each reaction including:
@@ -26,16 +27,25 @@ library = 'jeff_33'  # endfb_71 endfb_80 jendl_40u jeff_33  tendl_21
 #  mass of the foil in g
 #  atomic mass of the foil in amu
 #  abundance of the parent isotope in the foil
-data_file_name = 'data/reactions'
+data_file_name = 'data/reactions.json'
 
 # set path to a spectrum data txt file, 
 # should include two columns:
 #  column 1: the neutron spectrum in arbitrary units
 #  column 2: associated raw uncertainty in the same units
-spectrum_file = 'data/spectrum'
+spectrum_file = 'data/spectrum.txt'
+
+# endf nuclear data files, should be saved in library.
+# list here in the same order as reactions in reaction_file
+endf_files = [
+    'n_079-Au-197_7925.dat',
+    'n_041-Nb-93_4125.dat',
+    'n_028-Ni-58_2825.dat'
+]
 
 # load group structure and set library
 uncertainties = IsotopicSpectrumUncertainty(ek,library)
 
 # get the reaction-specific spectrum uncertainties 
-uncertainties.get_isotopic_uncertainties(spectrum_file,data_file_name)
+uncertainties.get_isotopic_uncertainties(spectrum_file,data_file_name,
+                                         endf_files)

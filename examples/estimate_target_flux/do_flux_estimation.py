@@ -16,7 +16,7 @@ from nfoils.history import IrradTimeline
 #  material density (g/cm3)
 #  atomic mass (g/mol)
 #  total relative uncertainty on all the above
-target_json = 'data/target'
+target_json = 'data/target.json'
 
 # load target data
 analyse_target = TargetAnalysis(target_json)

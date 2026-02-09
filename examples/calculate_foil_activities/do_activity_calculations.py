@@ -20,7 +20,7 @@ experiment_dir = '.'
 #  thickness of the foil in cm
 #  density of the foil in gcm3
 #  element of the foil i.e. "fe"
-measurements_file = 'data/measurement_data'
+measurements_file = 'data/measurement_data.json'
 
 # filepath for the detector calibration curves json
 # should include dictionaries for each calibration including:
@@ -29,7 +29,7 @@ measurements_file = 'data/measurement_data'
 #  parameters for the efficiency equation = 
 #    exp(a0 + a1log(E) + a2log(E)^2+ a3log(E)^3)
 #  average fractional uncertainty on the efficiency curve fit
-calibration_file = 'data/calibrations'
+calibration_file = 'data/calibrations.json'
 
 # input datetime for the end of the irradiation
 irradiation_end = datetime(2024,3,28, 18,17,00)
@@ -44,6 +44,9 @@ irrad_time = 3600*2
 # input the desired name of the json activity results file
 e_results_name = 'e_results'
 
+# path to xcom attenuation data folder
+xcom_folder = '../../data/XCOM_new'
+
 # get experimental results json with activities and reaction rates
 # uncertainties stem from peak fitting and efficiency uncertainty
-activities.calculate_activities(irrad_time,e_results_name)
+activities.calculate_activities(irrad_time,e_results_name,xcom_folder)

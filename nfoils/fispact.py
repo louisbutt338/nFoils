@@ -44,7 +44,7 @@ class JsonRetriever:
         """
         interval = time_interval-1
         try:
-            with open(f'{self.filepath}.json') as json_path:
+            with open(self.filepath) as json_path:
                 json_file_data = json.load(json_path)
                 nuclides_list = (json_file_data['inventory_data']
                                  [interval]

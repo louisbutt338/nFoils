@@ -492,8 +492,8 @@ class BayesianUnfolding:
                                  for i in response])
         rr_arr = np.concatenate(rr)
         sigma_rr_arr = np.concatenate(sigma_rr)
-        loglikelihood = -0.5 * np.sum(np.log(2 * np.pi * sigma_rr_arr ** 2)
-                     +(rr_arr - rr_model_arr) ** 2 / sigma_rr_arr ** 2)
+        loglikelihood = np.sum( np.log( 1/np.sqrt(2*np.pi*sigma_rr_arr**2))
+                      - (0.5*(rr_model_arr - rr_arr)** 2 / sigma_rr_arr ** 2) )
         return loglikelihood
 
     # try and get this to work to avoid doing expensive MC 

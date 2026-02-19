@@ -252,7 +252,7 @@ class PostprocessReactions(NuclearData):
         super().__init__(ek, library)
 
         # make new folder to save the responses/uncertainties in
-        self.results_folder = os.path.join("for_unfolding")
+        self.results_folder = os.path.join(f"for_unfolding")
         os.makedirs(self.results_folder,exist_ok=True)
 
     def _export_and_plot_stdev(self, material_list, mt_values_list,
@@ -275,6 +275,7 @@ class PostprocessReactions(NuclearData):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
+        #fig,ax2 = plt.subplots(1, figsize=(12, 8),tight_layout=True)
         color = iter(plt.cm.rainbow(np.linspace(0, 1, len(material_list))))
 
         # loop through specified materials and MT values
@@ -289,10 +290,8 @@ class PostprocessReactions(NuclearData):
                 ek_mev = [(i/1e6) for i in self.ek]
                 for std in array_of_arrays:
                     c = next(color)
-                    ax1.stairs(std, ek_mev,
-                               label=f'{reaction}', color=c, lw=1.5)
-                    ax2.stairs(std, ek_mev,
-                               label=f'{reaction}', color=c, lw=1.5)
+                    ax1.stairs(std,ek_mev,label=f'{reaction}',color=c,lw=1.5)
+                    ax2.stairs(std,ek_mev,label=f'{reaction}',color=c,lw=1.5)
                     
                     # export data to one csv file
                     #with open('response_function_uncertainty.csv', 'a', newline='') as f:
@@ -313,7 +312,7 @@ class PostprocessReactions(NuclearData):
         ax1.set_ylim(1e0, 2e2)
         ax1.set_xscale('log')
         ax1.grid()
-        ax2.set_xlim(1e0, 18)
+        ax2.set_xlim(1, 18)
         ax2.set_ylim(1e0, 2e2)
         ax2.tick_params(axis='y', left=False, labelleft=False)
         ax2.grid()
@@ -322,7 +321,7 @@ class PostprocessReactions(NuclearData):
                    ncol=3)
         fig.supylabel(r"Standard deviation ($\%$)", y=0.55)
         fig.supxlabel("Neutron energy (MeV)", y=0.03)
-        fig.savefig('percentage_uncert.png')
+        fig.savefig(f'percentage_uncert.png')
 
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
                             mass_list, abundance_list, atomic_mass_list,

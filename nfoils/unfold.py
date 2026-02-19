@@ -712,8 +712,11 @@ class BayesianUnfolding:
         # do corner plotting
         fig = corner.corner(samples,
                             bins=40,
-                            labels=self.param_names)
-        plt.savefig(f'{plotname}.png')
+                            labels=self.param_names,
+                            labelpad=0.2)
+        #fig.tight_layout(pad=0.001)
+        fig.set_size_inches(15,15)
+        plt.savefig(f'{plotname}.png',bbox_inches='tight')
         
         return param_aves,param_cov_matrix
     
@@ -830,10 +833,10 @@ class BayesianUnfolding:
         ax.fill_between(gs, min_spectrum,max_spectrum,
                         alpha=0.25,step='pre')
         #ax.set_xscale('log')
-        ax.set_xlim(0)
+        ax.set_xlim(0,20)
         ax.set_xlabel('Neutron energy (MeV)')
         ax.set_yscale('log')
-        ax.set_ylim(1e0)
+        ax.set_ylim(1e1)
         ax.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)')
         ax.grid()
         ax.legend(loc="lower left",frameon=True, fontsize=18,
@@ -961,6 +964,8 @@ class BayesianUnfolding:
         # get raw uncertainty and dump spectrum+uncert
         print(f'total flux = {np.sum(mean_spectrum)} n/cm2/s')
         uncert_spectrum=[(i-j) for i,j in zip(max_spectrum,mean_spectrum)]
+        frac_uncert = np.divide(uncert_spectrum, mean_spectrum)
+        print(f'average spectrum uncertainty {np.mean(frac_uncert)}')
         np.savetxt(f'{txtname}.txt', 
                    np.transpose([mean_spectrum,uncert_spectrum]))
 

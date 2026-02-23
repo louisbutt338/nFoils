@@ -405,7 +405,7 @@ class PostprocessReactions(NuclearData):
         ax2.grid()
         ax2.legend(loc="upper right", frameon=True, fontsize=18,
                    fancybox=False, facecolor='white', framealpha=1, ncol=3)
-        fig.supylabel("Response function Rn(E) (cm$^2$)", y=0.55)
+        fig.supylabel("Response function (cm$^2$)", y=0.55)
         fig.supxlabel("Neutron energy (MeV)", y=0.03)
         fig.savefig('response_function.png')
 

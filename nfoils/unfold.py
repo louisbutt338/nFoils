@@ -837,7 +837,7 @@ class BayesianUnfolding:
         ax.set_xlabel('Neutron energy (MeV)')
         ax.set_yscale('log')
         ax.set_ylim(1e1)
-        ax.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)')
+        ax.set_ylabel('Flux per energy bin (n cm$^{-2}$ s$^{-1}$)')
         ax.grid()
         ax.legend(loc="lower left",frameon=True, fontsize=18,
                   fancybox=False,facecolor='white')
@@ -910,7 +910,7 @@ class BayesianUnfolding:
         ax1.set_xlim(1e-7,1e0)
         ax1.tick_params(axis='x',labelbottom=False)
         ax1.grid()
-        ax1.set_ylabel('Flux (n cm$^{-2}$ s$^{-1}$)',y=0.5)
+        ax1.set_ylabel('Flux per energy bin (n cm$^{-2}$ s$^{-1}$)',y=0.5)
         ax2.set_yscale('log')
         ax2.set_ylim(1e0)
         ax2.set_xlim(1,15)
@@ -965,7 +965,7 @@ class BayesianUnfolding:
         print(f'total flux = {np.sum(mean_spectrum)} n/cm2/s')
         uncert_spectrum=[(i-j) for i,j in zip(max_spectrum,mean_spectrum)]
         frac_uncert = np.divide(uncert_spectrum, mean_spectrum)
-        print(f'average spectrum uncertainty {np.mean(frac_uncert)}')
+        print(f'mean spectrum uncertainty = {np.mean(frac_uncert)}')
         np.savetxt(f'{txtname}.txt', 
                    np.transpose([mean_spectrum,uncert_spectrum]))
 
@@ -984,8 +984,8 @@ class BayesianUnfolding:
         rss : float
             residual sum of squares for unfolding model
         """
-        pred_rates = [i*spectrum for i in self.response_matrix]
-        obs_rates = self.reaction_rates
+        pred_rates = [np.dot(i,spectrum) for i in self.response_matrix]
+        obs_rates = np.concatenate(self.reaction_rates)
         squares_list = [(i-j)**2 for i,j in zip(obs_rates,pred_rates)]
         rss = np.sum(squares_list)
         return rss
@@ -1014,6 +1014,38 @@ class BayesianUnfolding:
         mean_spectrum= self.get_spectra(model,param_aves,
                                         param_stds,cutoff)[0]
         rss = self.residual_sum_squares(mean_spectrum)
-        num_rrs = len(self.reaction_rates) 
+        num_rrs = len(self.reaction_rates)
         bic = (num_rrs*np.log(rss/num_rrs) + self.nparam*np.log(num_rrs))
         return bic
+    
+    def get_chi_squared(self,model,param_aves,param_stds,cutoff=None):
+        """ calculate reduced chi squared between a set of measurements, 
+        and a set of model predictions
+
+        Parameters
+        ----------
+        model : callable 
+            set to the model function
+        param_aves : list[float]
+            mean values for the parameters
+        param_stds : list[float]
+            standard deviation values for the parameters
+        cutoff : int
+            number of unphysical values 
+            to cut off from the end of the spectrum
+
+        Returns
+        -------
+        reduced_chi_squared : float
+            reduced chi square between measurements and predictions
+        """
+        mean_spectrum= self.get_spectra(model,param_aves,
+                                        param_stds,cutoff)[0]
+        predicted = [np.dot(i,mean_spectrum) for i in self.response_matrix]
+        observed = np.concatenate(self.reaction_rates)
+        uncerts = np.concatenate(self.reaction_rate_uncerts)
+        squared_dev_list = [((i-j)/k)**2 for 
+                            i,j,k in zip(observed,predicted,uncerts)]
+        dof = len(observed) - self.nparam
+        r_chi_sq = np.sum(squared_dev_list)/dof
+        return r_chi_sq

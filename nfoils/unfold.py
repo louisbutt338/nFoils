@@ -836,7 +836,7 @@ class BayesianUnfolding:
         ax.set_xlim(0,20)
         ax.set_xlabel('Neutron energy (MeV)')
         ax.set_yscale('log')
-        ax.set_ylim(1e1)
+        ax.set_ylim(1e1,1e7)
         ax.set_ylabel('Flux per energy bin (n cm$^{-2}$ s$^{-1}$)')
         ax.grid()
         ax.legend(loc="lower left",frameon=True, fontsize=18,

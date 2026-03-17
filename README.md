@@ -47,7 +47,7 @@ export NJOY=/path/to/njoy
 
 ## How to use
 
-Suggest testing the examples and using them as a starting point for your own measurement. 
+We suggest testing the example scripts in */examples/* and using them as a starting point for your own measurement. 
 Key example folders for a basic foil measurement are:
 
 - *extract_nuclear_data* for getting relevant foil response functions and uncertainties, 
@@ -56,6 +56,9 @@ using [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://
 measurements, using [actigamma](https://github.com/fispact/actigamma)
 - *unfold_neutron_spectrum* for probabilistic unfolding of a neutron spectrum, using 
 [emcee](https://github.com/dfm/emcee) and [corner](https://github.com/dfm/corner.py)
+
+A case study measurement of a proton-lithium neutron spectrum (data to be released on publication) was presented at 
+OSSFE2026, and the slides are available in */materials/*.
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
 Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 

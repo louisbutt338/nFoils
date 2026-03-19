@@ -4,7 +4,7 @@ import setuptools
 
 setuptools.setup(
     name="nfoils",
-    version="1.1.0",
+    version="1.1.2",
     author="Louis Butt",
     author_email="LJB841@bham.ac.uk",
     description="nFoils suite for foil neutron measurements",

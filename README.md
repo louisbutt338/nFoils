@@ -1,9 +1,9 @@
 # nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
-Python toolkit for probabilistic neutron measurements with activation foils
-
 [![MIT](http://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/louisbutt338/nfoils/develop/LICENSE)
-[![DOI:10.5281/zenodo.19108623](http://img.shields.io/badge/DOI-10.5281/zenodo.19108623-B31B1B.svg)](https://doi.org/10.5281/zenodo.19108623)
+[![DOI:10.5281/zenodo.19108622](http://img.shields.io/badge/DOI-10.5281/zenodo.19108622-B31B1B.svg)](https://doi.org/10.5281/zenodo.19108622)
+
+Python toolkit for probabilistic neutron measurements with activation foils
 
 Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. Contributors are welcome!
 Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ 

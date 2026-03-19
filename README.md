@@ -1,10 +1,15 @@
 # nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
-Python toolkit for probabilistic neutron measurements with activation foils. Contributors are welcome!
+Python toolkit for probabilistic neutron measurements with activation foils
 
-Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. 
+.. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+    :target: https://github.com/louisbutt338/nfoils/develop/LICENSE
+.. image:: http://img.shields.io/badge/DOI-10.5281/zenodo.19108623-orange.svg?style=flat
+    :target: https://doi.org/10.5281/zenodo.19108623
+
+Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. Contributors are welcome!
 Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ 
-when hell freezes over.
+when hell freezes over
 
 ### Neutron spectrum measurement
 
@@ -12,17 +17,17 @@ The purpose of the package is the probabilistic measurement of complex fast neut
 (such as a fusion reactor spectrum). This requires the calculation of probability distributions for the 
 measurement data e.g. foil response functions from nuclear data libraries, and reaction rates from foil 
 gamma spectrum measurements. It also requires an unfolding method which takes these distributions and uses them 
-to estimate a neutron spectrum distribution. For this we developed a Bayesian version of parametric unfolding, 
+to estimate a neutron spectrum distribution. For this we developed a Bayesian parametric unfolding algorithm, 
 which takes a physics-informed parameterisation of the spectrum as a prior, a likelihood constructed from the 
-input data distributions, and then samples from the combined posterior.
+input data distributions, and then samples from the combined posterior
 
 To do this, the package includes modules for extracting and calculating response functions, 
 calibrating a gamma detector, calculating foil activities and reaction rates, and the parametric unfolding 
-program to estimate the spectrum. Uncertainty on all inputs/outputs is considered everywhere.
+program to estimate the spectrum. Uncertainty on all inputs/outputs is considered everywhere
 
 Extra tools for performing a flux estimation on a lithium target neutron source, 
 postprocessing of ASCII gamma spec files, and validating of a model/unfolded neutron spectrum by comparing 
-FISPACT activity predictions with the experimental results are also included, as a special treat.
+FISPACT activity predictions with the experimental results are also included, as a special treat
 
 ## Installation
 
@@ -58,7 +63,7 @@ measurements, using [actigamma](https://github.com/fispact/actigamma)
 [emcee](https://github.com/dfm/emcee) and [corner](https://github.com/dfm/corner.py)
 
 A case study measurement of a proton-lithium neutron spectrum (data to be released on publication) was presented at 
-OSSFE2026, and the slides are available in */materials/*.
+OSSFE2026, and the slides are available in */materials/*
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
 Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 

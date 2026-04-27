@@ -1,0 +1,232 @@
+{
+    "Be7": {
+            "live_time": 9091.4,
+            "datetime": [2024,4,15, 12,39,1],
+            "counts": [52930,0,0,0,0],
+            "counts_uncertainty": [252.3,0,0,0,0],
+            "coincidence_factor": [1,0,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_shelf",
+            "thickness_cm": 0.05,
+            "density_gcm3": 0.534,
+            "foil_material": "li"
+        },
+    "Zn65": {
+            "live_time": 9091.4,
+            "datetime": [2024,4,15, 12,39,1],
+            "counts": [3.577e5,0,0,0,0],
+            "counts_uncertainty": [5.996e2,0,0,0,0],
+            "coincidence_factor": [1,0,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_shelf",
+            "thickness_cm": 0.1,
+            "density_gcm3": 8.96,
+            "foil_material": "cu"
+        },
+
+    "Mn56": {
+            "live_time": 703,
+            "datetime": [2024,3,28, 18,42,32],
+            "counts": [12520,1641,744.5,0,0],
+            "counts_uncertainty": [113.2,41.6,27.6,0,0],
+            "coincidence_factor": [0.921,0.826,0.829,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.1,
+            "density_gcm3": 7.87,
+            "foil_material": "fe"
+        },
+
+    "Au196": {
+            "live_time": 418,
+            "datetime": [2024,3,28, 22,43,46],
+            "counts": [126.4,0,0,0,0],
+            "counts_uncertainty": [14.6,0,0,0,0],
+            "coincidence_factor": [0.952,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.005,
+            "density_gcm3": 19.30,
+            "foil_material": "au"
+        },
+    "Au198": {
+            "live_time": 418,
+            "datetime": [2024,3,28, 22,43,46],
+            "counts": [11610,0,0,0,0],
+            "counts_uncertainty": [113.4,0,0,0,0],
+            "coincidence_factor": [0.9984,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.005,
+            "density_gcm3": 19.30,
+            "foil_material": "au"
+        },
+
+    "Na24": {
+            "live_time": 8644,
+            "datetime": [2024,3,28, 20,0,42],
+            "counts": [8539.92,4245.37,0,0,0],
+            "counts_uncertainty": [93.807,65.6465,0,0,0],
+            "coincidence_factor": [0.822,0.837,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 2.7,
+            "foil_material": "al"
+        },
+
+    "Ni65": {
+            "live_time": 929,
+            "datetime": [2024,3,28, 18,58,33],
+            "counts": [75,118.6,0,0,0],
+            "counts_uncertainty": [10.8,12.3,0,0,0],
+            "coincidence_factor": [1.02,0.938,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 8.96,
+            "foil_material": "cu"
+        },
+    "Cu64": {
+            "live_time": 929,
+            "datetime": [2024,3,28, 18,58,33],
+            "counts": [41.92,0,0,0,0],
+            "counts_uncertainty": [8.33,0,0,0,0],
+            "coincidence_factor": [1,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 8.96,
+            "foil_material": "cu",
+            "pathway_probabilities": [0.342,0.658]
+        },
+
+    "Cd111m": {
+            "live_time": 1536,
+            "datetime": [2024,3,28, 19,24,23],
+            "counts": [13510,5805.5,0,0,0],
+            "counts_uncertainty": [119,82.9,0,0,0],
+            "coincidence_factor": [1,1,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.0034,
+            "density_gcm3": 8.64,
+            "foil_material": "cd",
+            "pathway_probabilities": [0.02776,0.80484,0.16737]
+        },
+    "Cd115": {
+            "live_time": 1536,
+            "datetime": [2024,3,28, 19,24,23],
+            "counts": [253.8,71.3,0,0,0],
+            "counts_uncertainty": [18.6,11.9,0,0,0],
+            "coincidence_factor": [1,1,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.0034,
+            "density_gcm3": 8.64,
+            "foil_material": "cd",
+            "pathway_probabilities": [0.72795,0.27205]
+        },
+    "In117": {
+            "live_time": 1536,
+            "datetime": [2024,3,28, 19,24,23],
+            "counts": [253.8,0,0,0,0],
+            "counts_uncertainty": [18.6,0,0,0,0],
+            "coincidence_factor": [0.807,0,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.0034,
+            "density_gcm3": 8.64,
+            "foil_material": "cd"
+        },
+
+
+    "In115m": {
+            "live_time": 459,
+            "datetime": [2024,3,28, 19,51,24],
+            "counts": [24551.91,0,0,0,0],
+            "counts_uncertainty": [220.32,0,0,0,0],
+            "coincidence_factor": [1,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 7.31,
+            "foil_material": "in"
+        },
+    "In116m": {
+            "live_time": 459,
+            "datetime": [2024,3,28, 19,51,24],
+            "counts": [276501.6,0,0,0,0],
+            "counts_uncertainty": [2386.8,0,0,0,0],
+            "coincidence_factor": [0.947,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 7.31,
+            "foil_material": "in"
+        },
+
+    "Ni57": {
+            "live_time": 274848.9,
+            "datetime": [2024,3,29, 11,29,26],
+            "counts": [7419.6,0,0,0,0],
+            "counts_uncertainty": [101.676,0,0,0,0],
+            "coincidence_factor": [0.963,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.1,
+            "density_gcm3": 8.9,
+            "foil_material": "ni"
+        },
+    "Co58": {
+            "live_time": 274848.9,
+            "datetime": [2024,3,29, 11,29,26],
+            "counts": [7419.6,0,0,0,0],
+            "counts_uncertainty": [101.676,0,0,0,0],
+            "coincidence_factor": [0.9987,0,0,0,0],
+            "foil_radius_cm": 0.75,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.1,
+            "density_gcm3": 8.9,
+            "foil_material": "ni"
+        },
+
+    "Dy165": {
+            "live_time": 44220,
+            "datetime": [2024,3,28, 23,8,18],
+            "counts": [0,1943,0,0,0],
+            "counts_uncertainty": [0,83.6,0,0,0],
+            "coincidence_factor": [0,1,0,0,0],
+            "foil_radius_cm": 0.5,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.0051,
+            "density_gcm3": 8.551,
+            "foil_material": "dy"
+        },
+    "Dy157": {
+            "live_time": 44220,
+            "datetime": [2024,3,28, 23,8,18],
+            "counts": [2332,0,0,0,0],
+            "counts_uncertainty": [104.1,0,0,0,0],
+            "coincidence_factor": [1,0,0,0,0],
+            "foil_radius_cm": 0.5,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.0051,
+            "density_gcm3": 8.551,
+            "foil_material": "dy",
+            "pathway_probabilities": [0.73696,0.26304]
+        },
+
+    "Nb92m": {
+            "live_time": 24133,
+            "datetime": [2024,4,3, 10,16,14],
+            "counts": [3861,0,0,0,0],
+            "counts_uncertainty": [67.5,0,0,0,0],
+            "coincidence_factor": [0.8158,0,0,0,0],
+            "foil_radius_cm": 0.6,
+            "calibration": "B03_hpge_endcap",
+            "thickness_cm": 0.05,
+            "density_gcm3": 8.4,
+            "foil_material": "nb"
+        }
+}

@@ -1,0 +1,12 @@
+{
+    "121.7817" : {"efficiency" : 0.000972425, "uncertainty": 5.00169E-05 , "correction_factor": 1 },
+    "244.6974" : {"efficiency" : 0.00074166 , "uncertainty": 4.19527E-05 , "correction_factor": 1 },
+    "344.2785" : {"efficiency" : 0.000563953, "uncertainty": 2.94885E-05 , "correction_factor": 1 },
+    "443.9606" : {"efficiency" : 0.000471526, "uncertainty": 3.54344E-05 , "correction_factor": 1 },
+    "778.9045" : {"efficiency" : 0.00029065 , "uncertainty": 1.69317E-05 , "correction_factor": 1 },
+    "867.3800" : {"efficiency" : 0.000267581, "uncertainty": 2.07387E-05 , "correction_factor": 1 },
+    "964.0570" : {"efficiency" : 0.000249694, "uncertainty": 1.4535E-05  , "correction_factor": 1 },
+    "1085.837" : {"efficiency" : 0.000241937, "uncertainty": 1.49791E-05 , "correction_factor": 1 },
+    "1112.076" : {"efficiency" : 0.00022527 , "uncertainty": 1.33982E-05 , "correction_factor": 1 },
+    "1408.013" : {"efficiency" : 0.000191711, "uncertainty": 1.09422E-05 , "correction_factor": 1 }
+}

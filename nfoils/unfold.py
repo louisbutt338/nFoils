@@ -960,12 +960,10 @@ class BayesianUnfolding:
                                                         param_aves,
                                                         param_stds,
                                                         cutoff)
-
+        
         # get raw uncertainty and dump spectrum+uncert
-        print(f'total flux = {np.sum(mean_spectrum)} n/cm2/s')
+        print(f'total spectrum flux = {np.sum(mean_spectrum)} n/cm2/s')
         uncert_spectrum=[(i-j) for i,j in zip(max_spectrum,mean_spectrum)]
-        frac_uncert = np.divide(uncert_spectrum, mean_spectrum)
-        print(f'mean spectrum uncertainty = {np.mean(frac_uncert)}')
         np.savetxt(f'{txtname}.txt', 
                    np.transpose([mean_spectrum,uncert_spectrum]))
 

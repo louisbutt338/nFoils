@@ -1,0 +1,83 @@
+{
+    "dy164_ng": {
+            "mat_number": 661640,
+            "mt_value": 102,
+            "density_gcm3": 8.551,
+            "mass_g": 0.0435,
+            "thickness_cm": 0.0051,
+            "foil_atomic_mass": 162.5,
+            "isotope_abundance": 0.283
+        },
+    "au197_ng": {
+            "mat_number": 791970,
+            "mt_value": 102,
+            "density_gcm3": 19.3,
+            "mass_g": 0.1498,
+            "thickness_cm": 0.005,
+            "foil_atomic_mass": 197,
+            "isotope_abundance": 1
+        },
+    "in115_nn'": {
+            "mat_number": 491150,
+            "mt_value": 4,
+            "density_gcm3": 7.29,
+            "mass_g": 0.6452,
+            "thickness_cm": 0.05,
+            "foil_atomic_mass": 114.818,
+            "isotope_abundance": 0.957
+        },
+    "cu65_np": {
+            "mat_number": 290650,
+            "mt_value": 103,
+            "density_gcm3": 8.83,
+            "mass_g": 0.7877,
+            "thickness_cm": 0.05,
+            "foil_atomic_mass": 63.546,
+            "isotope_abundance": 0.309
+        },
+    "fe56_np": {
+            "mat_number": 260560,
+            "mt_value": 103,
+            "density_gcm3": 7.874,
+            "mass_g": 1.4440,
+            "thickness_cm": 0.1,
+            "foil_atomic_mass": 55.845,
+            "isotope_abundance": 0.91754
+        },
+    "al27_na": {
+            "mat_number": 130270,
+            "mt_value": 107,
+            "density_gcm3": 2.7,
+            "mass_g": 0.2334,
+            "thickness_cm": 0.05,
+            "foil_atomic_mass": 26.982,
+            "isotope_abundance": 1
+        },
+    "au197_n2n": {
+            "mat_number": 791970,
+            "mt_value": 16,
+            "density_gcm3": 19.3,
+            "mass_g": 0.1498,
+            "thickness_cm": 0.005,
+            "foil_atomic_mass": 197,
+            "isotope_abundance": 1
+        },
+    "nb93_n2n": {
+            "mat_number": 410930,
+            "mt_value": 16,
+            "density_gcm3": 8.57,
+            "mass_g": 0.7317,
+            "thickness_cm": 0.05,
+            "foil_atomic_mass": 92.906,
+            "isotope_abundance": 1
+        },
+    "ni58_n2n": {
+            "mat_number": 280580,
+            "mt_value": 16,
+            "density_gcm3": 8.90,
+            "mass_g": 1.5845,
+            "thickness_cm": 0.1,
+            "foil_atomic_mass": 58.69,
+            "isotope_abundance": 0.681
+        }
+}

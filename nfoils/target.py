@@ -109,7 +109,7 @@ class TargetAnalysis:
         Returns
         -------
         lithium7_xs : float
-            Real lithium 7 cross section 
+            Real lithium 7 be7 prod cross section 
         """
         lithium7_xs = (1e27*no_isotopes)/(target_atoms*beam_flux*0.925)
         return lithium7_xs

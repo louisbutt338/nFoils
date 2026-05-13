@@ -743,8 +743,8 @@ class BayesianUnfolding:
             spectrum_leth.append(j/leth)
         return spectrum_leth
     
-    def get_spectra(self,model,param_aves,param_stds,cutoff=None):
-        """ get spectra from the model params
+    def get_spectra(self,model,param_aves,param_cov,cutoff=None):
+        """ get spectra from the model params and cov matrix
 
         Parameters
         ----------
@@ -752,8 +752,8 @@ class BayesianUnfolding:
             set to the model function
         param_aves : list[float]
             mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
+        param_cov : list[float]
+            covariance matrix for the parameters
         cutoff : int
             number of unphysical values 
             to cut off from the end of the spectrum
@@ -772,19 +772,28 @@ class BayesianUnfolding:
         # shorthand for the unfolding group structure
         gs = self.group_structure
 
-        # calculate max/min parameters and convert all to tuples
-        param_ave_array = np.array(param_aves)
-        param_std_array = np.array(param_stds)
-        theta_max = tuple(param_ave_array + param_std_array)
-        theta_min = tuple(param_ave_array - param_std_array)
+        # calculate the initial guess spectrum w the model 
         theta_guesses = tuple(self.guesses)
-
-        # calculate mean, max, min, initial guess spectra
-        max_spectrum = [model(theta_max,i) for i in gs]
-        min_spectrum = [model(theta_min,i) for i in gs]
         guess_spectrum = [model(theta_guesses,i) for i in gs]
-        mean_spectrum = [np.mean([i,j]) for i,j 
-                         in zip(min_spectrum,max_spectrum)]
+        
+        # need to sample from parameter distributions to produce
+        # a distribution of spectra, then find the mean and std 
+        # spectra from the distribution
+
+        # generate random samples from the parameter distribution
+        param_ave_array = np.array(param_aves)
+        param_cov_array = np.array(param_cov)
+        param_samples = np.random.multivariate_normal(mean=param_ave_array,
+                                                      cov=param_cov_array,
+                                                      size=1000)
+        # calculate mean, max, min spectra
+        spectrum_samples = np.array([[model(i,j) for j in gs]
+                            for i in param_samples])
+        spectrum_samples[np.isnan(spectrum_samples)]=0
+        mean_spectrum = np.mean(spectrum_samples[:,0:len(gs)],axis=0)
+        std_spectrum = np.std(spectrum_samples[:,0:len(gs)],axis=0)
+        max_spectrum = mean_spectrum + std_spectrum
+        min_spectrum = mean_spectrum - std_spectrum
 
         # remove preset unphysical values from spectra
         if cutoff != None:
@@ -797,32 +806,27 @@ class BayesianUnfolding:
         return (mean_spectrum,max_spectrum,
                 min_spectrum,guess_spectrum)
     
-    def plot_simple_spectrum(self,model,param_aves,param_stds,
-                             cutoff=None,plotname='spectrum'):
+    def plot_simple_spectrum(self,mean_spectrum,max_spectrum,
+                             min_spectrum,guess_spectrum,
+                             plotname='spectrum'):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. simple linear plot
 
         Parameters
         ----------
-        model : callable 
-            set to the model function
-        param_aves : list[float]
-            mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
-        cutoff : int
-            number of unphysical values 
-            to cut off from the end of the spectrum
+        mean_spectrum : list[float]
+            the solution spectrum
+        max_spectrum : list[float]
+            the upper bound spectrum
+        min_spectrum : list[float]
+            the lower bound spectrum
+        guess_spectrum : list[float]
+            the prior guess spectrum
         plotname : str
             name of the spectrum plot
         """
         # get all the spectra and the group structure
         gs = self.group_structure
-        (mean_spectrum,max_spectrum,
-        min_spectrum,guess_spectrum) = self.get_spectra(model,
-                                                        param_aves,
-                                                        param_stds,
-                                                        cutoff)
 
         # plot solution and prior spectrum guess
         fig, ax = plt.subplots(1,figsize=(10,6))
@@ -845,35 +849,33 @@ class BayesianUnfolding:
         plt.savefig(f'{plotname}.png')
 
 
-    def plot_split_spectrum(self,model,param_aves,param_stds,
-                            cutoff=None,plotname='spectrum'):
+    def plot_split_spectrum(self,mean_spectrum,max_spectrum,
+                            min_spectrum,guess_spectrum,
+                            plotname='spectrum',cutoff=None):
         """ plot solution spectrum+uncertainty and initial
         parameter guess spectrum. split log-linear plot
 
         Parameters
         ----------
-        model : callable 
-            set to the model function
-        param_aves : list[float]
-            mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
+        mean_spectrum : list[float]
+            the solution spectrum
+        max_spectrum : list[float]
+            the upper bound spectrum
+        min_spectrum : list[float]
+            the lower bound spectrum
+        guess_spectrum : list[float]
+            the prior guess spectrum
+        plotname : str
+            name of the spectrum plot
         cutoff : int
             number of unphysical values 
             to cut off from the end of the spectrum
-        plotname : str
-            name of the spectrum plot
         """
 
         # get all the spectra and the group structure
         gs = self.group_structure
-        (mean_spectrum,max_spectrum,
-        min_spectrum,guess_spectrum) = self.get_spectra(model,
-                                                        param_aves,
-                                                        param_stds,
-                                                        cutoff)
         
-        # cutoff swithces for the C/T graph
+        # cutoff switches for the C/T graph
         if cutoff!= None:
             gs_cutoff = gs[:-cutoff]
             ones_cutoff = np.ones(len(gs[:-cutoff]))
@@ -936,31 +938,19 @@ class BayesianUnfolding:
         plt.subplots_adjust(wspace=0.04, hspace=0.1)
         plt.savefig(f'{plotname}.png')
 
-    def dump_spectrum(self,model,param_aves,param_stds,
-                      cutoff=None,txtname='spectrum'):
+    def dump_spectrum(self,mean_spectrum,max_spectrum,
+                      txtname='spectrum'):
         """ dump spectrum for further analysis
 
         Parameters
         ----------
-        model : callable 
-            set to the model function
-        param_aves : list[float]
-            mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
-        cutoff : int
-            number of unphysical values 
-            to cut off from the end of the spectrum
+        mean_spectrum : list[float]
+            the solution spectrum
+        max_spectrum : list[float]
+            the upper bound spectrum
         txtname : str
             name of the dumped spectrum txt file
         """
-        # get all the spectra and the group structure
-        (mean_spectrum,max_spectrum,
-        min_spectrum,guess_spectrum) = self.get_spectra(model,
-                                                        param_aves,
-                                                        param_stds,
-                                                        cutoff)
-        
         # get raw uncertainty and dump spectrum+uncert
         print(f'total spectrum flux = {np.sum(mean_spectrum)} n/cm2/s')
         uncert_spectrum=[(i-j) for i,j in zip(max_spectrum,mean_spectrum)]
@@ -969,13 +959,12 @@ class BayesianUnfolding:
 
     def residual_sum_squares(self,spectrum):
         """ find residual sum of sqaures for reaction rates, for 
-        a given converged unfolding model
+        a given spectrum in the problem group structure
 
-        
         Parameters
         ----------
         spectrum : list[float]
-            final unfolded spectrum
+            spectrum in the problem structure
 
         Returns
         -------
@@ -988,57 +977,39 @@ class BayesianUnfolding:
         rss = np.sum(squares_list)
         return rss
 
-    def get_bic(self,model,param_aves,param_stds,cutoff=None):
+    def get_bic(self,mean_spectrum):
         """ calculate bayesian information criterion, 
-        for a given converged unfolding model
+        for a given solution spectrum
 
         Parameters
         ----------
-        model : callable 
-            set to the model function
-        param_aves : list[float]
-            mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
-        cutoff : int
-            number of unphysical values 
-            to cut off from the end of the spectrum
+        mean_spectrum : list[float]
+            the solution spectrum in the group structure
 
         Returns
         -------
         bic : float
             Bayesian information criterion for model
         """
-        mean_spectrum= self.get_spectra(model,param_aves,
-                                        param_stds,cutoff)[0]
         rss = self.residual_sum_squares(mean_spectrum)
         num_rrs = len(self.reaction_rates)
         bic = (num_rrs*np.log(rss/num_rrs) + self.nparam*np.log(num_rrs))
         return bic
     
-    def get_chi_squared(self,model,param_aves,param_stds,cutoff=None):
+    def get_chi_squared(self,mean_spectrum):
         """ calculate reduced chi squared between a set of measurements, 
-        and a set of model predictions
+        and a set of solution spectrum predictions
 
         Parameters
         ----------
-        model : callable 
-            set to the model function
-        param_aves : list[float]
-            mean values for the parameters
-        param_stds : list[float]
-            standard deviation values for the parameters
-        cutoff : int
-            number of unphysical values 
-            to cut off from the end of the spectrum
+        mean_spectrum : list[float]
+            the solution spectrum in the group structure
 
         Returns
         -------
         reduced_chi_squared : float
             reduced chi square between measurements and predictions
         """
-        mean_spectrum= self.get_spectra(model,param_aves,
-                                        param_stds,cutoff)[0]
         predicted = [np.dot(i,mean_spectrum) for i in self.response_matrix]
         observed = np.concatenate(self.reaction_rates)
         uncerts = np.concatenate(self.reaction_rate_uncerts)

@@ -104,6 +104,6 @@ if __name__ == '__main__':
         np.savetxt('params.txt', np.transpose(params))
         np.savetxt('cov_matrix.txt', np.transpose(cov_matrix))
 
-        # lazy stdev calculation and plot spectrum
-        stds = np.diag(np.sqrt(cov_matrix))
-        unfold.plot_simple_spectrum(model,params,stds)
+        # calculate the distribution of spectra and plot them
+        all_spectra = unfold.get_spectra(model,params,cov_matrix)
+        unfold.plot_simple_spectrum(*all_spectra)

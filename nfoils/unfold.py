@@ -786,10 +786,13 @@ class BayesianUnfolding:
         param_samples = np.random.multivariate_normal(mean=param_ave_array,
                                                       cov=param_cov_array,
                                                       size=1000)
-        # calculate mean, max, min spectra
+        
+        # simulate the spectrum for the parameter samples
         spectrum_samples = np.array([[model(i,j) for j in gs]
                             for i in param_samples])
         spectrum_samples[np.isnan(spectrum_samples)]=0
+
+        # calculate mean, max, min spectra
         mean_spectrum = np.mean(spectrum_samples[:,0:len(gs)],axis=0)
         std_spectrum = np.std(spectrum_samples[:,0:len(gs)],axis=0)
         max_spectrum = mean_spectrum + std_spectrum

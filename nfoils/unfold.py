@@ -834,11 +834,11 @@ class BayesianUnfolding:
         # plot solution and prior spectrum guess
         fig, ax = plt.subplots(1,figsize=(10,6))
         ax.step(gs, guess_spectrum,
-                label='Prior guess',c='blue',where='pre')
+                label='Prior guess',c='b',where='pre')
         ax.step(gs, mean_spectrum,
-                label='Solution',c='magenta',where='pre')
+                label='Solution',c='m',where='pre')
         ax.fill_between(gs, min_spectrum,max_spectrum,
-                        alpha=0.25,step='pre')
+                        alpha=0.2,step='pre',color='m')
         #ax.set_xscale('log')
         ax.set_xlim(0,20)
         ax.set_xlabel('Neutron energy (MeV)')
@@ -890,23 +890,23 @@ class BayesianUnfolding:
                                     gridspec_kw={'width_ratios': [1, 2],
                                                  'height_ratios': [4, 1]}))
         # plot a priori, solution and uncertainty 
-        ax1.step(gs, guess_spectrum, label='Prior guess',where='pre',c='blue')
-        ax2.step(gs, guess_spectrum, label='Prior guess',where='pre',c='blue')
-        ax1.step(gs, mean_spectrum, label='Solution', where='pre',c='magenta')
-        ax2.step(gs, mean_spectrum, label='Solution', where='pre',c='magenta')
-        ax1.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.25)
-        ax2.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.25)
+        ax1.step(gs, guess_spectrum, label='Prior guess',where='pre',c='b')
+        ax2.step(gs, guess_spectrum, label='Prior guess',where='pre',c='b')
+        ax1.step(gs, mean_spectrum, label='Solution', where='pre',c='m')
+        ax2.step(gs, mean_spectrum, label='Solution', where='pre',c='m')
+        ax1.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.2,color='m')
+        ax2.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.2,color='m')
 
         # plot C/T graph with uncertainty
         soln_ct = np.array(mean_spectrum)/np.array(guess_spectrum)
         min_ct = np.array(min_spectrum)/np.array(guess_spectrum)
         max_ct = np.array(max_spectrum)/np.array(guess_spectrum)
-        ax3.step(gs, soln_ct, where='pre',c='magenta')
-        ax4.step(gs, soln_ct, where='pre',c='magenta')
-        ax3.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.25)
-        ax4.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.25)
-        ax3.step(gs_cutoff, ones_cutoff, where='post',c='blue')
-        ax4.step(gs_cutoff, ones_cutoff, where='post',c='blue')
+        ax3.step(gs, soln_ct, where='pre',c='m')
+        ax4.step(gs, soln_ct, where='pre',c='m')
+        ax3.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.2,color='m')
+        ax4.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.2,color='m')
+        ax3.step(gs_cutoff, ones_cutoff, where='post',c='b')
+        ax4.step(gs_cutoff, ones_cutoff, where='post',c='b')
 
         # plotting parameters for all 4 graphs 
         ax1.set_xscale('log')

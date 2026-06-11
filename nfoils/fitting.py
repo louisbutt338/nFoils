@@ -215,7 +215,7 @@ class CurveFitter:
         plt.scatter(self.x_data, self.y_data,
                     label="Data", c='r',marker='o',lw=2)
         plt.plot(self.interpolation_range, solutions,
-                 label="Fitted Curve", color='blue')
+                 label="Polynomial function", color='blue')
         plt.fill_between(self.interpolation_range,
                          solutions-standard_dev, solutions+standard_dev,
                          step='post', alpha=0.25)
@@ -226,6 +226,7 @@ class CurveFitter:
         #plt.ylim(-0.05,0.3)
         plt.xlabel("Gamma energy (keV)")
         plt.ylabel("Efficiency")
+        plt.tight_layout()
         plt.savefig("mc_function.png")
         plt.close()
 
@@ -234,9 +235,10 @@ class CurveFitter:
         plt.scatter( self.x_data, residuals,c='r',marker='o',lw=2)
         plt.errorbar(self.x_data, residuals,yerr=self.errors,lw=2,
                      capsize=2,color='k',zorder=-1,fmt='none')
-        plt.title("Plot of the residual of the fit")
+        #plt.title("Plot of the residual of the fit")
         plt.xlabel("Gamma energy (keV)")
         plt.ylabel("Residual")
+        plt.tight_layout()
         plt.savefig("mc_residuals.png")
         plt.close()
 

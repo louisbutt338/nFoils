@@ -312,7 +312,7 @@ class PostprocessReactions(NuclearData):
         ax1.set_ylim(1e0, 2e2)
         ax1.set_xscale('log')
         ax1.grid()
-        ax2.set_xlim(1, 18)
+        ax2.set_xlim(1, 20)
         ax2.set_ylim(1e0, 2e2)
         ax2.tick_params(axis='y', left=False, labelleft=False)
         ax2.grid()
@@ -354,6 +354,7 @@ class PostprocessReactions(NuclearData):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8),
                                        gridspec_kw={'width_ratios': [2, 3.5]},
                                        tight_layout=True)
+        #fig,ax2 = plt.subplots(1, figsize=(12, 8),tight_layout=True)
         color = iter(plt.cm.rainbow(np.linspace(0, 1, len(material_list))))
 
         # loop through specified materials and MT values
@@ -398,7 +399,7 @@ class PostprocessReactions(NuclearData):
         ax1.set_xscale('log')
         ax1.set_yscale('log')
         ax1.grid()
-        ax2.set_xlim(1e0, 18)
+        ax2.set_xlim(1, 20)
         ax2.set_ylim(1e-11, 1e3)
         ax2.set_yscale('log')
         ax2.tick_params(axis='y', left=False, labelleft=False)

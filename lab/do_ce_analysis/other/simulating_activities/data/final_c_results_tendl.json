@@ -1,0 +1,14 @@
+{
+    "Au196": {
+        "reaction_rates":[593],
+        "reaction_rate_uncertainties":[72],
+    },
+    "Nb92m": {
+        "reaction_rates":[1669],
+        "reaction_rate_uncertainties":[72],
+    },
+    "Ni57": {
+        "reaction_rates":[102],
+        "reaction_rate_uncertainties":[4],
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "fe56_np": {
+            "mat_number": 260560,
+            "mt_value": 103,
+            "density_gcm3": 7.874,
+            "mass_g": 1.4440,
+            "thickness_cm": 0.1,
+            "foil_atomic_mass": 55.845,
+            "isotope_abundance": 0.91754
+        }
+}

@@ -1,0 +1,11 @@
+{
+    "li7_d2n": {
+            "mat_number": 30070,
+            "mt_value": 16,
+            "density_gcm3": 0.534,
+            "mass_g": 0.0302,
+            "thickness_cm": 0.05,
+            "foil_atomic_mass": 6.941,
+            "isotope_abundance": 0.95
+        }
+}

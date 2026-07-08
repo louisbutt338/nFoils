@@ -1,0 +1,21 @@
+{
+    "Au196": {
+        "foil_weight":0.1498,
+        "mathmode_name":"$^{196}Au$",
+        "spectrum_fractional_uncertainty": 0.20155,
+        "self_shielding_factor":1,
+        "pathway_probabilities":[1]
+    },
+    "Nb92m": {
+        "foil_weight":0.7317,
+        "mathmode_name":"$^{92m}Nb$",
+        "spectrum_fractional_uncertainty": 0.2019645,
+        "self_shielding_factor":1
+    },
+    "Ni57": {
+        "foil_weight":1.5845,
+        "mathmode_name":"$^{57}Ni$",
+        "spectrum_fractional_uncertainty": 0.20763,
+        "self_shielding_factor":1
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "Be7": {
+        "activities": [
+            215169.5268109098
+        ],
+        "activity_uncertainties": [
+            9600.955314899067
+        ],
+        "pathway_probabilities": [
+            1
+        ],
+        "reaction_rates": [
+            1189603241.101949
+        ],
+        "reaction_rate_uncertainty": [
+            53080599.88585621
+        ]
+    }
+}

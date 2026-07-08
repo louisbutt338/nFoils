@@ -60,9 +60,12 @@ measurements, using [actigamma](https://github.com/fispact/actigamma)
 
 ## Case studies
 
-- Analysis scripts for the initial characterisation of a Birmingham proton-lithium neutron source are available in 
-*/materials/proton_lithium_march2024/*, as an appendix to a manuscript currently in review (link to be provided soon)
-- Slides on the unfolding algorithm, presented at OSSFE2026, are also available in */materials/*
+- The scripts used for the analyses featured in three manuscripts, and the results, are available in */lab/*. The papers 
+are currently in review, and will be linked here on publication. Note that 
+'Dosimetry foil characterisation of a new lithium-target fast neutron source' analyses are in *proton_march24* folders, 
+'Neutron production from deuterons on lithium at 9.7 and 14 MeV analyses' are in *deuteron_nov24* and *deuteron_sep25* folders, 
+and 'Bayesian inference of fast neutron spectra with dosimetry foils' are in *unfolding_paper* folders.
+- Slides on the unfolding algorithm, presented at OSSFE2026, are available in */materials/*
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 
 Fusion Environment Impact on Materials, part-funded by EPSRC (grant number EP/W006839/1). It was also supported 

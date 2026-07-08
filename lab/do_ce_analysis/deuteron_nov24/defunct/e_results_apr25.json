@@ -1,0 +1,86 @@
+{
+    "Mn56": {
+        "root_values":[0,0],
+        "interspec_values":[10193.4 , 581.699]
+    },
+    "Au196": {
+        "root_values":[0,0],
+        "interspec_values":[54.2236 ,3.34138]
+    },
+    "Au198": {
+        "root_values":[0,0],
+        "interspec_values":[463.426 , 26.6484]
+    },
+    "Na24": {
+        "root_values":[0,0],
+        "interspec_values":[979.525 , 57.5317]
+    },
+    "Mg27": {
+        "root_values":[0,0],
+        "interspec_values":[69426.2, 4076.64 ]
+    },
+    "Ni65": {
+        "root_values":[0,0],
+        "interspec_values":[535.885 , 37.5782]
+    },
+    "Cu64": {
+        "root_values":[0,0],
+        "interspec_values":[1456.31 , 280.006]
+    },
+    "Cd111m": {
+        "root_values":[0,0],
+        "interspec_values":[5214.02, 297.806]
+    },
+    "In117": {
+        "root_values":[0,0],
+        "interspec_values":[31.4666, 3.60109 ]
+    },
+    "In115m": {
+        "root_values":[0,0],
+        "interspec_values":[15863.1, 905.209 ]
+    },
+    "In116m": {
+        "root_values":[0,0],
+        "interspec_values":[83163.1 , 4742.37]
+    },
+    "Ni57": {
+        "root_values":[0,0],
+        "interspec_values":[32.9396 ,  2.54821]
+    },
+    "Co58": {
+        "root_values":[0,0],
+        "interspec_values":[115.955 , 7.00397 ]
+    },
+    "Co61": {
+        "root_values":[0,0],
+        "interspec_values":[195.452 , 25.8059]
+    },
+    "Co57": {
+        "root_values":[0,0],
+        "interspec_values":[14.8243 , 1.11569]
+    },
+    "Dy165": {
+        "root_values":[0,0],
+        "interspec_values":[1715.68, 130.11]
+    },
+    "Dy157": {
+        "root_values":[0,0],
+        "interspec_values":[2.90828 , 0.369817]
+    },
+    "Sc44m": {
+        "root_values":[0,0],
+        "interspec_values":[1034.25 , 127.482]
+    },
+    "Tc101": {
+        "root_values":[0,0],
+        "interspec_values":[644.554 , 62.3989]
+    },
+    "Rh101m": {
+        "root_values":[0,0],
+        "interspec_values":[4.358202608872218 , 0.8981278956376112]
+    },
+    "Y90m": {
+        "root_values":[0,0],
+        "interspec_values":[30.5368 , 1.91068]
+    }
+}

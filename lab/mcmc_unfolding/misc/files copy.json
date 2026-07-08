@@ -1,0 +1,8 @@
+{
+    "reaction_rates": "data_linear_gs/reaction_rates.txt",
+    "reaction_rate_uncerts": "data_linear_gs/reaction_rate_uncertainties.txt",
+    "reaction_rate_labels": "data_linear_gs/reaction_rate_labels.txt",
+    "response_matrix": "data_linear_gs/for_unfolding_51/response_matrix.txt",
+    "response_matrix_uncerts": "data_linear_gs/for_unfolding_51/response_matrix_uncertainties.txt",
+    "group_structure": "data_linear_gs/for_unfolding_51/group_structure.txt"
+}

@@ -1,0 +1,20 @@
+{
+    "B03_hpge_endcap": {
+            "foil_distance_cm": 1,
+            "detector_radius_cm": 3.25,
+            "efficiency_equation_parameters": [-23.31856, 11.3172, -1.926, 0.101795],
+            "efficiency_curve_fractional_uncertainty":  0.03773
+        },
+    "G11_bege_endcap": {
+            "foil_distance_cm": 0.4,
+            "detector_radius_cm": 3.75,
+            "efficiency_equation_parameters": [-25.7209, 13.8415, -2.48, 0.1352],
+            "efficiency_curve_fractional_uncertainty":  0.0375 
+        },
+    "B03_hpge_shelf": {
+            "foil_distance_cm": 38,
+            "detector_radius_cm": 3.25,
+            "efficiency_equation_parameters": [-27.749, 11.12167, -1.893544, 0.099985],
+            "efficiency_curve_fractional_uncertainty": 0.04415
+        }
+}

@@ -1,0 +1,16 @@
+/Users/ljb841@student.bham.ac.uk/anaconda3/envs/nfoils/lib/python3.13/site-packages/emcee/moves/red_blue.py:99: RuntimeWarning: invalid value encountered in scalar subtract
+  lnpdiff = f + nlp - state.log_prob[j]
+running sampler for response matrix sample 1
+running sampler for response matrix sample 2
+running sampler for response matrix sample 3
+running sampler for response matrix sample 4
+running sampler for response matrix sample 5
+Mean acceptance fraction: 0.316
+Parameter results:
+sigma1 = 0.326 +- 0.020
+peak1 = 370969.740 +- 31041.189
+sigma2 = 0.616 +- 0.131
+peak2 = 168080.589 +- 42006.835
+mode4 = 0.449 +- 0.114
+peak4 = 2271091.469 +- 1083588.367
+BIC = 155.89941622822985

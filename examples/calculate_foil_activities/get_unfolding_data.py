@@ -1,7 +1,7 @@
-""" example for extracting single reaction rate data for unfolding a 
-neutron spectrum
+""" example for extracting single reaction rate data for unfolding an 
+incident particle energy spectrum
 """
-from nfoils.activity import ReactionRateRetrieval
+from bfoils.activity import ReactionRateRetrieval
 
 # folder to look into and print results
 exp_folder = '.'

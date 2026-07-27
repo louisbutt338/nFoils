@@ -6,7 +6,7 @@ develop further for optimisation study:
 - dont worry about uncertainties
 - just get approximate 'nuclear data' relative uncerts from an example spectrum run
 """
-from nfoils.fispact import JsonRetriever
+from bfoils.fispact import JsonRetriever
 
 # input working directory with the json file in 
 #upper_directory = '/Users/ljb841@student.bham.ac.uk/fispact/WORKSHOP/uBB/model_results/approach_1_p/neutrons/calibration_model2/020725_foils_sep_ssf'

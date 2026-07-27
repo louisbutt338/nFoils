@@ -16,7 +16,7 @@ src/
 /*.eggs
 
 # pycache stuff
-nfoils/__pycache__/
+bfoils/__pycache__/
 
 # vs code
 .vscode/

@@ -1,6 +1,6 @@
 """ example for postprocessing spectrum after unfolding
 """
-from nfoils.unfold import BayesianUnfolding
+from bfoils.unfold import BayesianUnfolding
 import numpy as np
 import json
 

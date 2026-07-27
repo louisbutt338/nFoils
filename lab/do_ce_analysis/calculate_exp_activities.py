@@ -1,7 +1,7 @@
 """ example for calculating foil activities
 """
 from datetime import datetime
-from nfoils.activity import ActivityCalc
+from bfoils.activity import ActivityCalc
 
 # workin dir for input data and to save results e.g 'test'
 experiment_dir = "deuteron_sep25"

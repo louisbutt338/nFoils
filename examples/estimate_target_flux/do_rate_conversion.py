@@ -2,7 +2,7 @@
 using a conversion factor, then dump into a json
 """
 import json
-from nfoils.history import RateConversion
+from bfoils.history import RateConversion
 
 # set path to the rate data txt file
 # should include:

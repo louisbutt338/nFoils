@@ -11,7 +11,7 @@ when hell freezes over
 
 ### Energy spectrum measurement
 
-nFoils was developed for measuring complex beam energy spectra with uncertainty quantification.
+bFoils was developed for measuring complex beam energy spectra with uncertainty quantification.
 This requires (a) the calculation of probability distributions for the measurement data and (b) an unfolding method 
 which takes these distributions, and estimates a distribution of likely energy spectra. 
 The method is a custom Bayesian parametric unfolding algorithm: this takes the parameterised spectrum 

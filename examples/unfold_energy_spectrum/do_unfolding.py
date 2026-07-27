@@ -2,7 +2,7 @@
 from reaction rates and response functions with uncertainties. 
 options for running in sequential or in parallel
 """
-from nfoils.unfold import BayesianUnfolding
+from bfoils.unfold import BayesianUnfolding
 import numpy as np
 import multiprocessing as mp
 
@@ -23,8 +23,8 @@ guesses = [0.8, 1e5]
 # load the unfolding data and parameter info
 unfold = BayesianUnfolding(files_json,nparam,param_names,guesses)
 
-# create neutron flux model, given parameters theta 
-# and a given neutron energy (MeV)
+# create incident particle flux model, given parameters theta 
+# and a given incident energy (MeV)
 def model(theta,energy):
 
     # unpack the tuple of parameters
@@ -38,7 +38,7 @@ def model(theta,energy):
     flux = unfold.gaussian(mean_energy,sigma,peak,energy)
     return flux
 
-# create log-prior, given parameters theta and the neutron flux model
+# create log-prior, given parameters theta and the incident flux model
 # should return log-prior distribution for the entire group structure
 def log_prior(theta,model): 
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
    weight='normal',size=20)
-from nfoils.unfold import BayesianUnfolding
+from bfoils.unfold import BayesianUnfolding
 
 # get mean spectra and max/min spectra
 spec1,uncert1 = np.loadtxt('4p_175_spectrum.txt',

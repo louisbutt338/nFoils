@@ -2,7 +2,7 @@
 efficiency measurements. measurements should include 
 coincidence summing corrections if required
 """
-from nfoils.fitting import CurveFitter
+from bfoils.fitting import CurveFitter
 
 # path to efficiency data json file
 input_data = "2025/efficiencies/b03_1cm.json"  # g11_pt4cm

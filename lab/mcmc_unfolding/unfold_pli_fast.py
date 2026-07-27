@@ -1,6 +1,6 @@
 """ unfolding fast end of proton-lithium spectrum
 """
-from nfoils.unfold import BayesianUnfolding
+from bfoils.unfold import BayesianUnfolding
 import numpy as np
 import multiprocessing as mp
 

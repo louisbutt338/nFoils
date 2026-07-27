@@ -1,14 +1,14 @@
-""" setup the nFoils package
+""" setup the bFoils package
 """
 import setuptools
 
 setuptools.setup(
-    name="nfoils",
+    name="bfoils",
     version="1.1.2",
     author="Louis Butt",
     author_email="LJB841@bham.ac.uk",
-    description="nFoils suite for foil neutron measurements",
-    url="https://github.com/louisbutt338/nFoils",
+    description="bFoils suite for foil energy spectrum measurements",
+    url="https://github.com/louisbutt338/bFoils",
     packages=setuptools.find_packages(),
     python_requires='>3.11',
     install_requires=['numpy',

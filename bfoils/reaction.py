@@ -320,7 +320,7 @@ class PostprocessReactions(NuclearData):
                    fancybox=False, facecolor='white', framealpha=1,
                    ncol=3)
         fig.supylabel(r"Standard deviation ($\%$)", y=0.55)
-        fig.supxlabel("Neutron energy (MeV)", y=0.03)
+        fig.supxlabel("Incident energy (MeV)", y=0.03)
         fig.savefig(f'percentage_uncert.png')
 
     def _export_and_plot_rf(self, material_list, mt_list, density_list,
@@ -407,7 +407,7 @@ class PostprocessReactions(NuclearData):
         ax2.legend(loc="upper right", frameon=True, fontsize=18,
                    fancybox=False, facecolor='white', framealpha=1, ncol=3)
         fig.supylabel("Response function (cm$^2$)", y=0.55)
-        fig.supxlabel("Neutron energy (MeV)", y=0.03)
+        fig.supxlabel("Incident energy (MeV)", y=0.03)
         fig.savefig('response_function.png')
 
     def run_rf(self, datafile, labels,endf_files):

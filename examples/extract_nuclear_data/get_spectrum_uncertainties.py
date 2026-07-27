@@ -1,10 +1,10 @@
-""" get the average uncertainty from an input neutron spectrum uncertainty 
+""" get the average uncertainty from an input energy spectrum uncertainty 
 array, for a specific set of nuclear reactions
 
 These can be input into the c_results file when doing c/e analysis
 """
 import numpy as np
-from nfoils.reaction import IsotopicSpectrumUncertainty
+from bfoils.reaction import IsotopicSpectrumUncertainty
 
 # set predefined sandy energy group structure
 # make sure to import sandy.energy_grids if doing this 
@@ -31,7 +31,7 @@ data_file_name = 'data/reactions.json'
 
 # set path to a spectrum data txt file, 
 # should include two columns:
-#  column 1: the neutron spectrum in arbitrary units
+#  column 1: the incident energy spectrum in arbitrary units
 #  column 2: associated raw uncertainty in the same units
 spectrum_file = 'data/spectrum.txt'
 

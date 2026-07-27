@@ -4,8 +4,8 @@ and output a correction factor to give you real current on the target
 (2) Rescale an input value by this correction i.e. neutron flux 
 (3) Print a fispact irradiation history for the target
 """
-from nfoils.target import TargetAnalysis
-from nfoils.history import IrradTimeline
+from bfoils.target import TargetAnalysis
+from bfoils.history import IrradTimeline
 
 # calculate the correction factor and uncertainty:
 

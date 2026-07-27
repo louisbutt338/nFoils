@@ -6,7 +6,7 @@ different nuclear data library simulations with FISPACT
 Use after get_activites.py, which generates the 'e_results' file.
 The FISPACT simulation results should be contained in 'data/c_results'
 """
-from nfoils.ce import CEPlotter
+from bfoils.ce import CEPlotter
 
 # path to the calculated and experimental results files to analyse
 # the final C/E plot will also be saved here
@@ -44,10 +44,10 @@ we_isotopes = [0,3]
 we_library = 'IRDFF-II'
 
 # get c/e plot with red uncertainty band representing combined 
-# uncertainty from isotopic neutron spectrum and flux estimation. 
+# uncertainty from isotopic incident particle spectrum and flux estimation. 
 # C/E error bar uncertainties values are from C and E uncertainties:
 # C value errors include (a) FISPACT uncertainties 
-# (b) isotopic neutron spectrum uncertainty, (c) flux estimation uncertainty
+# (b) isotopic incident particle spectrum uncertainty, (c) flux estimation uncertainty
 # E value errors include (a) peak fitting (b) efficiency calibration
 # also do weighted ave analysis for specified isotopes
 ce_plotter = CEPlotter(folder)

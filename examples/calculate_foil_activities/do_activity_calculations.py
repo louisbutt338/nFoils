@@ -1,7 +1,7 @@
 """ calculate experimental foil activities and reaction rates 
 from a json of foil measurements and a json of calibration curves.
 """
-from nfoils.activity import ActivityCalc
+from bfoils.activity import ActivityCalc
 from datetime import datetime
 
 # path to the directory containing the input data jsons

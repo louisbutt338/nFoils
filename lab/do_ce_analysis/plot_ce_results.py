@@ -2,7 +2,7 @@
 calculated results should have three datasets for three nuclear data libs,
  experimental should have one dataset from one experiment.
 """
-from nfoils.ce import CEPlotter
+from bfoils.ce import CEPlotter
 
 #folder
 folder = 'proton_march24'

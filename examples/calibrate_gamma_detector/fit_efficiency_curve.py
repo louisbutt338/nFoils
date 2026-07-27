@@ -1,7 +1,7 @@
 """ fit hpge efficiency functions to calibration measurements 
  with a simple monte carlo simulation
 """
-from nfoils.fitting import CurveFitter
+from bfoils.fitting import CurveFitter
 
 # set path to efficiency data json file
 # should include dictionaries for each peak energy (keV), including:

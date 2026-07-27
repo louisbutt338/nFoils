@@ -4,8 +4,8 @@ and writes a fispact history
 """
 import json
 import numpy as np
-from nfoils.target import TargetAnalysis
-from nfoils.history import IrradTimeline
+from bfoils.target import TargetAnalysis
+from bfoils.history import IrradTimeline
 
 # calculating the correction factor from cup current to target current
 

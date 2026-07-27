@@ -1,6 +1,6 @@
 """ example for summing ascii files together and plotting the result
 """
-from nfoils.ascii import AsciiSummer
+from bfoils.ascii import AsciiSummer
 
 # path to dir with asciis in
 folder_path = ('/Users/ljb841@student.bham.ac.uk/gamma_spec/data/dli_sep25/'

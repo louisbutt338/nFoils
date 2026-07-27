@@ -29,7 +29,7 @@ class BayesianUnfolding:
         files_json_path : str
             path to the files data json
         nparam : int
-            number of parameters in the neutron flux model
+            number of parameters in the incident particle flux model
         param_names : list[str]
             list of the names of the parameters
         guesses : list[float]
@@ -198,12 +198,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy MeV
+            incident energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         non_scaled_peak = stats.norm.pdf(mean,loc=mean,scale=sigma)
         scale = peak / non_scaled_peak
@@ -225,12 +225,12 @@ class BayesianUnfolding:
         skew : float
             skew of distribution
         energy : float
-            neutron energy MeV
+            incident energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         non_scaled_peak = stats.skewnorm.pdf(mean,skew,loc=mean,scale=sigma)
         scale = peak / non_scaled_peak
@@ -250,12 +250,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy MeV
+            incident energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         mu = np.log(mode) + sigma**2
         non_scaled_peak = stats.lognorm.pdf(mode,s=sigma,scale=np.exp(mu))
@@ -276,12 +276,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy MeV
+            incident energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         mode = (alpha-1)*beta
         non_scaled_peak = stats.gamma.pdf(mode,a=alpha,scale=beta)
@@ -302,12 +302,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy in MeV
+            incident energy in MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         mode = beta*((alpha-1)/beta)**(1/alpha)
         non_scaled_peak = stats.weibull_min.pdf(mode,c=alpha,scale=beta)
@@ -326,12 +326,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy in MeV
+            incident energy in MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         non_scaled_peak = np.sqrt(temp)* np.exp(-1)
         scale = peak/non_scaled_peak
@@ -352,12 +352,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy in MeV
+            incident energy in MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         non_scaled_peak = (np.sinh(np.sqrt(beta*temp))*
                            np.exp(-1))
@@ -377,12 +377,12 @@ class BayesianUnfolding:
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy in MeV
+            incident energy in MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         non_scaled_peak = temp * np.exp(-1)
         scale = peak/non_scaled_peak
@@ -404,12 +404,12 @@ class BayesianUnfolding:
         e_limit : float
             lower energy limit ~1e-7 (MeV)
         energy : float
-            neutron energy in MeV
+            incident energy in MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         term1 = 1-np.exp(-(energy/e_limit)**2)
         term2 = energy**(alpha-1)
@@ -424,16 +424,16 @@ class BayesianUnfolding:
         Parameters
         ----------
         mean : float
-            mean/thermal neutron energy ~1.53e-8 (MeV)
+            mean/thermal incident energy ~1.53e-8 (MeV)
         peak : float
             peak of the distribution (n/cm2/s)
         energy : float
-            neutron energy in MeV
+            incident energy in MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         non_scaled_peak = (1/mean)*np.exp(-1)
         scale=peak/non_scaled_peak
@@ -443,7 +443,7 @@ class BayesianUnfolding:
     
     def powerlaw(self,alpha,scale,energy):
         """ simple power law distribution. 
-        Use for the low-energy neutron spectrum
+        Use for a low-energy incident spectrum
         
         Parameters
         ----------
@@ -453,12 +453,12 @@ class BayesianUnfolding:
             scale of the distribution (n/cm2/s)
             (hypothetical flux around 1 MeV)
         energy : float
-            neutron energy MeV
+            incident energy MeV
 
         Returns
         -------
         flux : float
-            neutron flux for the given energy
+            incident flux for the given energy
         """
         flux = scale / (np.power(energy,(1-alpha)))
         return flux
@@ -474,7 +474,7 @@ class BayesianUnfolding:
         theta : tuple
             parameters
         model : callable
-            neutron flux model
+            incident particle flux model
         rr : array[array]
             array of reaction rates
         sigma_rr : array[array]
@@ -515,7 +515,7 @@ class BayesianUnfolding:
     def log_posterior(self,theta,model,log_prior,log_likelihood,
                       rr,sigma_rr,response):
         """ combined distribution for the measurements (likelihoods)
-        and the parameterised neutron spectrum (prior), for emcee to sample
+        and the parameterised incident energy spectrum (prior), for emcee to sample
         checks for non physical prior first
 
         Parameters
@@ -523,7 +523,7 @@ class BayesianUnfolding:
         theta : tuple
             parameters
         model : callable
-            neutron flux model function
+            incident particle flux model function
         log_prior : callable
             log prior function
         log_likelihood : callable
@@ -538,7 +538,7 @@ class BayesianUnfolding:
         Returns
         -------
         log_posterior : float
-            log posterior for neutron flux model, given
+            log posterior for incident particle flux model, given
             the reaction rate measurement disitribution
         """
         if not np.isfinite(log_prior(theta,model)).any():
@@ -841,7 +841,7 @@ class BayesianUnfolding:
                         alpha=0.2,step='pre',color='m')
         #ax.set_xscale('log')
         ax.set_xlim(0,20)
-        ax.set_xlabel('Neutron energy (MeV)')
+        ax.set_xlabel('Incident energy (MeV)')
         ax.set_yscale('log')
         ax.set_ylim(1e1,1e7)
         ax.set_ylabel('Flux per energy bin (n cm$^{-2}$ s$^{-1}$)')
@@ -935,7 +935,7 @@ class BayesianUnfolding:
         ax4.set_xlim(1,15)
         ax4.tick_params(axis='y',labelleft=False)
         ax4.grid()
-        fig.supxlabel('Neutron energy (MeV)',y=0.04)
+        fig.supxlabel('Incident energy (MeV)',y=0.04)
         fig.tight_layout()
         plt.show
         plt.subplots_adjust(wspace=0.04, hspace=0.1)

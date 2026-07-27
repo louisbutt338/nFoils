@@ -529,7 +529,7 @@ class ActivitySim:
         rm_u : arr
             response function uncertainties for the same reaction
         spectrum : arr
-            neutron spectrum 
+            energy spectrum 
         """
         # check if we have a multi pathway isotope
         # if so, maybe do sum of reaction rates??

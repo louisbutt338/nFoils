@@ -1,37 +1,37 @@
-# nFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
+# bFoils <img src="https://www.cmosc.org/wp-content/uploads/2020/04/tinfoil.jpg" alt="Foils image" width="100" height="60">
 
 [![MIT](http://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/louisbutt338/nfoils/develop/LICENSE)
 [![DOI:10.5281/zenodo.19108622](http://img.shields.io/badge/DOI-10.5281/zenodo.19108622-B31B1B.svg)](https://doi.org/10.5281/zenodo.19108622)
 
-Python toolkit for neutron spectrometry with activation foils
+Python toolkit for beam energy spectrometry with activation foils
 
 Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. Contributors are welcome!
-Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ 
+Please reference this code appropriately in your work - accompanying papers to be provided ~2025~ ~2026~ s
 when hell freezes over
 
-### Neutron spectrum measurement
+### Energy spectrum measurement
 
-nFoils was developed for measuring complex fast neutron spectra with uncertainty quantification.
+bFoils was developed for measuring complex beam energy spectra with uncertainty quantification.
 This requires (a) the calculation of probability distributions for the measurement data and (b) an unfolding method 
-which takes these distributions, and estimates a distribution of likely neutron spectra. 
+which takes these distributions, and estimates a distribution of likely energy spectra. 
 The method is a custom Bayesian parametric unfolding algorithm: this takes the parameterised spectrum 
 as a prior and the input data distributions as a likelihood, and then samples from the combined posterior.
 
 The package includes modules for extracting and calculating response functions, 
 calibrating a gamma detector, calculating foil activities and reaction rates, and the parametric unfolding 
-program to estimate the spectrum. Uncertainty on all inputs/outputs is considered everywhere
+program to estimate the spectrum. Uncertainty on all inputs/outputs is considered
 
-Extra tools for performing a flux estimation on a lithium target neutron source, 
-postprocessing of ASCII gamma spec files, and validating of a model/unfolded neutron spectrum by comparing 
-FISPACT activity predictions with the experimental results are also included, as a special treat just for you
+Extra tools for performing a particle flux estimation on a lithium target, 
+postprocessing of ASCII gamma spec files, and validating of a model/unfolded energy spectrum by comparing 
+activity predictions with experimental results are also included, as a special treat just for you
 
 ## Installation
 
 First set up a virtual environment with prerequisites installed \*, 
 then install a development version of the package \** with the following commands:
 ```
-git clone https://github.com/louisbutt338/nFoils.git
-cd nFoils
+git clone https://github.com/louisbutt338/bFoils.git
+cd bFoils
 pip install -r requirements.txt -e .
 ```
 
@@ -55,16 +55,12 @@ Key example folders for a basic foil measurement are:
 using [SANDY](https://github.com/luca-fiorito-11/sandy/) and [NJOY2016](https://github.com/njoy/NJOY2016)
 - *calculate_foil_activities* for measuring foil activities and uncertainties from gamma spectrum peak
 measurements, using [actigamma](https://github.com/fispact/actigamma)
-- *unfold_neutron_spectrum* for probabilistic unfolding of a neutron spectrum, using 
+- *unfold_neutron_spectrum* for probabilistic unfolding of an energy spectrum, using 
 [emcee](https://github.com/dfm/emcee) and [corner](https://github.com/dfm/corner.py)
 
 ## Case studies
 
-- The scripts used for the analyses featured in three manuscripts, and the results, are available in */lab/*. The papers 
-are currently in review, and will be linked here on publication. Note that 
-'Dosimetry foil characterisation of a new lithium-target fast neutron source' analyses are in *proton_march24* folders, 
-'Neutron production from deuterons on lithium at 9.7 and 14 MeV analyses' are in *deuteron_nov24* and *deuteron_sep25* folders, 
-and 'Bayesian inference of fast neutron spectra with dosimetry foils' are in *unfolding_paper* folders.
+- The scripts used for the analyses featured in three manuscripts, and the results, are available in */lab/*. The papers are currently in review, and will be linked here on publication.
 - Slides on the unfolding algorithm, presented at OSSFE2026, are available in */materials/*
 
 *Development was partly supported by an agreement between the University of Birmingham and UKAEA on a Joint Research Laboratory for 

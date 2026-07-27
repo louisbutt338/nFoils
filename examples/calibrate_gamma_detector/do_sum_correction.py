@@ -1,7 +1,7 @@
 """ do a simple coincidence summing correction for
 multi peak calibration source measurements
 """
-from nfoils.coincidence import SimpleCorrection
+from bfoils.coincidence import SimpleCorrection
 
 # set path to json file with multi peak and single peak measurements inside
 # should include dictionaries for "multi_source_near", "multi_source_far",

@@ -1,7 +1,7 @@
 """ example for getting response functions for reactions
 """
 import numpy as np
-from nfoils.reaction import PostprocessReactions
+from bfoils.reaction import PostprocessReactions
 
 # set energy grid from another file
 #ek=np.fromfile('../../data/energy_grids/group_structure_175.txt', sep=" ")

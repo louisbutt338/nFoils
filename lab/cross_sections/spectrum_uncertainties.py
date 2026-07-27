@@ -1,7 +1,7 @@
 """ example for getting isotopic spectrum uncertainties
 """
 import numpy as np
-from nfoils.reaction import IsotopicSpectrumUncertainty
+from bfoils.reaction import IsotopicSpectrumUncertainty
 
 # set energy grid from another file
 #ek=np.fromfile('../../data/energy_grids/group_structure_211.txt', sep=" ")

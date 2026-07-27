@@ -5,7 +5,7 @@ will also output the used energy group structure - together these
 can be used for unfolding
 """
 import numpy as np
-from nfoils.reaction import PostprocessReactions
+from bfoils.reaction import PostprocessReactions
 
 # set predefined sandy energy group structure
 # make sure to import sandy.energy_grids if using this 

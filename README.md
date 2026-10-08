@@ -27,7 +27,7 @@ activity predictions with experimental results are also included, as a special t
 First set up a virtual environment with prerequisites installed \*, 
 then install a development version of the package \** with the following commands:
 ```
-git clone https://github.com/louisbutt338/bFoils.git
+git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
 pip install -r requirements.txt -e .
 ```
@@ -39,7 +39,7 @@ then set the path to the NJOY2016 executable with the command:
 export NJOY=/path/to/njoy
 ```
 
-\* environment should include python>=3.11.0 pip>=25.0.0 setuptools>=64.0.0 git>=2.39.5 openblas>=0.3.30
+\* environment should include pip>=25.0.0 openblas>=0.3.30
 
 \** development version encouraged, so you can adapt the code to your heart's content 
 

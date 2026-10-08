@@ -1,3 +1,27 @@
 [build-system]
 requires = ["setuptools>=64.0.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name="nfoils"
+version="1.1.4"
+description="nFoils suite for foil energy spectrum measurements"
+readme="README.md"
+licence="MIT"
+requires-python = ">=3.11"
+authors = [
+    {name = "Louis Butt" , email = "LJB841@bham.ac.uk"}
+]
+dependencies = [
+    "numpy==1.26.4",
+    "scipy==1.13.0",
+    "matplotlib==3.10.5",
+    "sandy==1.1",
+    "actigamma==0.1.5",
+    "emcee==3.1.6",
+    "corner==2.2.3"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+namespaces = false

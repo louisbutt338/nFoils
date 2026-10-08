@@ -4,22 +4,20 @@
 # Setuptools distribution folder
 dist/
 
-# c++ source build
-build/
-
-# c++ code
-src/
-
 # Python egg metadata
 /*.egg-info
 /*.egg
 /*.eggs
 
 # pycache stuff
-bfoils/__pycache__/
+nfoils/__pycache__/
 
 # vs code
 .vscode/
 
 #Linter
 .flake8
+
+#venvs
+.venv/
+venv/

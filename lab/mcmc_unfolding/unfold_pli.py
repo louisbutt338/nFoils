@@ -1,6 +1,6 @@
 """ unfolding full proton-lithium spectrum
 """
-from bfoils.unfold import BayesianUnfolding
+from nfoils.unfold import BayesianUnfolding
 import numpy as np
 import multiprocessing as mp
 

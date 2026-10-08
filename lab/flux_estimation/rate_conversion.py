@@ -3,7 +3,7 @@ using conversion factor
 """
 import json
 import numpy as np
-from bfoils.history import RateConversion
+from nfoils.history import RateConversion
 
 # path to the rate data txt file with
 # time(s) and count rate (1/s) in the two columns

@@ -6,7 +6,7 @@ different nuclear data library simulations with FISPACT
 Use after get_activites.py, which generates the 'e_results' file.
 The FISPACT simulation results should be contained in 'data/c_results'
 """
-from bfoils.ce import CEPlotter
+from nfoils.ce import CEPlotter
 
 # path to the calculated and experimental results files to analyse
 # the final C/E plot will also be saved here

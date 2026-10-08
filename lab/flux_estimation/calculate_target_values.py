@@ -4,8 +4,8 @@ and writes a fispact history
 """
 import json
 import numpy as np
-from bfoils.target import TargetAnalysis
-from bfoils.history import IrradTimeline
+from nfoils.target import TargetAnalysis
+from nfoils.history import IrradTimeline
 
 # calculating the correction factor from cup current to target current
 
@@ -19,7 +19,7 @@ analyse_target = TargetAnalysis(target_json)
 # p:[1.5979e5,0.04448] (new cal) 
 # d1: [2.15488e5,0.04469] or [2.15170e+05,0.04462]
 # d2: [5.44243e+05, 0.04445]
-isotope_activity = [2.15170e+05,0.04462]
+isotope_activity = [5.44243e+05, 0.04445]
 # halflife of be7 isotope
 isotope_halflife = 53.22*(24*3600)
 
@@ -34,17 +34,17 @@ timing_list = cup_data["cup_timings_s"]
 #current_list = [5.5,9,10]    # p:[5.5,9,10] or [8.778]
 #timing_list  = [i*60 for i in [20,67,41.5]]  # p:[20,67,41.5] or [128.5]
 
-# relative uncertainty on the current (0.06)
-current_rel_uncert = 0
+# relative uncertainty on the current (d2: 0.06)
+current_rel_uncert = 0.06
 
 # ENDFB8 7Li()7Be XS (mb) and fractional uncertainty
 # for the energy of particles in the middle of target
-# p:[33.5,0.0324] d1:[64.3,0.05] d2:[50,0.05]
-cross_section = [64.3,0.05]
+# p:[33.5,0.0324] d1:[64.3,0.07859] d2:[50,0.07859]
+cross_section = [50,0.07859]
 
 # relative uncertainty on the energy of the incident particle
 # p: 0.0125 d1: 0.0143 d2: 0.02062
-energy_rel_uncert = 0.0143
+energy_rel_uncert = 0.02062
 
 # get correction factor for rescaling FC1 current values 
 # to target current values
@@ -53,6 +53,9 @@ correction,rel_uncert = analyse_target.run(isotope_activity,isotope_halflife,
                                            cross_section,current_rel_uncert,
                                            energy_rel_uncert)
 
+
+print(rel_uncert)
+exit()
 
 # estimating target source strength and foil neutron flux
 

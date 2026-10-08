@@ -1,7 +1,7 @@
 """ example for extracting single reaction rates from experimental results 
 for use in spectra-uf
 """
-from bfoils.activity import ReactionRateRetrieval
+from nfoils.activity import ReactionRateRetrieval
 
 # folder to look into
 exp_folder = 'proton_march24'

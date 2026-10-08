@@ -4,7 +4,7 @@ array, for a specific set of nuclear reactions
 These can be input into the c_results file when doing c/e analysis
 """
 import numpy as np
-from bfoils.reaction import IsotopicSpectrumUncertainty
+from nfoils.reaction import IsotopicSpectrumUncertainty
 
 # set predefined sandy energy group structure
 # make sure to import sandy.energy_grids if doing this 

@@ -476,10 +476,12 @@ class IsotopicSpectrumUncertainty(NuclearData):
         frac_uncert : array[float]
             full spectrum fractional uncertainty array
         """
-        spectrum_data = np.fromfile(spectrum_file, sep=" ")
+        spectrum_data = np.fromfile(spectrum_file, sep=",")
         flux_vals = spectrum_data[::2]
         uncert_vals = spectrum_data[1::2]
         frac_uncert = np.divide(uncert_vals, flux_vals)
+        #spectrum_data = np.loadtxt(spectrum_file, delimiter=",")
+        #frac_uncert = np.divide(spectrum_data[1], spectrum_data[0])
         return frac_uncert
 
     def _normalise_xs(self, xs):

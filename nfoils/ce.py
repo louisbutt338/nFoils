@@ -135,7 +135,7 @@ class CEPlotter:
             X co ordinate to place the start of the legend on the plot
         """
         #initial plotting settings
-        fig, ax1 = plt.subplots(figsize=(12,6))
+        fig, ax1 = plt.subplots(figsize=(16,6))
         fig.supxlabel('Transmuted isotopes',x=0.5,y=-0.14) 
         fig.supylabel('C/E',x=0.06,y=0.5)
 
@@ -143,7 +143,7 @@ class CEPlotter:
         ax1.tick_params(axis='y',bottom=False,left=True,labelleft=True,
                         top=True)
         ax1.set_xticks(range(len(new_order)),labels=new_isotope_list,
-                       rotation=45)
+                       rotation=45,size='large')
         ax1.set_ylim(y_axis[0],y_axis[1])
         ax1.scatter (new_isotope_list,ce_results_1,s=40 , c='b',
                      linewidth=2,label=library_labels[0])
@@ -195,6 +195,11 @@ class CEPlotter:
         ax1.vlines(x=corrected_splitting,color='k',linewidth=1,linestyle='-',
                    ymin=y_axis[0],ymax=y_axis[1])
 
+        # add spectrum region labelling
+        #ax1.text(1.7,1.2,'$\Phi_{CNE}$',size=30)
+        #ax1.text(6.8,1.6,'$\Phi_{NEB}$',size=30)
+        #ax1.text(14,1.6,'$\Phi_{DIR}$',size=30)
+
         # save figure
         fig.savefig(f"{self.folder}/{self.plotname}.png",transparent=False,
                     bbox_inches='tight')
@@ -229,6 +234,34 @@ class CEPlotter:
         weighted_ce_result = summed_weighted_values/summed_weights
         weighted_ce_error = 1/np.sqrt(summed_weights)
         return weighted_ce_result,weighted_ce_error
+
+
+    def _r_chi_squared(self,meas_vals,pred_values,meas_uncerts):
+        """ calculate reduced chi squared between a set of measurements, 
+        and a set of predictions
+
+        Parameters
+        ----------
+        meas_vals : list[float]
+            measured values list
+        pred_vals : list[float]
+            predicted values list
+        meas_uncerts : list[float]
+            measured values uncertainties list
+
+        Returns
+        -------
+        reduced_chi_squared : float
+            reduced chi square between measurements and predictions
+        """
+        predicted = pred_values
+        observed = meas_vals
+        uncerts = meas_uncerts
+        squared_dev_list = [((i-j)/k)**2 for 
+                            i,j,k in zip(observed,predicted,uncerts)]
+        dof = len(observed) - 1
+        r_chi_sq = np.sum(squared_dev_list)/dof
+        return r_chi_sq
     
     def run(self,calc_results,exp_results,libraries,
             flux_error,we_isotopes,we_library,new_order=None,
@@ -249,7 +282,7 @@ class CEPlotter:
         flux_error : float
             Fractional uncertainty on the flux estimation
         we_isotopes : list[int]
-            specify isotopes you want to do weighted average analysis on 
+            specify isotopes you want to do weighted average/chi2 analysis on 
             like [4,19] for isotopes 4-->19
         we_library : str
             Name of the library to do the weighted ave analysis on 
@@ -368,18 +401,18 @@ class CEPlotter:
         #print some results
         new_isotope_list = [isotope_list_mathmode[i] for i in new_order]
         for i,j in enumerate(new_isotope_list):
-            #print(f'********* {j} C/E results')
-            #print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
-            #      f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
-            #      f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")
-            print(f"{libraries[0]} value is "
-                  f"{ce_results_1[i]:.3f} +- {ce_errors_1[i]:.3f}")
-            if len(libraries) in (2,3):
-                print(f"{libraries[1]} value is "
-                      f"{ce_results_2[i]:.3f} +- {ce_errors_2[i]:.3f}")
-            if len(libraries) == 3:
-                print(f"{libraries[2]} value is "
-                      f"{ce_results_3[i]:.3f} +- {ce_errors_3[i]:.3f}")
+            print(f'********* {j} C/E results')
+            print(f"{ce_results_1[i]:.2f} $\pm$ {ce_errors_1[i]:.2f} & "
+                  f"{ce_results_2[i]:.2f} $\pm$ {ce_errors_2[i]:.2f} & "
+                  f"{ce_results_3[i]:.2f} $\pm$ {ce_errors_3[i]:.2f}")
+            #print(f"{libraries[0]} value is "
+            #      f"{ce_results_1[i]:.3f} +- {ce_errors_1[i]:.3f}")
+            #if len(libraries) in (2,3):
+            #    print(f"{libraries[1]} value is "
+            #          f"{ce_results_2[i]:.3f} +- {ce_errors_2[i]:.3f}")
+            #if len(libraries) == 3:
+            #    print(f"{libraries[2]} value is "
+            #          f"{ce_results_3[i]:.3f} +- {ce_errors_3[i]:.3f}")
         
         # plot results
         self._plotter(new_order,new_isotope_list,ce_results_1,
@@ -387,17 +420,20 @@ class CEPlotter:
                       ce_results_3,ce_errors_3,spectrum_flux_frac_u,
                       libraries,plot_splitting,y_axis,legend_x_coord)
         
-        # find out which library is being used for WE calculations
+        # find out which library is being used for WE/chi2 calculations
         we_library_index = libraries.index(we_library)
         if we_library_index == 0:
             we_ce_results = ce_results_1
             we_ce_uncerts = ce_errors_1
+            chi2_pred_results = [calc_a_1[i] for i in new_order]
         if we_library_index == 1:
             we_ce_results = ce_results_2
             we_ce_uncerts = ce_errors_2
+            chi2_pred_results = [calc_a_2[i] for i in new_order]
         if we_library_index == 2:
             we_ce_results = ce_results_3
             we_ce_uncerts = ce_errors_3
+            chi2_pred_results = [calc_a_3[i] for i in new_order]
 
         # do weighted ave calcs and print 
         weighted_ave_value = self._weighted_ce(
@@ -409,3 +445,16 @@ class CEPlotter:
         print(f"weighted {libraries[we_library_index]} C/E for "
               f"{new_isotope_list[we_isotopes[0]:we_isotopes[1]]} is "
               f"{weighted_ave_value} +- {weighted_ave_uncert}")
+
+        # get the lists for the chi2 analysis
+        chi2_exp_results = [exp_a[i] for i in new_order]
+        chi2_exp_uncerts = [exp_u[i] for i in new_order]
+
+        # do reduced chi squared calcs and print
+        chi2_val = self._r_chi_squared(
+            chi2_exp_results ,
+            chi2_pred_results,
+            chi2_exp_uncerts )
+        print(f"{libraries[we_library_index]} Chi2/DoF for "
+              f"all isotopes is "
+              f"{chi2_val}")

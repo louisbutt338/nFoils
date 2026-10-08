@@ -24,12 +24,11 @@ activity predictions with experimental results are also included, as a special t
 
 ## Installation
 
-First set up a virtual environment with prerequisites installed \*, 
-then install a development version of the package \** with the following commands:
+Install a development version of the package \** with the following commands in a virtual env:
 ```
 git clone https://github.com/louisbutt338/nFoils.git
 cd nFoils
-pip install -r requirements.txt -e .
+pip install -e .
 ```
 
 To enable nuclear data extraction, install NJOY2016 by following the installation instructions on the 
@@ -38,8 +37,6 @@ then set the path to the NJOY2016 executable with the command:
 ```
 export NJOY=/path/to/njoy
 ```
-
-\* environment should include pip>=25.0.0 openblas>=0.3.30
 
 \** development version encouraged, so you can adapt the code to your heart's content 
 

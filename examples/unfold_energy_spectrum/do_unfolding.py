@@ -2,7 +2,7 @@
 from reaction rates and response functions with uncertainties. 
 options for running in sequential or in parallel
 """
-from bfoils.unfold import BayesianUnfolding
+from nfoils.unfold import BayesianUnfolding
 import numpy as np
 import multiprocessing as mp
 

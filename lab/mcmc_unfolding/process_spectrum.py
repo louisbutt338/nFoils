@@ -19,24 +19,20 @@ with open(files_json, 'r') as f:
 with open('files.json','w') as f:
     json.dump(data,f,indent=4)
 
-# path to results folder
-#results_path = f'good_lhood_results/diff_gs_5param_weiss_260226/lin{gs_num}'
-results_path = 'good_lhood_results/diff_priors_lin51_240226/1freepeak_maxwell'
-
 # how many parameters in the model
-nparam = 5
+nparam = 2
 
 # names of parameters
-param_names = [r'$\mu_{fast,1}$',
-               r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
+param_names = [#r'$\mu_{fast,1}$',
+               #r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
                #r'$\sigma_{fast,2}$',r'$C_{fast,2}$',
                #r'$\sigma_{fast,3}$',r'$C_{fast,3}$',
-               r'$T_W$', r'$C_W$'
+               r'$T_{evap}$', r'$C_{evap}$'
                ]
 
 # set initial guesses for each parameter
-guesses = [15.5-2.0945, 
-           0.35, 5e5, 
+guesses = [#15.5-2.0945, 
+           #0.35, 5e5, 
            #0.5, 1e5,
            #0.5, 1e4,
            1,  1e6
@@ -49,8 +45,8 @@ unfold = BayesianUnfolding(files_json,nparam,param_names,guesses)
 def model(theta,energy):
 
     # unpack the tuple of parameters
-    (mean1,
-     sigma1,peak1,
+    (#mean1,
+     #sigma1,peak1,
      #sigma2,peak2,
      #sigma3,peak3,
      mode4,peak4,
@@ -59,31 +55,30 @@ def model(theta,energy):
 
     # create the model
     #if energy>1:
-    flux = (unfold.gaussian(mean1,sigma1,peak1,energy)+
+    flux = (#unfold.gaussian(mean1,sigma1,peak1,energy)
             #unfold.gaussian(15.5-6.45,sigma2,peak2,energy)+
             #unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
-            unfold.maxwellian(mode4,peak4,energy)
+
+            # REMEMBER THIS ONEß
+            unfold.weisskopf(mode4,peak4,energy)
             )
     #else:
     #    flux = (unfold.weisskopf(mode4,peak4,energy)+
     #            unfold.powerlaw(alpha5,scale5,energy))
     return flux
 
+# path to results folder
+results_path = '.'
+
 # load calculated parameters and standard deviations from results file
-#params_fast = np.loadtxt('results_test.txt', usecols=(1,))
-#params_slow = np.loadtxt('results_slow.txt', usecols=(1,))
-#params = np.append(params_fast,params_slow)
 params = np.loadtxt(f'{results_path}/params.txt')
 
 # get covariance matrix
-#covs_fast = np.loadtxt('results_test.txt', usecols=(2,))
-#covs_slow = np.loadtxt('results_slow.txt', usecols=(2,))
-#covs = np.append(stds_fast,stds_slow)
 cov_matrix = np.loadtxt(f'{results_path}/covs.txt')
 
 # sample cov matrix by cholesky decomp
 chol = np.linalg.cholesky(cov_matrix)
-rand_samples = np.random.randn(100000000,nparam)
+rand_samples = np.random.randn(1000000,nparam)
 true_samples = rand_samples @ chol.T
 true_cov_matrix = np.cov(true_samples.T)
 
@@ -100,12 +95,12 @@ print(f'mean param std = {100*np.mean(stds/params)} pc')
 all_spectra = unfold.get_spectra(model,params,true_cov_matrix,cutoff)
 
 # find the mean spectrum uncertainty
-mean_std_spec = 100*np.mean((all_spectra[1]-all_spectra[0])/all_spectra[0])
+mean_std_spec = 100*np.mean(np.divide((all_spectra[1]-all_spectra[0]),all_spectra[0]))
 print(f'mean spectrum std = {mean_std_spec} pc')
 
 # plot and dump spectrum
-#unfold.plot_simple_spectrum(*all_spectra,f'{results_path}/spectrum4')
-#unfold.dump_spectrum(all_spectra[0],all_spectra[1],f'{results_path}/spectrum4')
+unfold.plot_simple_spectrum(*all_spectra,f'{results_path}/spectrum')
+unfold.dump_spectrum(all_spectra[0],all_spectra[1],f'{results_path}/spectrum')
 
 #and reduced chi squared
 chi_squared = unfold.get_chi_squared(all_spectra[0])

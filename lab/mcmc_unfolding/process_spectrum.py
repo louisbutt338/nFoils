@@ -5,7 +5,7 @@ import numpy as np
 import json
 
 # linear group structure number
-gs_num = 51
+gs_num = 21
 
 # path to files json containing paths for all the data
 files_json = 'files.json'
@@ -20,11 +20,11 @@ with open('files.json','w') as f:
     json.dump(data,f,indent=4)
 
 # how many parameters in the model
-nparam = 2
+nparam = 4
 
 # names of parameters
 param_names = [#r'$\mu_{fast,1}$',
-               #r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
+               r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
                #r'$\sigma_{fast,2}$',r'$C_{fast,2}$',
                #r'$\sigma_{fast,3}$',r'$C_{fast,3}$',
                r'$T_{evap}$', r'$C_{evap}$'
@@ -32,7 +32,7 @@ param_names = [#r'$\mu_{fast,1}$',
 
 # set initial guesses for each parameter
 guesses = [#15.5-2.0945, 
-           #0.35, 5e5, 
+           0.35, 5e5, 
            #0.5, 1e5,
            #0.5, 1e4,
            1,  1e6
@@ -46,7 +46,7 @@ def model(theta,energy):
 
     # unpack the tuple of parameters
     (#mean1,
-     #sigma1,peak1,
+     sigma1,peak1,
      #sigma2,peak2,
      #sigma3,peak3,
      mode4,peak4,
@@ -55,12 +55,12 @@ def model(theta,energy):
 
     # create the model
     #if energy>1:
-    flux = (#unfold.gaussian(mean1,sigma1,peak1,energy)
+    flux = (unfold.gaussian(15.5-2.0945,sigma1,peak1,energy)+
             #unfold.gaussian(15.5-6.45,sigma2,peak2,energy)+
             #unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
 
-            # REMEMBER THIS ONEß
-            unfold.weisskopf(mode4,peak4,energy)
+            # REMEMBER THIS ONE
+            unfold.maxwellian(mode4,peak4,energy)
             )
     #else:
     #    flux = (unfold.weisskopf(mode4,peak4,energy)+
@@ -78,7 +78,7 @@ cov_matrix = np.loadtxt(f'{results_path}/covs.txt')
 
 # sample cov matrix by cholesky decomp
 chol = np.linalg.cholesky(cov_matrix)
-rand_samples = np.random.randn(1000000,nparam)
+rand_samples = np.random.randn(10000000,nparam)
 true_samples = rand_samples @ chol.T
 true_cov_matrix = np.cov(true_samples.T)
 

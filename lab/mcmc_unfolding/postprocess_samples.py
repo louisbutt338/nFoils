@@ -7,11 +7,11 @@ from nfoils.unfold import BayesianUnfolding
 files_json = 'files.json'
 
 # how many parameters in the model
-nparam = 2
+nparam = 4
 
 # names of parameters
 param_names = [#r'$\mu_{fast,1}$', 
-               #r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
+               r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
                #r'$\sigma_{fast,2}$',r'$C_{fast,2}$',
                #r'$\sigma_{fast,3}$',r'$C_{fast,3}$',
                r'$T_{evap}$', r'$C_{evap}$'
@@ -20,7 +20,7 @@ param_names = [#r'$\mu_{fast,1}$',
 
 # set initial guesses for each parameter
 guesses = [#15.5-2.0945,
-           #0.35, 5e5, 
+           0.35, 5e5, 
            #0.5, 1e5,
            #0.5, 1e4,
            1, 1e6

@@ -42,21 +42,20 @@ def model(theta,energy):
 # should return log-prior distribution for the entire group structure
 def log_prior(theta,model): 
 
-    # unpack the tuple of parameters
-    sigma,peak = theta
+    # check physical spectrum limits
+    if model(theta,20)<1e1:
 
-    # set hard limits for the parameters
-    if (0.1 < sigma < 2 and 1e3 < peak < 1e9):
-
-        # generate and sum model values for the group structure
-        # to get the prior
-        prior = np.sum([model(theta,i) for i in unfold.group_structure])
-
-        # return log(prior) for the group structure (MeV) if in limits
+        # then find the joint uniform probability distribution
+        # this should include all the parameter limits
+        #  P(param) = 1/(upper_limit-lower_limit)
+        # one column for each parameter
+        prior = 1/( 
+            (2-0.1) #sigma1
+            *(1e9-1e3) #peak1
+            )
         return np.log(prior)
-    
-    # return -inf if outside limits 
-    return -np.inf
+    else:
+        return -np.inf
 
 # grab the log likelihood and log posterior
 # these are automatically constructed from the prior/model at runtime

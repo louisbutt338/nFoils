@@ -21,3 +21,6 @@ nfoils/__pycache__/
 #venvs
 .venv/
 venv/
+
+# big mcmc results files
+**/samples.txt

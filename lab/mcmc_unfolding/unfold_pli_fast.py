@@ -54,12 +54,12 @@ def model(theta,energy):
      ) = theta
 
     # create the model
-    flux = (#unfold.gaussian(mean1,sigma1,peak1,energy)
+    flux = (unfold.gaussian(15.5-2.0945,sigma1,peak1,energy)+
             #unfold.gaussian(15.5-6.45,sigma2,peak2,energy)+
             #unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
 
             # REMEMBER THIS ONE
-            unfold.weisskopf(mode4,peak4,energy)
+            unfold.maxwellian(mode4,peak4,energy)
             )
     return flux
 
@@ -76,12 +76,12 @@ def log_prior(theta,model):
         # one column for each parameter
         prior = 1/( 
             #(14-13) # mean1
-            #*(0.8-0.1) #sigma1
-            #* (1e6-5e4) #peak1
-            #* (0.8-0.1) #sigma2
-            #* (5e5-5e4) #peak2
-             (2-0.1) #mode4
-            * (5e6-1e5) #peak4
+            (0.8-0.1) #sigma1
+            *(1e6-5e4) #peak1
+            #*(0.8-0.1) #sigma2
+            #*(5e5-5e4) #peak2
+            *(2-0.1) #mode4
+            *(5e6-1e5) #peak4
             )
         return np.log(prior)
     else:
@@ -104,7 +104,7 @@ nburn = 50
 
 # total number of MCMC steps to take (including nburn)
 # no. of trace results =  rm_samples * nwalkers * (nsteps-nburn)
-nsteps = 100
+nsteps = 1000
 
 # run sampler, postprocess, save results (single)
 #samples = unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,

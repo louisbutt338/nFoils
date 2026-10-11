@@ -55,7 +55,8 @@ measurements, using [actigamma](https://github.com/fispact/actigamma)
 ## Case studies
 
 - Slides on the unfolding algorithm, presented at OSSFE2026, are available in */materials/*
-- The scripts used for the analyses featured in three papers, and the results, are available in */lab/*. The papers are listed below:
+- The analysis scripts used in a few publications, and the results, are available in */lab/*. The papers are listed below:
+  - Dosimetry foil characterisation of a new lithium-target fast neutron source, Fus Eng Design https://www.sciencedirect.com/science/article/pii/S0920379626004801
   - Neutron production from deuterons on lithium at 9.7 and 14 Mev, NIM B https://www.sciencedirect.com/science/article/pii/S0168583X26003241
 
 

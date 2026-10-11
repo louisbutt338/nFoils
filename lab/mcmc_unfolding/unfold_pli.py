@@ -15,25 +15,27 @@ param_names = ['sigma1','peak1',
                'sigma2','peak2',
                'sigma3','peak3',
                'mode4','peak4',
-               'alpha5','scale5']
+               'alpha5','scale5'
+               ]
 
 # set initial guesses for each parameter
 guesses = [0.3, 5e5,  
            0.3, 1e5,
            0.3, 1e5,
            1, 5e5,
-           1.1,1e4]
+           1.1,1e4
+           ]
 
 # load the unfolding data and parameter info
 unfold = BayesianUnfolding(files_json,nparam,param_names,guesses)
 
 # crop the input data if needed
 # gs: [112]=1 MeV, [70]=0.1 , [47]=0.01 , [98]=0.5, [5]=1e-6
-unfold.group_structure = unfold.group_structure[5:]
+unfold.group_structure = unfold.group_structure[70:]
 unfold.reaction_rates = unfold.reaction_rates
 unfold.reaction_rate_uncerts = unfold.reaction_rate_uncerts
-unfold.response_matrix = [i[5:] for i in unfold.response_matrix]
-unfold.response_matrix_uncerts = [i[5:] for i in 
+unfold.response_matrix = [i[70:] for i in unfold.response_matrix]
+unfold.response_matrix_uncerts = [i[70:] for i in 
                                   unfold.response_matrix_uncerts]
 
 # create neutron flux model, given parameters theta and a neutron energy
@@ -45,16 +47,17 @@ def model(theta,energy):
      sigma2,peak2,
      sigma3,peak3,
      mode4,peak4,
-     alpha5,scale5) = theta
+     alpha5,scale5
+     ) = theta
 
     # create the model
     if energy>1:
         flux = (unfold.gaussian(15.5-2.0945,sigma1,peak1,energy)+ 
                 unfold.gaussian(15.5-6.45,sigma2,peak2,energy)+
-                unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
-                unfold.weisskopf(mode4,peak4,energy))
+                #unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
+                unfold.maxwellian(mode4,peak4,energy))
     else:
-        flux = (unfold.weisskopf(mode4,peak4,energy)+
+        flux = (unfold.maxwellian(mode4,peak4,energy)+
                 unfold.powerlaw(alpha5,scale5,energy))
     return flux
 
@@ -67,7 +70,8 @@ def log_prior(theta,model):
      sigma2,peak2,
      sigma3,peak3,
      mode4,peak4,
-     alpha5,scale5) = theta
+     alpha5,scale5
+     ) = theta
 
     # set hard limits for the parameters
     if ( 0.1 < sigma1 < 0.5 and 1e3 < peak1 < 1e9 
@@ -99,11 +103,11 @@ rm_samples = 1
 nwalkers = 50
 
 # "burn-in" period to let chains stabilize
-nburn = 500
+nburn = 50
 
 # total number of MCMC steps to take (including nburn)
 # no. of trace results =  nwalkers * (nsteps-nburn)
-nsteps = 1000
+nsteps = 100
 
 # run sampler, postprocess, save results (single)
 #samples = unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,

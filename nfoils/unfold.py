@@ -662,8 +662,8 @@ class BayesianUnfolding:
             # print acceptance fraction and autocorr time
             print("mean acceptance fraction: {0:.3f}".format(
                   np.mean(sampler.acceptance_fraction)))
-            #print("mean autocorrelation time: {0:.3f} steps".format(
-            #      np.mean(sampler.get_autocorr_time())))
+            print("mean autocorrelation time: {0:.3f} steps".format(
+                  np.mean(sampler.get_autocorr_time(quiet=True))))
 
             # get sampler results and append, removing nburn steps 
             samples = sampler.get_chain(flat=True,discard=nburn)
@@ -716,6 +716,24 @@ class BayesianUnfolding:
                             labelpad=0.2)
         #fig.tight_layout(pad=0.001)
         fig.set_size_inches(15,15)
+
+        # 3. Reshape axes to a clear colour grid mapping (ndim x ndim)
+        ndim = samples.shape[1]
+        axes = np.array(fig.axes).reshape((ndim, ndim))
+        
+        # Loop through the lower triangle to inject custom colourmap scatter plots
+        for i in range(ndim):
+            for j in range(i):
+                ax = axes[i, j]
+                x = samples[:, j]
+                y = samples[:, i]
+
+                # hexbin colour map
+                ax.hexbin(x, y, gridsize=40, cmap="viridis", 
+                          mincnt=1, edgecolors='none')
+                continue
+            continue
+
         plt.savefig(f'{plotname}.png',bbox_inches='tight')
         
         return param_aves,param_cov_matrix
@@ -801,10 +819,10 @@ class BayesianUnfolding:
         # remove preset unphysical values from spectra
         if cutoff != None:
             for i in range(len(gs)-cutoff,len(gs)):
-                mean_spectrum[i]=0
-                max_spectrum[i]=0
-                min_spectrum[i]=0
-                guess_spectrum[i]=0
+                mean_spectrum[i]=1e-10
+                max_spectrum[i]=1e-10
+                min_spectrum[i]=1e-10
+                guess_spectrum[i]=1e-10
 
         return (mean_spectrum,max_spectrum,
                 min_spectrum,guess_spectrum)
@@ -833,7 +851,7 @@ class BayesianUnfolding:
 
         # plot solution and prior spectrum guess
         fig, ax = plt.subplots(1,figsize=(10,6))
-        ax.step(gs, guess_spectrum,
+        ax.step(gs, guess_spectrum,linestyle='--',
                 label='Prior guess',c='b',where='pre')
         ax.step(gs, mean_spectrum,
                 label='Solution',c='m',where='pre')
@@ -890,8 +908,8 @@ class BayesianUnfolding:
                                     gridspec_kw={'width_ratios': [1, 2],
                                                  'height_ratios': [4, 1]}))
         # plot a priori, solution and uncertainty 
-        ax1.step(gs, guess_spectrum, label='Prior guess',where='pre',c='b')
-        ax2.step(gs, guess_spectrum, label='Prior guess',where='pre',c='b')
+        ax1.step(gs, guess_spectrum, label='Prior guess',linestyle='--',where='pre',c='b')
+        ax2.step(gs, guess_spectrum, label='Prior guess',linestyle='--',where='pre',c='b')
         ax1.step(gs, mean_spectrum, label='Solution', where='pre',c='m')
         ax2.step(gs, mean_spectrum, label='Solution', where='pre',c='m')
         ax1.fill_between(gs, min_spectrum, max_spectrum, step='pre', alpha=0.2,color='m')
@@ -905,8 +923,8 @@ class BayesianUnfolding:
         ax4.step(gs, soln_ct, where='pre',c='m')
         ax3.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.2,color='m')
         ax4.fill_between(gs, min_ct, max_ct, step='pre',alpha=0.2,color='m')
-        ax3.step(gs_cutoff, ones_cutoff, where='post',c='b')
-        ax4.step(gs_cutoff, ones_cutoff, where='post',c='b')
+        ax3.step(gs_cutoff, ones_cutoff, linestyle='--',where='post',c='b')
+        ax4.step(gs_cutoff, ones_cutoff, linestyle='--',where='post',c='b')
 
         # plotting parameters for all 4 graphs 
         ax1.set_xscale('log')

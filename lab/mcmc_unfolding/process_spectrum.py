@@ -5,7 +5,7 @@ import numpy as np
 import json
 
 # linear group structure number
-gs_num = 21
+gs_num = 51
 
 # path to files json containing paths for all the data
 files_json = 'files.json'
@@ -20,10 +20,10 @@ with open('files.json','w') as f:
     json.dump(data,f,indent=4)
 
 # how many parameters in the model
-nparam = 4
+nparam = 5
 
 # names of parameters
-param_names = [#r'$\mu_{fast,1}$',
+param_names = [r'$\mu_{fast,1}$',
                r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
                #r'$\sigma_{fast,2}$',r'$C_{fast,2}$',
                #r'$\sigma_{fast,3}$',r'$C_{fast,3}$',
@@ -31,7 +31,7 @@ param_names = [#r'$\mu_{fast,1}$',
                ]
 
 # set initial guesses for each parameter
-guesses = [#15.5-2.0945, 
+guesses = [15.5-2.0945, 
            0.35, 5e5, 
            #0.5, 1e5,
            #0.5, 1e4,
@@ -45,7 +45,7 @@ unfold = BayesianUnfolding(files_json,nparam,param_names,guesses)
 def model(theta,energy):
 
     # unpack the tuple of parameters
-    (#mean1,
+    (mean1,
      sigma1,peak1,
      #sigma2,peak2,
      #sigma3,peak3,
@@ -55,12 +55,12 @@ def model(theta,energy):
 
     # create the model
     #if energy>1:
-    flux = (unfold.gaussian(15.5-2.0945,sigma1,peak1,energy)+
+    flux = (unfold.gaussian(mean1,sigma1,peak1,energy)+
             #unfold.gaussian(15.5-6.45,sigma2,peak2,energy)+
             #unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
 
             # REMEMBER THIS ONE
-            unfold.maxwellian(mode4,peak4,energy)
+            unfold.weisskopf(mode4,peak4,energy)
             )
     #else:
     #    flux = (unfold.weisskopf(mode4,peak4,energy)+
@@ -68,7 +68,7 @@ def model(theta,energy):
     return flux
 
 # path to results folder
-results_path = '.'
+results_path = '/Users/ljb841@student.bham.ac.uk/nFoils/lab/mcmc_unfolding/unfolding_paper/unfolding_results_revised/diff_priors_101026/50bin-1freeG-weiss-NEW'
 
 # load calculated parameters and standard deviations from results file
 params = np.loadtxt(f'{results_path}/params.txt')

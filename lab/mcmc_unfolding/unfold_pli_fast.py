@@ -8,19 +8,19 @@ import multiprocessing as mp
 files_json = 'files.json'
 
 # how many parameters in the model
-nparam = 4
+nparam = 5
 
 # names of parameters
-param_names = [#r'$\mu_{fast,1}$', 
-               #r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
+param_names = [r'$\mu_{fast,1}$', 
+               r'$\sigma_{fast,1}$',r'$C_{fast,1}$',
                #r'$\sigma_{fast,2}$',r'$C_{fast,2}$',
                #r'$\sigma_{fast,3}$',r'$C_{fast,3}$',
                r'$T_{evap}$', r'$C_{evap}$'
                ]
 
 # set initial guesses for each parameter
-guesses = [#15.5-2.0945,
-           #0.35, 5e5, 
+guesses = [15.5-2.0945,
+           0.35, 5e5, 
            #0.5, 1e5,
            #0.5, 1e4,
            1, 1e6
@@ -46,20 +46,20 @@ unfold.response_matrix_uncerts = [i/100 for i in unfold.response_matrix_uncerts]
 def model(theta,energy):
 
     # unpack the tuple of parameters
-    (#mean1,
-     #sigma1,peak1,
+    (mean1,
+     sigma1,peak1,
      #sigma2,peak2,
      #sigma3,peak3,
      mode4,peak4
      ) = theta
 
     # create the model
-    flux = (unfold.gaussian(15.5-2.0945,sigma1,peak1,energy)+
+    flux = (unfold.gaussian(mean1,sigma1,peak1,energy)+
             #unfold.gaussian(15.5-6.45,sigma2,peak2,energy)+
             #unfold.gaussian(15.5-8.85,sigma3,peak3,energy)+
 
             # REMEMBER THIS ONE
-            unfold.maxwellian(mode4,peak4,energy)
+            unfold.weisskopf(mode4,peak4,energy)
             )
     return flux
 
@@ -75,8 +75,8 @@ def log_prior(theta,model):
         #  P(param) = 1/(upper_limit-lower_limit)
         # one column for each parameter
         prior = 1/( 
-            #(14-13) # mean1
-            (0.8-0.1) #sigma1
+            (14-13) # mean1
+            *(0.8-0.1) #sigma1
             *(1e6-5e4) #peak1
             #*(0.8-0.1) #sigma2
             #*(5e5-5e4) #peak2
@@ -94,17 +94,17 @@ log_posterior = unfold.log_posterior
 
 # number of samples from the response function distributions
 # computational expense skyrockets here, so start with 1
-rm_samples = 50
+rm_samples = 40
 
 # number of MCMC walkers/chains
-nwalkers = 50
+nwalkers = 20
 
 # "burn-in" period to let chains stabilize
 nburn = 50
 
 # total number of MCMC steps to take (including nburn)
 # no. of trace results =  rm_samples * nwalkers * (nsteps-nburn)
-nsteps = 1000
+nsteps = 200
 
 # run sampler, postprocess, save results (single)
 #samples = unfold.run_sampler(log_posterior,model,log_prior,log_likelihood,

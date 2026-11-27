@@ -5,8 +5,9 @@
 
 Python toolkit for neutron energy spectrometry with activation foils
 
-Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. Contributors are welcome!
-Please reference this code appropriately in your work with the DOI
+Contact LJB841@bham.ac.uk for further information or if anything is behaving badly. Contributors are welcome! 
+If referencing the activation analysis method in your work, please use 10.1016/j.fusengdes.2026.116094. 
+If referencing the Bayesian unfolding method, please use 10.1016/j.nima.2026.172265.
 
 nFoils was developed for measuring complex neutron energy spectra with uncertainty quantification.
 This requires (a) the calculation of probability distributions for the measurement data and (b) an unfolding method 
@@ -58,6 +59,7 @@ measurements, using [actigamma](https://github.com/fispact/actigamma)
 - The analysis scripts used in a few publications, and the results, are available in */lab/*. The papers are listed below:
   - Dosimetry foil characterisation of a new lithium-target fast neutron source, Fus Eng Design https://www.sciencedirect.com/science/article/pii/S0920379626004801
   - Neutron production from deuterons on lithium at 9.7 and 14 Mev, NIM B https://www.sciencedirect.com/science/article/pii/S0168583X26003241
+  - Bayesian inference of fast neutron spectra with dosimetry foils, NIM A https://www.sciencedirect.com/science/article/pii/S0168900226009915?
 
 
 ### Energy spectrum measurement

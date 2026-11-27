@@ -8,11 +8,11 @@ rc("font", **{"family":"sans-serif", "sans-serif":["Helvetica"]},
 from nfoils.unfold import BayesianUnfolding
 
 # get mean spectra and max/min spectra
-spec1,uncert1 = np.loadtxt('4p_175_spectrum.txt',
+spec1,uncert1 = np.loadtxt('4p_lin51_spectrum.txt',
                        unpack=True)
 spec1max = [(i+j) for i,j in zip(spec1,uncert1)]
 spec1min = [(i-j) for i,j in zip(spec1,uncert1)]
-spec2,uncert2 = np.loadtxt('gravel_175_spectrum.txt',delimiter=',')
+spec2,uncert2 = np.loadtxt('gravel_lin51_spectrum2.txt',delimiter=',')
 spec2max = [(i+j) for i,j in zip(spec2,uncert2)]
 spec2min = [(i-j) for i,j in zip(spec2,uncert2)]
 
@@ -43,8 +43,8 @@ chisq_spec2 = unfold.get_chi_squared(spec2)
 print('Chi squared =',chisq_spec1, 'and', chisq_spec2)
 
 # find mean spectrum uncertainty
-std_spec1 = 100*np.mean(uncert1/spec1)
-std_spec2 = 100*np.mean(uncert2/spec2)
+std_spec1 = 100*np.mean(uncert1[:-14]/spec1[:-14])
+std_spec2 = 100*np.mean(uncert2[:-14]/spec2[:-14])
 print('mean spectrum std =',std_spec1, 'and', std_spec2, 'pc')
 
 # group structure shorthand
